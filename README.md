@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Panoptical Labs Ecosystem
+
+A modern enterprise-grade web application serving as a centralized gateway for all programs, courses, and externally deployed labs across multiple domains and subdomains.
+
+## Project Vision
+
+The platform acts as a single unified portal where users can discover programs, courses, and labs, while administrators manage the entire ecosystem from one centralized dashboard. 
+
+It handles multiple labs deployed on different domains (e.g., `ai.panoptical.org`, `nano.panoptical.org`) connecting them to this central platform through a unified authentication and authorization system.
+
+## Key Features
+
+- **Public Homepage**: Premium, enterprise-level entry point showcasing featured labs and programs.
+- **Single Sign-On (SSO)**: Centralized authentication allowing users to register and login once to access authorized resources across the ecosystem.
+- **Role-Based Access Control (RBAC)**: Support for Super Admin, Program Manager, Lab Manager, Support Manager, and Users.
+- **Master Control Center**: Powerful administration panel to manage users, labs, access requests, and monitor system health.
+- **Lab Discovery & Management**: Centralized registry of all external labs with their statuses, domains, and visibility settings.
+- **User Dashboard**: Dedicated portals where students see only authorized labs and can request access to restricted ones.
+
+## Technology Stack
+
+- **Frontend**: Next.js 15, React 19, Tailwind CSS v4, ShadCN UI, Framer Motion
+- **Backend**: Next.js App Router (Server Actions / API Routes), NextAuth.js
+- **Database**: Prisma ORM with SQLite (Easily swappable to PostgreSQL)
 
 ## Getting Started
 
-First, run the development server:
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. **Initialize Database**:
+   ```bash
+   npx prisma db push
+   npx prisma generate
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. **Run Development Server**:
+   ```bash
+   npm run dev
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Access the Application**:
+   - Platform Gateway: `http://localhost:3000`
+   - Registration: `http://localhost:3000/register` (The first registered user is automatically a SUPER_ADMIN)
+   - Login: `http://localhost:3000/login`
+   - Admin Panel: `http://localhost:3000/admin`
