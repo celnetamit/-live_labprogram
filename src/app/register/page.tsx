@@ -69,8 +69,8 @@ export default function Register() {
           className="glassmorphism p-8 rounded-2xl border border-border shadow-2xl"
         >
           <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-secondary-foreground mb-4 shadow-lg shadow-secondary/20 border border-border">
-              <ShieldCheck className="w-6 h-6" />
+            <div className="w-14 h-14 rounded-2xl btn-brand flex items-center justify-center text-primary-foreground mb-4">
+              <ShieldCheck className="w-7 h-7" />
             </div>
             <h2 className="text-2xl font-bold text-center tracking-tight">Request Platform Access</h2>
             <p className="text-sm text-muted-foreground mt-2 text-center">
@@ -133,7 +133,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full mt-4 disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-lg text-sm font-semibold btn-brand h-11 px-4 py-2 w-full mt-4 disabled:opacity-50 disabled:pointer-events-none"
             >
               {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
               {loading ? "Creating..." : "Create Account"}

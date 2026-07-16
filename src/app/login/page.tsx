@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Lock, Mail, Fingerprint, Key, Loader2 } from "lucide-react";
 
@@ -37,7 +37,9 @@ export default function Login() {
         throw new Error("Invalid email or password");
       }
 
-      router.push("/admin"); // Redirect to admin or dashboard based on role, for now just admin
+      const session = await getSession();
+      const role = (session?.user as { role?: string } | undefined)?.role;
+      router.push(role === "SUPER_ADMIN" ? "/admin" : "/dashboard");
       router.refresh();
     } catch (err: any) {
       setError(err.message);
@@ -65,7 +67,7 @@ export default function Login() {
           className="glassmorphism p-8 rounded-2xl border border-border shadow-2xl"
         >
           <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-2xl mb-4 shadow-lg shadow-primary/20">
+            <div className="w-14 h-14 rounded-2xl btn-brand flex items-center justify-center text-primary-foreground font-bold text-2xl mb-4">
               P
             </div>
             <h2 className="text-2xl font-bold text-center tracking-tight">Sign in to Panoptical</h2>
@@ -115,7 +117,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full mt-2 disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-lg text-sm font-semibold btn-brand h-11 px-4 py-2 w-full mt-2 disabled:opacity-50 disabled:pointer-events-none"
             >
               {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
               {loading ? "Signing In..." : "Sign In"}
