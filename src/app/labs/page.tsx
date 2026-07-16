@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description: "Browse all premium workshop labs. Sign in to open a lab and unlock its resources.",
 };
 
+// Reads the DB per-request; never prerender at build time.
+export const dynamic = "force-dynamic";
+
 export default async function PublicLabs() {
   const labs = await prisma.lab.findMany({
     where: { enabled: true, status: "ACTIVE" },

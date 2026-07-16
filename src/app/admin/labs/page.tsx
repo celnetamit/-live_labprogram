@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import LabsClient from "./LabsClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function LabManagement() {
   const labs = await prisma.lab.findMany({
     orderBy: [{ points: "desc" }, { name: "asc" }],
