@@ -124,7 +124,7 @@ export default function LabCatalogClient({
           <Link
             key={lab.id}
             href={`/dashboard/labs/${lab.slug}`}
-            className="group flex flex-col rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all"
+            className="card-glow hairline-top group flex flex-col rounded-2xl border border-border bg-card overflow-hidden"
           >
             <div className="p-5 flex-1">
               <div className="flex items-center justify-between mb-3">

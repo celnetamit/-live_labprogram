@@ -18,11 +18,12 @@ import { createLab, updateLab, deleteLab, syncLabs } from "./actions";
 
 const PAGE_SIZE = 15;
 
-function statusBadge(status: string) {
+function pillTone(status: string) {
   const s = status.toUpperCase();
-  if (s === "ACTIVE") return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-  if (s === "MAINTENANCE") return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-  return "bg-rose-500/10 text-rose-400 border-rose-500/20";
+  if (s === "ACTIVE") return "text-emerald-400";
+  if (s === "MAINTENANCE") return "text-amber-400";
+  if (s === "DISABLED") return "text-muted-foreground";
+  return "text-rose-400";
 }
 
 export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
@@ -111,32 +112,37 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
 
   return (
     <>
-      <div className="flex flex-wrap justify-between items-end gap-3 mb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Lab Management</h1>
-          <p className="text-muted-foreground mt-1">
-            {initialLabs.length} labs · manage pricing, availability, and launch URLs.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={handleSync}
-            disabled={syncing}
-            className="flex items-center px-4 py-2 border border-border rounded-lg font-medium hover:bg-accent transition-colors disabled:opacity-60"
-          >
-            {syncing ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <RefreshCw className="w-4 h-4 mr-2" />
-            )}
-            Sync from source
-          </button>
-          <button
-            onClick={openAddModal}
-            className="flex items-center px-4 py-2 btn-brand rounded-lg font-medium"
-          >
-            <Plus className="w-5 h-5 mr-2" /> Add Lab
-          </button>
+      <div className="relative overflow-hidden rounded-3xl bg-mesh border border-border p-6 sm:p-7 mb-6">
+        <div className="aurora-blob animate-aurora bg-brand-2 w-64 h-64 -top-20 -right-10 opacity-25" />
+        <div className="relative flex flex-wrap justify-between items-end gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              Lab <span className="text-gradient-animated">Management</span>
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              {initialLabs.length} labs · manage pricing, availability, and launch URLs.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={handleSync}
+              disabled={syncing}
+              className="flex items-center px-4 py-2 glass rounded-xl font-medium hover:bg-accent transition-colors disabled:opacity-60"
+            >
+              {syncing ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 mr-2" />
+              )}
+              Sync
+            </button>
+            <button
+              onClick={openAddModal}
+              className="flex items-center px-4 py-2 btn-brand rounded-xl font-medium"
+            >
+              <Plus className="w-5 h-5 mr-2" /> Add Lab
+            </button>
+          </div>
         </div>
       </div>
 
@@ -163,7 +169,7 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-muted-foreground bg-muted/50 uppercase">
               <tr>
@@ -187,7 +193,7 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
                 <tr key={lab.id} className="hover:bg-muted/20 transition-colors group">
                   <td className="px-4 sm:px-6 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                      <div className="w-9 h-9 rounded-lg avatar-grad flex items-center justify-center shrink-0 shadow-sm">
                         <FlaskConical className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
@@ -218,11 +224,7 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
                     ₹{(lab.priceMinor / 100).toLocaleString("en-IN")}
                   </td>
                   <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${statusBadge(
-                        lab.status
-                      )}`}
-                    >
+                    <span className={`pill ${pillTone(lab.enabled ? lab.status : "DISABLED")}`}>
                       {lab.enabled ? lab.status : "DISABLED"}
                     </span>
                   </td>
@@ -253,6 +255,55 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile cards */}
+        <div className="md:hidden divide-y divide-border">
+          {pageLabs.length === 0 && (
+            <div className="px-6 py-12 text-center text-muted-foreground">No labs found.</div>
+          )}
+          {pageLabs.map((lab) => (
+            <div key={lab.id} className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg avatar-grad flex items-center justify-center shrink-0">
+                  <FlaskConical className="w-4 h-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold truncate">{lab.name}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {lab.subject || "—"} · {lab.difficulty || "—"}
+                  </div>
+                </div>
+                <span className={`pill ${pillTone(lab.enabled ? lab.status : "DISABLED")}`}>
+                  {lab.enabled ? lab.status : "DISABLED"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <span className="font-bold">₹{(lab.priceMinor / 100).toLocaleString("en-IN")}</span>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => openEditModal(lab)}
+                    className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                    title="Edit"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(lab.id)}
+                    disabled={deletingId === lab.id}
+                    className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-50"
+                    title="Delete"
+                  >
+                    {deletingId === lab.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="p-4 border-t border-border flex items-center justify-between text-sm text-muted-foreground bg-muted/20">

@@ -7,8 +7,6 @@ import {
   Shield,
   User as UserIcon,
   Mail,
-  CheckCircle2,
-  ShieldAlert,
   Settings2,
   X,
   Loader2,
@@ -49,16 +47,35 @@ export default function UsersClient({ users, labs }: { users: AdminUser[]; labs:
     );
   }, [users, search]);
 
+  const adminCount = users.filter((u) => u.role === "SUPER_ADMIN").length;
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Users &amp; Access</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage roles, status, and per-lab access for every member.
-        </p>
+      {/* Header */}
+      <div className="relative overflow-hidden rounded-3xl bg-mesh border border-border p-6 sm:p-7">
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              Users &amp; <span className="text-gradient-animated">Access</span>
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Manage roles, status, and per-lab access for every member.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <div className="glass rounded-xl px-4 py-2 text-center">
+              <div className="text-xl font-extrabold">{users.length}</div>
+              <div className="text-[11px] text-muted-foreground">Members</div>
+            </div>
+            <div className="glass rounded-xl px-4 py-2 text-center">
+              <div className="text-xl font-extrabold text-primary">{adminCount}</div>
+              <div className="text-[11px] text-muted-foreground">Admins</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="p-4 border-b border-border bg-muted/20">
           <div className="relative max-w-md w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -67,33 +84,34 @@ export default function UsersClient({ users, labs }: { users: AdminUser[]; labs:
               placeholder="Search users by name or email…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-muted-foreground bg-muted/50 uppercase border-b border-border">
+            <thead className="text-xs text-muted-foreground bg-muted/50 uppercase border-b border-border sticky top-0">
               <tr>
-                <th className="px-4 sm:px-6 py-3 font-medium">User</th>
+                <th className="px-6 py-3 font-medium">User</th>
                 <th className="px-4 py-3 font-medium">Role</th>
-                <th className="px-4 py-3 font-medium hidden md:table-cell">Lab Access</th>
+                <th className="px-4 py-3 font-medium">Lab Access</th>
                 <th className="px-4 py-3 font-medium hidden lg:table-cell">Purchases</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 sm:px-6 py-3 text-right font-medium">Manage</th>
+                <th className="px-6 py-3 text-right font-medium">Manage</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filtered.map((u) => (
-                <tr key={u.id} className="hover:bg-muted/10 transition-colors">
-                  <td className="px-4 sm:px-6 py-3">
+                <tr key={u.id} className="group hover:bg-muted/20 transition-colors">
+                  <td className="px-6 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center font-bold text-secondary-foreground shrink-0 border border-border">
+                      <div className="w-9 h-9 rounded-full avatar-grad flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
                         {u.name ? u.name.charAt(0).toUpperCase() : "U"}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-foreground truncate">
+                        <p className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
                           {u.name || "Anonymous"}
                         </p>
                         <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -105,7 +123,7 @@ export default function UsersClient({ users, labs }: { users: AdminUser[]; labs:
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${
+                      className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold border ${
                         u.role === "SUPER_ADMIN"
                           ? "bg-primary/10 text-primary border-primary/20"
                           : "bg-muted text-muted-foreground border-border"
@@ -119,46 +137,78 @@ export default function UsersClient({ users, labs }: { users: AdminUser[]; labs:
                       {u.role.replace("_", " ")}
                     </span>
                   </td>
-                  <td className="px-4 py-3 font-medium hidden md:table-cell">
-                    {u.role === "SUPER_ADMIN" ? "All" : `${u.access.length} labs`}
+                  <td className="px-4 py-3 font-medium">
+                    {u.role === "SUPER_ADMIN" ? (
+                      <span className="text-primary">All labs</span>
+                    ) : (
+                      `${u.access.length} labs`
+                    )}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
                     {u.purchases}
                   </td>
                   <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center text-xs font-medium ${
-                        u.status === "ACTIVE" ? "text-emerald-400" : "text-rose-400"
-                      }`}
-                    >
-                      {u.status === "ACTIVE" ? (
-                        <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                      ) : (
-                        <ShieldAlert className="w-3.5 h-3.5 mr-1" />
-                      )}
+                    <span className={`pill ${u.status === "ACTIVE" ? "text-emerald-400" : "text-rose-400"}`}>
                       {u.status}
                     </span>
                   </td>
-                  <td className="px-4 sm:px-6 py-3 text-right">
+                  <td className="px-6 py-3 text-right">
                     <button
                       onClick={() => setManagingId(u.id)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg text-xs font-medium hover:bg-accent transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg text-xs font-medium hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
                     >
                       <Settings2 className="w-3.5 h-3.5" /> Manage
                     </button>
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
-                    No users found.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
+
+        {/* Mobile cards */}
+        <div className="md:hidden divide-y divide-border">
+          {filtered.map((u) => (
+            <div key={u.id} className="p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full avatar-grad flex items-center justify-center font-bold shrink-0">
+                  {u.name ? u.name.charAt(0).toUpperCase() : "U"}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold truncate">{u.name || "Anonymous"}</p>
+                  <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                </div>
+                <span className={`pill ${u.status === "ACTIVE" ? "text-emerald-400" : "text-rose-400"}`}>
+                  {u.status}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap mb-3">
+                <span
+                  className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[11px] font-bold border ${
+                    u.role === "SUPER_ADMIN"
+                      ? "bg-primary/10 text-primary border-primary/20"
+                      : "bg-muted text-muted-foreground border-border"
+                  }`}
+                >
+                  {u.role.replace("_", " ")}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {u.role === "SUPER_ADMIN" ? "All labs" : `${u.access.length} labs`} · {u.purchases} purchases
+                </span>
+              </div>
+              <button
+                onClick={() => setManagingId(u.id)}
+                className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-border rounded-lg text-sm font-medium hover:bg-accent transition-colors"
+              >
+                <Settings2 className="w-4 h-4" /> Manage
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {filtered.length === 0 && (
+          <div className="px-6 py-12 text-center text-muted-foreground">No users found.</div>
+        )}
         <div className="p-4 border-t border-border text-sm text-muted-foreground bg-muted/20">
           {filtered.length} of {users.length} users
         </div>

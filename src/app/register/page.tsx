@@ -51,7 +51,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-background relative overflow-hidden">
+    <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-mesh relative overflow-hidden">
       {/* Background gradients */}
       <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />

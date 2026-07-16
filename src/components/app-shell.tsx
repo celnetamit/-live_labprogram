@@ -60,10 +60,10 @@ function NavLinks({
                 key={item.href}
                 href={item.href}
                 onClick={onNavigate}
-                className={`group flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                className={`group relative flex items-center justify-between px-3 py-2.5 text-sm rounded-lg transition-colors ${
                   active
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    ? "bg-gradient-to-r from-primary/15 via-primary/5 to-transparent text-primary font-semibold before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-5 before:w-1 before:rounded-full before:bg-primary"
+                    : "font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 }`}
               >
                 <span className="flex items-center gap-3">
