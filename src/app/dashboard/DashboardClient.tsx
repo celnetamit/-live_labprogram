@@ -54,9 +54,16 @@ export default function DashboardClient({
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-10">
-        {stats.map((s) => (
-          <div key={s.label} className="glass rounded-2xl p-4 sm:p-5">
-            <s.icon className="w-5 h-5 text-primary mb-2" />
+        {stats.map((s, i) => (
+          <div
+            key={s.label}
+            className={`hairline-top rounded-2xl border border-border bg-gradient-to-br ${
+              ["from-brand-1/25", "from-brand-2/25", "from-brand-3/25"][i]
+            } to-card p-4 sm:p-5`}
+          >
+            <div className="w-9 h-9 rounded-xl glass flex items-center justify-center text-primary mb-3">
+              <s.icon className="w-5 h-5" />
+            </div>
             <div className="text-2xl sm:text-3xl font-extrabold">{s.value}</div>
             <div className="text-xs sm:text-sm text-muted-foreground">{s.label}</div>
           </div>
@@ -102,7 +109,7 @@ export default function DashboardClient({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(index, 8) * 0.05, duration: 0.3 }}
-              className="flex flex-col rounded-2xl border border-border bg-card p-5 hover:border-primary/50 transition-all group"
+              className="card-glow flex flex-col rounded-2xl border border-border bg-card p-5 group"
             >
               <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
                 <FlaskConical className="w-5 h-5" />

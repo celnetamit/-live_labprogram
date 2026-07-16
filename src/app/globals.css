@@ -308,6 +308,124 @@
   }
 }
 
+/* =========================================================
+   Bold / expressive layer — modern-trend utilities
+   ========================================================= */
+@theme inline {
+  --animate-gradient: gradient-move 6s ease infinite;
+  --animate-pulse-glow: pulse-glow 3s ease-in-out infinite;
+  --animate-spin-slow: spin 14s linear infinite;
+}
+
+@layer components {
+  /* Mesh gradient backdrop — layered radial brand blooms */
+  .bg-mesh {
+    background-color: var(--background);
+    background-image:
+      radial-gradient(at 12% 0%, color-mix(in oklch, var(--brand-1) 26%, transparent) 0px, transparent 45%),
+      radial-gradient(at 88% 8%, color-mix(in oklch, var(--brand-3) 22%, transparent) 0px, transparent 42%),
+      radial-gradient(at 60% 92%, color-mix(in oklch, var(--brand-2) 20%, transparent) 0px, transparent 48%);
+  }
+
+  /* Animated gradient text (shifts across brand hues) */
+  .text-gradient-animated {
+    background-image: linear-gradient(110deg, var(--brand-1), var(--brand-2) 40%, var(--brand-3) 70%, var(--brand-1));
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-gradient);
+  }
+
+  /* Card that lifts + glows on hover, with a gradient hairline on top */
+  .card-glow {
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .card-glow:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklch, var(--primary) 45%, var(--border));
+    box-shadow: 0 18px 50px -20px var(--brand-glow);
+  }
+  .hairline-top {
+    position: relative;
+  }
+  .hairline-top::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    border-radius: inherit;
+    background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--brand-1) 80%, transparent), color-mix(in oklch, var(--brand-3) 80%, transparent), transparent);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .card-glow:hover .hairline-top::before,
+  .hairline-top:hover::before {
+    opacity: 1;
+  }
+
+  /* Gradient initials avatar */
+  .avatar-grad {
+    background-image: linear-gradient(135deg, var(--brand-1), var(--brand-2) 55%, var(--brand-3));
+    color: var(--primary-foreground);
+  }
+
+  /* Status pill with a leading dot */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .pill::before {
+    content: "";
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: currentColor;
+    box-shadow: 0 0 0 3px color-mix(in oklch, currentColor 22%, transparent);
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklch, var(--muted-foreground) 12%, transparent) 25%,
+      color-mix(in oklch, var(--muted-foreground) 22%, transparent) 37%,
+      color-mix(in oklch, var(--muted-foreground) 12%, transparent) 63%
+    );
+    background-size: 400% 100%;
+    animation: var(--animate-shimmer);
+    border-radius: 0.5rem;
+  }
+}
+
+@keyframes gradient-move {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--primary) 30%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in oklch, var(--primary) 0%, transparent);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
