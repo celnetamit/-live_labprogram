@@ -1,151 +1,144 @@
-"use client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import prisma from "@/lib/prisma";
+import { formatPrice } from "@/lib/access";
+import { Users, FlaskConical, Receipt, IndianRupee } from "lucide-react";
 
-import { motion } from "framer-motion";
-import { Users, FlaskConical, ShieldAlert, Activity, ArrowUpRight, ArrowDownRight } from "lucide-react";
+export default async function AdminDashboard() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || (session.user as { role?: string }).role !== "SUPER_ADMIN") {
+    redirect("/login");
+  }
 
-export default function AdminDashboard() {
+  const [userCount, labCount, paidOrders, pendingOrders, recentOrders] = await Promise.all([
+    prisma.user.count(),
+    prisma.lab.count({ where: { enabled: true } }),
+    prisma.order.findMany({ where: { status: "PAID" }, select: { amountMinor: true } }),
+    prisma.order.count({ where: { status: "PENDING" } }),
+    prisma.order.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 6,
+      include: { items: true, user: { select: { name: true, email: true } } },
+    }),
+  ]);
+
+  const revenueMinor = paidOrders.reduce((s, o) => s + o.amountMinor, 0);
+
   const stats = [
-    { title: "Total Users", value: "24,593", change: "+12.5%", trend: "up", icon: <Users /> },
-    { title: "Active Labs", value: "142", change: "+3", trend: "up", icon: <FlaskConical /> },
-    { title: "Access Requests", value: "12", change: "-5", trend: "down", icon: <ShieldAlert /> },
-    { title: "Active Sessions", value: "1,204", change: "+18%", trend: "up", icon: <Activity /> },
+    { title: "Total Users", value: userCount.toLocaleString("en-IN"), icon: Users, href: "/admin/users" },
+    { title: "Active Labs", value: labCount.toLocaleString("en-IN"), icon: FlaskConical, href: "/admin/labs" },
+    { title: "Paid Orders", value: paidOrders.length.toLocaleString("en-IN"), icon: Receipt, href: "/admin/orders" },
+    { title: "Revenue", value: formatPrice(revenueMinor), icon: IndianRupee, href: "/admin/orders" },
   ];
 
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Master Control Center</h1>
-        <p className="text-muted-foreground mt-1">Overview of your Panoptical Labs Ecosystem.</p>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Master Control Center</h1>
+        <p className="text-muted-foreground mt-1">Overview of your Panoptical Labs ecosystem.</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-        {stats.map((stat, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.4 }}
-            className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col"
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 mb-8">
+        {stats.map((stat) => (
+          <Link
+            key={stat.title}
+            href={stat.href}
+            className="bg-card border border-border rounded-xl p-5 hover:border-primary/50 transition-colors flex flex-col"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-muted-foreground">{stat.title}</h3>
               <div className="text-primary p-2 bg-primary/10 rounded-lg">
-                {stat.icon}
+                <stat.icon className="w-5 h-5" />
               </div>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold">{stat.value}</span>
-              <span className={`text-xs font-medium flex items-center ${stat.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
-                {stat.trend === 'up' ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
-                {stat.change}
-              </span>
-            </div>
-          </motion.div>
+            <span className="text-2xl sm:text-3xl font-bold">{stat.value}</span>
+          </Link>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Access Requests */}
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent orders */}
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl overflow-hidden flex flex-col">
           <div className="p-6 border-b border-border flex justify-between items-center">
             <div>
-              <h2 className="text-lg font-bold">Recent Access Requests</h2>
-              <p className="text-sm text-muted-foreground">Pending lab authorization requests.</p>
+              <h2 className="text-lg font-bold">Recent Orders</h2>
+              <p className="text-sm text-muted-foreground">Latest lab purchases.</p>
             </div>
-            <button className="text-sm text-primary font-medium hover:underline">View All</button>
+            <Link href="/admin/orders" className="text-sm text-primary font-medium hover:underline">
+              View all
+            </Link>
           </div>
-          <div className="p-0 overflow-x-auto flex-1">
+          <div className="overflow-x-auto flex-1">
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-muted-foreground bg-muted/50 uppercase">
                 <tr>
-                  <th className="px-6 py-4 font-medium">User</th>
-                  <th className="px-6 py-4 font-medium">Requested Lab</th>
-                  <th className="px-6 py-4 font-medium">Date</th>
-                  <th className="px-6 py-4 font-medium">Status</th>
-                  <th className="px-6 py-4 text-right font-medium">Action</th>
+                  <th className="px-6 py-3 font-medium">Customer</th>
+                  <th className="px-6 py-3 font-medium">Lab</th>
+                  <th className="px-6 py-3 font-medium">Amount</th>
+                  <th className="px-6 py-3 font-medium">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {[
-                  { name: "Alice Chen", role: "Researcher", lab: "AI Research Lab", date: "2 hours ago", status: "Pending" },
-                  { name: "Robert Fox", role: "Student", lab: "Cyber Security Lab", date: "5 hours ago", status: "Pending" },
-                  { name: "Sarah Connor", role: "Faculty", lab: "Nano Simulation Lab", date: "1 day ago", status: "Pending" },
-                  { name: "John Doe", role: "Data Scientist", lab: "Biotech Research", date: "1 day ago", status: "Pending" },
-                ].map((req, i) => (
-                  <tr key={i} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-foreground">{req.name}</div>
-                      <div className="text-xs text-muted-foreground">{req.role}</div>
+                {recentOrders.map((o) => (
+                  <tr key={o.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="px-6 py-3">
+                      <div className="font-medium text-foreground truncate">{o.user.name || "User"}</div>
+                      <div className="text-xs text-muted-foreground truncate">{o.user.email}</div>
                     </td>
-                    <td className="px-6 py-4 font-medium">{req.lab}</td>
-                    <td className="px-6 py-4 text-muted-foreground">{req.date}</td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                        {req.status}
+                    <td className="px-6 py-3 text-muted-foreground truncate max-w-[180px]">
+                      {o.items.map((i) => i.labTitle).join(", ")}
+                    </td>
+                    <td className="px-6 py-3 font-medium">{formatPrice(o.amountMinor, o.currency)}</td>
+                    <td className="px-6 py-3">
+                      <span
+                        className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                          o.status === "PAID"
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                            : o.status === "PENDING"
+                            ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                            : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                        }`}
+                      >
+                        {o.status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button className="px-3 py-1 bg-primary text-primary-foreground rounded text-xs font-medium hover:bg-primary/90">Approve</button>
-                        <button className="px-3 py-1 bg-secondary text-secondary-foreground rounded text-xs font-medium hover:bg-secondary/80">Reject</button>
-                      </div>
                     </td>
                   </tr>
                 ))}
+                {recentOrders.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
+                      No orders yet.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* System Health */}
-        <div className="bg-card border border-border rounded-xl shadow-sm flex flex-col">
+        {/* Quick actions */}
+        <div className="bg-card border border-border rounded-xl flex flex-col">
           <div className="p-6 border-b border-border">
-            <h2 className="text-lg font-bold">System Health</h2>
-            <p className="text-sm text-muted-foreground">Ecosystem status and metrics.</p>
+            <h2 className="text-lg font-bold">Quick Actions</h2>
+            <p className="text-sm text-muted-foreground">Manage the ecosystem.</p>
           </div>
-          <div className="p-6 space-y-6">
-            <div>
-              <div className="flex justify-between mb-2 text-sm">
-                <span className="font-medium">SSO Authentication</span>
-                <span className="text-green-500 font-medium">99.9% Uptime</span>
-              </div>
-              <div className="w-full bg-secondary rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '99%' }}></div>
-              </div>
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-2 text-sm">
-                <span className="font-medium">Database Load</span>
-                <span className="text-amber-500 font-medium">78%</span>
-              </div>
-              <div className="w-full bg-secondary rounded-full h-2">
-                <div className="bg-amber-500 h-2 rounded-full" style={{ width: '78%' }}></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between mb-2 text-sm">
-                <span className="font-medium">Lab Endpoints (Active)</span>
-                <span className="text-foreground font-medium">138 / 142</span>
-              </div>
-              <div className="w-full bg-secondary rounded-full h-2">
-                <div className="bg-primary h-2 rounded-full" style={{ width: '95%' }}></div>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-border">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
-                  <Activity className="text-green-500 w-5 h-5" />
-                </div>
-                <div>
-                  <p className="font-medium">All Systems Operational</p>
-                  <p className="text-xs text-muted-foreground">Last updated: Just now</p>
-                </div>
-              </div>
-            </div>
+          <div className="p-4 space-y-2">
+            <Link href="/admin/labs" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent transition-colors">
+              <FlaskConical className="w-4 h-4 text-primary" /> Manage &amp; sync labs
+            </Link>
+            <Link href="/admin/users" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent transition-colors">
+              <Users className="w-4 h-4 text-primary" /> Grant / revoke access
+            </Link>
+            <Link href="/admin/orders" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent transition-colors">
+              <Receipt className="w-4 h-4 text-primary" /> Review orders
+              {pendingOrders > 0 && (
+                <span className="ml-auto bg-amber-500/15 text-amber-400 text-xs font-semibold rounded-full px-2 py-0.5">
+                  {pendingOrders} pending
+                </span>
+              )}
+            </Link>
           </div>
         </div>
       </div>

@@ -26,6 +26,7 @@ model User {
   labAccess     LabAccess[]
   ownedLabs     Lab[]     @relation("LabOwner")
   accessRequests AccessRequest[]
+  orders        Order[]
 }
 
 model Account {
@@ -65,8 +66,21 @@ model VerificationToken {
 
 model Lab {
   id          String   @id @default(cuid())
+  slug        String?  @unique
   name        String
   description String?
+  synopsis    String?
+  subject     String?
+  difficulty  String?  // Beginner, Intermediate, Advanced
+  points      Int      @default(0)
+  instructions String?
+  starterCode String?
+  sourceUrl   String?  // live lab launch URL
+  tags        String?  // JSON string array
+  keySkills   String?  // JSON string array
+  priceMinor  Int      @default(49900)
+  currency    String   @default("INR")
+  enabled     Boolean  @default(true)
   domainUrl   String   @unique
   category    String?
   thumbnail   String?
@@ -74,12 +88,13 @@ model Lab {
   status      String   @default("ACTIVE") // ACTIVE, ARCHIVED, INACTIVE
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   ownerId     String?
   owner       User?    @relation("LabOwner", fields: [ownerId], references: [id])
-  
+
   accesses    LabAccess[]
   accessRequests AccessRequest[]
+  orderItems  OrderItem[]
 }
 
 model LabAccess {
@@ -89,11 +104,41 @@ model LabAccess {
   grantedAt DateTime @default(now())
   expiresAt DateTime?
   grantedBy String?  // Admin ID who granted
+  source    String   @default("ADMIN") // ADMIN | PURCHASE
+  orderId   String?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   lab       Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
 
   @@unique([userId, labId])
+}
+
+model Order {
+  id               String   @id @default(cuid())
+  userId           String
+  status           String   @default("PENDING") // PENDING | PAID | FAILED
+  amountMinor      Int
+  currency         String   @default("INR")
+  provider         String   @default("mock") // razorpay | mock
+  providerOrderId  String?
+  providerPaymentId String?
+  createdAt        DateTime @default(now())
+  paidAt           DateTime?
+
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items            OrderItem[]
+}
+
+model OrderItem {
+  id         String @id @default(cuid())
+  orderId    String
+  labId      String
+  labSlug    String
+  labTitle   String
+  priceMinor Int
+
+  order      Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  lab        Lab    @relation(fields: [labId], references: [id], onDelete: Cascade)
 }
 
 model AccessRequest {
