@@ -39,7 +39,19 @@ export default function Login() {
 
       const session = await getSession();
       const role = (session?.user as { role?: string } | undefined)?.role;
-      router.push(role === "SUPER_ADMIN" ? "/admin" : "/dashboard");
+
+      // If the user was sent here trying to open a specific page, return them there.
+      let dest = role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
+      const cbRaw = new URLSearchParams(window.location.search).get("callbackUrl");
+      if (cbRaw) {
+        try {
+          const u = new URL(cbRaw, window.location.origin);
+          if (u.origin === window.location.origin) dest = u.pathname + u.search;
+        } catch {
+          /* ignore malformed callbackUrl */
+        }
+      }
+      router.push(dest);
       router.refresh();
     } catch (err: any) {
       setError(err.message);

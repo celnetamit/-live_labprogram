@@ -28,9 +28,11 @@ const difficultyColor: Record<string, string> = {
 export default function LabCatalogClient({
   labs,
   isAdmin,
+  publicMode = false,
 }: {
   labs: CatalogLab[];
   isAdmin: boolean;
+  publicMode?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [subject, setSubject] = useState("All");
@@ -59,10 +61,14 @@ export default function LabCatalogClient({
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Lab Catalog</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          {publicMode ? "Explore Labs" : "Lab Catalog"}
+        </h1>
         <p className="text-muted-foreground mt-1">
           {labs.length} premium workshop labs.{" "}
-          {isAdmin ? (
+          {publicMode ? (
+            <>Browse everything free — <span className="text-primary font-medium">sign in</span> to open a lab and unlock its resources.</>
+          ) : isAdmin ? (
             <span className="text-primary font-medium">Admin — full access to all labs.</span>
           ) : (
             <>

@@ -84,10 +84,10 @@ export default function Home() {
 
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
                 <Link
-                  href="/register"
+                  href="/labs"
                   className="w-full sm:w-auto px-7 py-3.5 btn-brand rounded-xl font-semibold text-base inline-flex items-center justify-center gap-2"
                 >
-                  Explore Ecosystem <ArrowRight className="w-5 h-5" />
+                  Explore Labs <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link
                   href="/login"
@@ -162,7 +162,7 @@ export default function Home() {
                 <h2 className="text-3xl md:text-4xl font-bold">Featured Innovation Labs</h2>
                 <p className="mt-2 text-muted-foreground">Discover state-of-the-art research environments.</p>
               </div>
-              <Link href="/register" className="text-primary hover:underline font-medium inline-flex items-center gap-1">
+              <Link href="/labs" className="text-primary hover:underline font-medium inline-flex items-center gap-1">
                 View All Labs <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -189,10 +189,10 @@ export default function Home() {
                     <h3 className="text-xl font-bold mb-1 group-hover:text-primary transition-colors">{lab.name}</h3>
                     <p className="text-sm text-muted-foreground mb-5 font-mono">{lab.domain}</p>
                     <Link
-                      href="/register"
+                      href="/labs"
                       className="w-full inline-flex items-center justify-center py-2.5 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-colors"
                     >
-                      Request Access
+                      View Labs
                     </Link>
                   </div>
                 </motion.div>
