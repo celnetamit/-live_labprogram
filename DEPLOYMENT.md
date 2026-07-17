@@ -1,28 +1,27 @@
-# Deployment Guide — Coolify (Docker + SQLite)
+# Deployment Guide — Coolify (Docker + PostgreSQL)
 
 This app ships a production `Dockerfile` and boot script. On start the container
-automatically applies the database schema, seeds the 106 labs, and serves Next.js.
+applies the database schema, seeds the 106 labs, and serves Next.js.
 
-- **Stack:** Next.js 16 · Prisma · NextAuth · SQLite
+- **Stack:** Next.js 16 · Prisma · NextAuth · **PostgreSQL**
 - **Runtime:** the container listens on port **3000**
-- **Data:** SQLite file on a **persistent volume** at `/app/data`
+- **Data:** lives in a **PostgreSQL** database (Coolify manages its persistence)
 
 ---
 
 ## What the container does on boot
 `docker-entrypoint.sh` runs, in order:
-1. `prisma db push` — creates/updates the schema in the DB file
+1. `prisma db push` — creates/updates the schema in Postgres (retries until the DB is reachable)
 2. `node scripts/import-labs.mjs` — seeds/re-syncs labs from `prisma/labs-snapshot.json` (idempotent)
 3. `next start -H 0.0.0.0 -p 3000`
 
-So a fresh volume is initialized automatically — no manual migration step.
+No manual migration step — a fresh database is initialized automatically.
 
 ---
 
 ## Prerequisites
 - A Coolify instance connected to a server with Docker.
-- The server should have free disk (a full `/var/lib/docker` causes BuildKit
-  export errors). Clear it if needed:
+- Free disk on the server (a full `/var/lib/docker` causes BuildKit export errors):
   ```bash
   df -h
   docker system prune -af
@@ -32,23 +31,33 @@ So a fresh volume is initialized automatically — no manual migration step.
 
 ---
 
-## Step 1 — Create the application
-Coolify → Project → **+ New** → **Application** → **Public Repository**
+## Step 1 — Create the PostgreSQL database
+Coolify → your Project → **+ New** → **Database** → **PostgreSQL**.
+- Pick a version (16+ recommended) and deploy it.
+- Open the DB resource → copy its **connection string**. Use the **internal**
+  URL (something like `postgres://postgres:PASSWORD@<service-name>:5432/postgres`)
+  — the app talks to it over Coolify's internal network.
+
+> Keep this DB and the app in the **same Coolify project** so the internal
+> hostname resolves.
+
+## Step 2 — Create the application
+Coolify → same Project → **+ New** → **Application** → **Public Repository**
 - **Repository:** `https://github.com/celnetamit/-live_labprogram`
 - **Branch:** `main`
 - **Build Pack:** `Dockerfile` (auto-detected)
 
-## Step 2 — Port
+## Step 3 — Port
 **Configuration → General → Ports Exposes:** `3000`
 
-## Step 3 — Environment variables
-**Configuration → Environment Variables** (use *Developer view* to paste all at once):
+## Step 4 — Environment variables
+**Configuration → Environment Variables** (use *Developer view* to paste at once):
 
 | Key | Value | Notes |
 | --- | --- | --- |
 | `NEXTAUTH_SECRET` | *(generate — see below)* | **Required.** Session encryption key. |
 | `NEXTAUTH_URL` | `https://your-domain` | **Required.** Must match your live domain exactly. |
-| `DATABASE_URL` | `file:/app/data/prod.db` | **Required.** SQLite file on the volume. |
+| `DATABASE_URL` | *(the Postgres internal URL from Step 1)* | **Required.** Append `?schema=public` if it isn't already there. |
 | `RAZORPAY_KEY_ID` | *(optional)* | Live payments. Blank = built-in mock checkout. |
 | `RAZORPAY_KEY_SECRET` | *(optional)* | Live payments. |
 | `LAB_SOURCE_URL` | *(optional)* | Re-sync source API; falls back to the committed snapshot. |
@@ -58,25 +67,19 @@ Generate the secret:
 openssl rand -base64 32
 ```
 
-## Step 4 — Persistent storage (required)
-**Configuration → Persistent Storage → + Add → Volume Mount**
-- **Name:** `panoptical-data`
-- **Destination Path:** `/app/data`
-
-> Without this volume, the SQLite database — every registered user and order — is
-> wiped on each redeploy.
-
 ## Step 5 — Domain + HTTPS
 **Configuration → General → Domains** → set your FQDN. Coolify provisions a
 Let's Encrypt certificate automatically. Then set `NEXTAUTH_URL` to that exact URL.
 
 ## Step 6 — Deploy
-Click **Deploy**. Watch **Logs** for:
+Make sure the **Postgres database is running first**, then click **Deploy** on the
+app. Watch **Logs** for:
 ```
 [entrypoint] Applying database schema (prisma db push) ...
-[entrypoint] Seeding / syncing labs from snapshot (idempotent) ...
+[entrypoint] Seeding / syncing labs (idempotent) ...
 [entrypoint] Starting Next.js on 0.0.0.0:3000 ...
 ```
+(If the DB is still starting, the entrypoint retries `db push` automatically.)
 
 ## Step 7 — Create the admin account
 Open `https://your-domain/register`. **The first registered user becomes `SUPER_ADMIN`.**
@@ -88,33 +91,47 @@ Log in at `/login` to reach the admin console at `/admin`.
 
 | Setting | Value |
 | --- | --- |
+| Database | PostgreSQL (Coolify resource) |
 | Build Pack | Dockerfile |
 | Exposed port | `3000` |
-| Volume mount | `/app/data` |
-| `DATABASE_URL` | `file:/app/data/prod.db` |
+| `DATABASE_URL` | Postgres internal URL `…?schema=public` |
 | `NEXTAUTH_URL` | your `https://` domain |
 | First user | becomes `SUPER_ADMIN` |
+
+> No application volume is needed — Postgres owns the data. Coolify persists the
+> database via the Postgres resource's own storage.
+
+---
+
+## Local development
+The schema now targets PostgreSQL, so local dev needs a Postgres too:
+```bash
+docker run -d --name panoptical-pg \
+  -e POSTGRES_USER=panoptical -e POSTGRES_PASSWORD=devpass -e POSTGRES_DB=panoptical \
+  -p 5434:5432 postgres:16-alpine
+
+# .env
+# DATABASE_URL="postgresql://panoptical:devpass@localhost:5434/panoptical?schema=public"
+
+npx prisma db push      # create tables
+npm run import:labs      # seed labs
+npm run dev
+```
 
 ---
 
 ## Operations
 
-**Re-sync labs from the source API**
-Set `LAB_SOURCE_URL` and redeploy, or run inside the app's Terminal:
+**Re-sync labs from the source API** — set `LAB_SOURCE_URL` and redeploy, or run in the app Terminal:
 ```bash
 npm run import:labs
 ```
 
-**Enable real payments**
-Add `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`, then redeploy. Checkout switches
-from mock to the live Razorpay gateway automatically.
+**Enable real payments** — add `RAZORPAY_KEY_ID` + `RAZORPAY_KEY_SECRET`, then redeploy.
 
-**Back up the database**
-Copy `/app/data/prod.db` from the volume (Coolify Terminal or `docker cp`).
+**Back up the database** — use Coolify's PostgreSQL backup feature (scheduled backups on the DB resource), or `pg_dump`.
 
-**Scaling note**
-SQLite is single-instance. Keep replicas at **1**. To run multiple instances,
-migrate to PostgreSQL (change the Prisma `datasource` provider and `DATABASE_URL`).
+**Scaling** — with PostgreSQL you can run multiple app instances/replicas safely.
 
 ---
 
@@ -123,6 +140,7 @@ migrate to PostgreSQL (change the Prisma `datasource` provider and `DATABASE_URL
 | Symptom | Cause / Fix |
 | --- | --- |
 | Build fails at *"exporting to image"* with `ref … locked … unavailable` | Server disk/Docker pressure. Run the prune/restart commands in *Prerequisites*. |
-| Registration/login fails after redeploy | Missing volume at `/app/data`, or `DATABASE_URL` not set. |
+| App logs *"db push failed after 10 attempts"* | `DATABASE_URL` wrong/unreachable, or the Postgres service isn't running. Verify the internal URL and that both are in the same project. |
+| Registration/login fails | Check `DATABASE_URL` and that Postgres is up. |
 | `/admin` redirects to `/login` | Account isn't `SUPER_ADMIN` (only the first registered user is). |
 | Payments show mock checkout | `RAZORPAY_*` keys not set (expected without them). |

@@ -16,7 +16,8 @@ RUN npm ci
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ENV DATABASE_URL="file:/tmp/build.db"
+# Placeholder so Prisma can validate env() at generate time; no DB connection is made.
+ENV DATABASE_URL="postgresql://build:build@localhost:5432/build?schema=public"
 RUN npx prisma generate
 RUN npm run build
 
