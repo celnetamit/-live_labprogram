@@ -1,0 +1,16 @@
+{
+  "name": "@panoptical/lab-auth-middleware",
+  "version": "1.0.0",
+  "description": "Drop-in server-side authorization middleware for individually deployed Panoptical workshop labs.",
+  "main": "index.js",
+  "keywords": [
+    "panoptical",
+    "coolify",
+    "lab",
+    "auth",
+    "middleware",
+    "jwt"
+  ],
+  "author": "Panoptical Team",
+  "license": "MIT"
+}

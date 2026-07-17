@@ -111,6 +111,7 @@ model LabAccess {
   lab       Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
 
   @@unique([userId, labId])
+  @@map("user_lab_access")
 }
 
 model Order {
@@ -153,4 +154,23 @@ model AccessRequest {
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   lab         Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
+}
+
+model AuthorizationLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  userEmail   String?
+  labId       String
+  labSlug     String?
+  tokenPrefix String?
+  status      String   // SUCCESS | FAILED_EXPIRED | FAILED_UNAUTHORIZED | FAILED_INVALID_TOKEN | FAILED_INACTIVE_USER
+  ipAddress   String?
+  userAgent   String?
+  reason      String?
+  createdAt   DateTime @default(now())
+
+  @@index([labId, status])
+  @@index([userId, status])
+  @@index([createdAt])
+  @@map("authorization_logs")
 }
