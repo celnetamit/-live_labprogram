@@ -22,5 +22,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     );
   }
 
-  return NextResponse.json({ authorized: true, launchUrl: lab.sourceUrl });
+  const launchUrl =
+    lab.sourceUrl || (lab.domainUrl && !lab.domainUrl.includes("lab.local") ? lab.domainUrl : null);
+
+  return NextResponse.json({ authorized: true, launchUrl });
 }

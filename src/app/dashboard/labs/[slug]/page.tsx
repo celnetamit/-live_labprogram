@@ -27,6 +27,8 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
   const owned = await hasLabAccess(user.id, user.role, lab.id);
   const skills = parseList(lab.keySkills);
   const tags = parseList(lab.tags);
+  const launchUrl =
+    lab.sourceUrl || (lab.domainUrl && !lab.domainUrl.includes("lab.local") ? lab.domainUrl : null);
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -92,9 +94,9 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                 Open the live lab environment in a new tab.
               </p>
             </div>
-            {lab.sourceUrl ? (
+            {launchUrl ? (
               <a
-                href={lab.sourceUrl}
+                href={launchUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 btn-brand rounded-xl font-semibold whitespace-nowrap"
