@@ -10,7 +10,7 @@ fi
 # (common when the app and DB boot together).
 echo "[entrypoint] Applying database schema (prisma db push) ..."
 n=0
-until npx prisma db push --skip-generate --accept-data-loss; do
+until npx prisma db push --accept-data-loss; do
   n=$((n + 1))
   if [ "$n" -ge 10 ]; then
     echo "[entrypoint] db push failed after 10 attempts — is the database reachable?"
