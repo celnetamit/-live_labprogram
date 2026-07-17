@@ -12,29 +12,23 @@ FROM base AS deps
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# ---- Build & Prune ----
-FROM base AS build
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-# Placeholder so Prisma can validate env() at generate time; no DB connection is made.
-ENV DATABASE_URL="postgresql://build:build@localhost:5432/build?schema=public"
-RUN npx prisma generate
-RUN npm run build
-# Prune dev dependencies inside the build stage to prevent parallel containerd mount locks during export
-RUN npm prune --omit=dev && npm cache clean --force
-# Consolidate runtime artifacts into a single folder to eliminate containerd parallel mount locks during image export
-RUN mkdir -p /release && \
-    mv node_modules .next public package.json next.config.mjs prisma scripts /release/
-
-# ---- Runtime (slim) ----
+# ---- Build & Runtime Stage (Unified to bypass BuildKit containerd cross-stage mount locks during image export) ----
 FROM base AS runner
 ENV NODE_ENV=production
 ENV PORT=3000
 WORKDIR /app
 
-COPY --from=build /release ./
-COPY docker-entrypoint.sh ./docker-entrypoint.sh
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 RUN chmod +x ./docker-entrypoint.sh
+
+# Placeholder so Prisma can validate env() at generate time; no DB connection is made.
+ENV DATABASE_URL="postgresql://build:build@localhost:5432/build?schema=public"
+RUN npx prisma generate
+RUN npm run build
+# Prune dev dependencies and strip source files inside the final stage to keep the production image slim without cross-stage copy locks
+RUN npm prune --omit=dev && npm cache clean --force && \
+    rm -rf src packages scripts/test-authorization-flow.ts tsconfig.json .git
 
 EXPOSE 3000
 ENTRYPOINT ["./docker-entrypoint.sh"]
