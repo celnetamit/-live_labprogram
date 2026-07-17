@@ -24,4 +24,8 @@ echo "[entrypoint] Seeding / syncing labs (idempotent) ..."
 node scripts/import-labs.mjs || echo "[entrypoint] lab import skipped (continuing)"
 
 echo "[entrypoint] Starting Next.js on 0.0.0.0:${PORT:-3000} ..."
-exec npx next start -H 0.0.0.0 -p "${PORT:-3000}"
+if [ -f server.js ]; then
+  exec node server.js
+else
+  exec npx next start -H 0.0.0.0 -p "${PORT:-3000}"
+fi
