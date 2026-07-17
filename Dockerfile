@@ -12,7 +12,7 @@ FROM base AS deps
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# ---- Build ----
+# ---- Build & Prune ----
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -20,18 +20,16 @@ COPY . .
 ENV DATABASE_URL="postgresql://build:build@localhost:5432/build?schema=public"
 RUN npx prisma generate
 RUN npm run build
-
-# ---- Production-only dependencies (small: no typescript/eslint/tailwind) ----
-FROM base AS prod-deps
-COPY package.json package-lock.json ./
-COPY prisma ./prisma
-RUN npm ci --omit=dev && npx prisma generate && npm cache clean --force
+# Prune dev dependencies inside the build stage to prevent parallel containerd mount locks during export
+RUN npm prune --omit=dev && npm cache clean --force
 
 # ---- Runtime (slim) ----
 FROM base AS runner
 ENV NODE_ENV=production
 ENV PORT=3000
-COPY --from=prod-deps /app/node_modules ./node_modules
+WORKDIR /app
+
+COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=build /app/package.json ./package.json
