@@ -22,6 +22,9 @@ RUN npx prisma generate
 RUN npm run build
 # Prune dev dependencies inside the build stage to prevent parallel containerd mount locks during export
 RUN npm prune --omit=dev && npm cache clean --force
+# Consolidate runtime artifacts into a single folder to eliminate containerd parallel mount locks during image export
+RUN mkdir -p /release && \
+    mv node_modules .next public package.json next.config.mjs prisma scripts /release/
 
 # ---- Runtime (slim) ----
 FROM base AS runner
@@ -29,13 +32,7 @@ ENV NODE_ENV=production
 ENV PORT=3000
 WORKDIR /app
 
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/next.config.mjs ./next.config.mjs
-COPY --from=build /app/prisma ./prisma
-COPY --from=build /app/scripts ./scripts
+COPY --from=build /release ./
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
 
