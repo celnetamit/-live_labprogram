@@ -21,22 +21,6 @@ const PRICE_BY_DIFFICULTY = {
 };
 
 async function loadLabs() {
-  try {
-    const res = await fetch(SOURCE_URL, {
-      headers: { "x-user-email": process.env.LAB_SOURCE_EMAIL || "amit@conwiz.in" },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data) && data.length) {
-        console.log(`Loaded ${data.length} labs from live source: ${SOURCE_URL}`);
-        return data;
-      }
-    }
-    console.warn(`Live source returned no labs (HTTP ${res.status}); falling back to snapshot.`);
-  } catch (err) {
-    console.warn(`Live source unavailable (${err.message}); falling back to snapshot.`);
-  }
   const raw = await readFile(SNAPSHOT, "utf8");
   const data = JSON.parse(raw);
   console.log(`Loaded ${data.length} labs from snapshot: ${SNAPSHOT}`);
