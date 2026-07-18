@@ -54,22 +54,34 @@ async function main() {
   let updated = 0;
 
   for (const w of labs) {
-    const slug = String(w.id);
+    const slug = String(w.slug || w.id);
     const priceMinor = PRICE_BY_DIFFICULTY[w.difficulty] ?? 49900;
+    
+    // Support either stringified tags array or actual array
+    let parsedTags = [];
+    try {
+      parsedTags = typeof w.tags === 'string' ? JSON.parse(w.tags) : (Array.isArray(w.tags) ? w.tags : []);
+    } catch(e) {}
+    
+    let parsedSkills = [];
+    try {
+      parsedSkills = typeof w.keySkills === 'string' ? JSON.parse(w.keySkills) : (Array.isArray(w.keySkills) ? w.keySkills : []);
+    } catch(e) {}
+
     const data = {
       slug,
-      name: w.title ?? slug,
-      description: w.synopsis ?? null,
-      synopsis: w.synopsis ?? null,
-      subject: w.subject ?? null,
+      name: w.name ?? w.title ?? slug,
+      description: w.description ?? w.synopsis ?? null,
+      synopsis: w.synopsis ?? w.description ?? null,
+      subject: w.subject ?? w.category ?? null,
       difficulty: w.difficulty ?? null,
       points: Number.isFinite(w.points) ? w.points : 0,
       instructions: w.instructions ?? null,
       starterCode: w.starterCode ?? null,
       sourceUrl: w.sourceUrl ?? null,
-      tags: JSON.stringify(Array.isArray(w.tags) ? w.tags : []),
-      keySkills: JSON.stringify(Array.isArray(w.keySkills) ? w.keySkills : []),
-      category: w.subject ?? null,
+      tags: JSON.stringify(parsedTags),
+      keySkills: JSON.stringify(parsedSkills),
+      category: w.category ?? w.subject ?? null,
       domainUrl: domainFor(w),
       accessType: "PRIVATE",
       status: "ACTIVE",
@@ -88,8 +100,16 @@ async function main() {
     }
   }
 
+  // Delete labs that are no longer in the snapshot
+  const keepSlugs = labs.map(w => String(w.slug || w.id));
+  const deleted = await prisma.lab.deleteMany({
+    where: {
+      slug: { notIn: keepSlugs }
+    }
+  });
+
   const total = await prisma.lab.count();
-  console.log(`Import complete. created=${created} updated=${updated} totalLabs=${total}`);
+  console.log(`Import complete. created=${created} updated=${updated} deleted=${deleted.count} totalLabs=${total}`);
 }
 
 main()
