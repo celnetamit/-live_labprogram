@@ -27,8 +27,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
   const owned = await hasLabAccess(user.id, user.role, lab.id);
   const skills = parseList(lab.keySkills);
   const tags = parseList(lab.tags);
-  const launchUrl =
-    lab.sourceUrl || (lab.domainUrl && !lab.domainUrl.includes("lab.local") ? lab.domainUrl : null);
+  const launchUrl = lab.id ? `/api/labs/${lab.slug}/launch` : null;
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -134,9 +133,9 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
           <div className="mx-auto w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center mb-4">
             <Lock className="w-7 h-7 text-primary" />
           </div>
-          <h2 className="text-xl font-bold mb-2">Unlock the full lab</h2>
+          <h2 className="text-xl font-bold mb-2">Unlock the full course</h2>
           <p className="text-muted-foreground max-w-md mx-auto mb-2">
-            Buy this lab to access the step-by-step instructions, starter code, and the live
+            Buy this course to access the step-by-step instructions, starter code, and the live
             launch link.
           </p>
           <div className="text-3xl font-extrabold text-gradient mb-6">
@@ -144,7 +143,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
           </div>
           <CheckoutButton labId={lab.id} priceLabel={formatPrice(lab.priceMinor, lab.currency)} />
           <p className="text-xs text-muted-foreground mt-4">
-            One-time purchase · lifetime access to this lab
+            One-time purchase · lifetime access to this course
           </p>
         </div>
       )}

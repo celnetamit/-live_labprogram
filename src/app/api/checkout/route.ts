@@ -31,23 +31,29 @@ export async function POST(req: Request) {
 
   const useRazorpay = razorpayConfigured();
 
-  const order = await prisma.order.create({
-    data: {
-      userId: user.id,
-      status: "PENDING",
-      amountMinor: lab.priceMinor,
-      currency: lab.currency,
-      provider: useRazorpay ? "razorpay" : "mock",
-      items: {
-        create: {
-          labId: lab.id,
-          labSlug: lab.slug ?? lab.id,
-          labTitle: lab.name,
-          priceMinor: lab.priceMinor,
+  let order;
+  try {
+    order = await prisma.order.create({
+      data: {
+        userId: user.id,
+        status: "PENDING",
+        amountMinor: lab.priceMinor,
+        currency: lab.currency,
+        provider: useRazorpay ? "razorpay" : "mock",
+        items: {
+          create: {
+            labId: lab.id,
+            labSlug: lab.slug ?? lab.id,
+            labTitle: lab.name,
+            priceMinor: lab.priceMinor,
+          },
         },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error("Order creation error:", err);
+    return NextResponse.json({ message: "Failed to create order. Please try again." }, { status: 500 });
+  }
 
   if (useRazorpay) {
     try {

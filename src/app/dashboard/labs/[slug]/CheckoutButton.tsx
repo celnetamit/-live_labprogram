@@ -46,7 +46,13 @@ export default function CheckoutButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ labId }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (err) {
+        throw new Error("Invalid response from server");
+      }
       if (!res.ok) throw new Error(data.message || "Checkout failed");
 
       if (data.mode === "mock") {
@@ -105,7 +111,7 @@ export default function CheckoutButton({
         ) : (
           <ShoppingCart className="w-5 h-5" />
         )}
-        {loading ? "Processing…" : `Buy Access · ${priceLabel}`}
+        {loading ? "Processing…" : `Buy Course · ${priceLabel}`}
       </button>
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>

@@ -17,10 +17,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
 
   const authorized = await hasLabAccess(user?.id, user?.role, lab.id);
   if (!authorized || !user?.id) {
-    return NextResponse.json(
-      { authorized: false, message: "Purchase or unlock this lab to launch it." },
-      { status: 403 }
-    );
+    const errorUrl = new URL(`/dashboard/labs/${slug}`, _req.url || "http://localhost:3000");
+    errorUrl.searchParams.set("error", "unauthorized");
+    return NextResponse.redirect(errorUrl);
   }
 
   const baseUrl =
@@ -46,5 +45,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     }
   }
 
-  return NextResponse.json({ authorized: true, launchUrl });
+  if (!launchUrl) {
+    const errorUrl = new URL(`/dashboard/labs/${slug}`, _req.url || "http://localhost:3000");
+    errorUrl.searchParams.set("error", "missing_url");
+    return NextResponse.redirect(errorUrl);
+  }
+
+  return NextResponse.redirect(launchUrl);
 }

@@ -4,6 +4,15 @@ import { verifyLabToken } from "@/lib/labTokens";
 import { decode } from "next-auth/jwt";
 import { hasLabAccess } from "@/lib/access";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
 const SECRET = process.env.NEXTAUTH_SECRET || "fallback_secret_for_local_dev_only";
 
 export async function POST(req: Request) {
@@ -35,14 +44,52 @@ export async function POST(req: Request) {
           authorized: false,
           status: "FAILED_INVALID_TOKEN",
           message: "Authentication required. Please sign in to access this lab.",
+          loginUrl: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`,
         },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
     // 1. Verify custom HMAC launch token or NextAuth JWT token
     let userId: string | null = null;
-    let tokenPrefix = typeof tokenString === "string" ? tokenString.slice(0, 15) : null;
+    // Extract the signature of the token to track uniqueness
+    let tokenSignature = typeof tokenString === "string" && tokenString.includes(".") 
+      ? tokenString.split(".")[1] 
+      : (typeof tokenString === "string" ? tokenString.slice(0, 15) : null);
+
+    // Check if this exact token was already used successfully more than 10 seconds ago
+    if (tokenSignature) {
+      const priorSuccess = await prisma.authorizationLog.findFirst({
+        where: {
+          tokenPrefix: tokenSignature,
+          status: "SUCCESS",
+        },
+        orderBy: { createdAt: "asc" }
+      });
+
+      if (priorSuccess) {
+        const secondsSinceFirstUse = (Date.now() - priorSuccess.createdAt.getTime()) / 1000;
+        if (secondsSinceFirstUse > 10) {
+          await logAttempt({
+            labId: labIdInput || "unknown",
+            tokenPrefix: tokenSignature,
+            status: "FAILED_INVALID_TOKEN",
+            reason: "Token has already been used",
+            ipAddress,
+            userAgent,
+          });
+          return NextResponse.json(
+            {
+              authorized: false,
+              status: "FAILED_INVALID_TOKEN",
+              message: "This launch link has already been used. Please launch the lab again from the dashboard.",
+              loginUrl: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`,
+            },
+            { status: 403, headers: corsHeaders }
+          );
+        }
+      }
+    }
 
     const launchPayload = verifyLabToken(tokenString);
     if (launchPayload?.userId) {
@@ -62,7 +109,7 @@ export async function POST(req: Request) {
     if (!userId) {
       await logAttempt({
         labId: labIdInput || "unknown",
-        tokenPrefix,
+        tokenPrefix: tokenSignature,
         status: "FAILED_INVALID_TOKEN",
         reason: "Token signature invalid or expired",
         ipAddress,
@@ -73,8 +120,9 @@ export async function POST(req: Request) {
           authorized: false,
           status: "FAILED_INVALID_TOKEN",
           message: "Authentication token is invalid or expired. Please sign in again.",
+          loginUrl: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`,
         },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -85,7 +133,7 @@ export async function POST(req: Request) {
         userId,
         userEmail: user?.email || undefined,
         labId: labIdInput || "unknown",
-        tokenPrefix,
+        tokenPrefix: tokenSignature,
         status: "FAILED_INACTIVE_USER",
         reason: "User account not found or status revoked/inactive",
         ipAddress,
@@ -96,8 +144,9 @@ export async function POST(req: Request) {
           authorized: false,
           status: "FAILED_INACTIVE_USER",
           message: "User account is inactive or revoked.",
+          loginUrl: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`,
         },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -107,7 +156,7 @@ export async function POST(req: Request) {
         userId: user.id,
         userEmail: user.email || undefined,
         labId: "unknown",
-        tokenPrefix,
+        tokenPrefix: tokenSignature,
         status: "FAILED_UNAUTHORIZED",
         reason: "Missing labId or domainUrl identifier in request",
         ipAddress,
@@ -118,8 +167,9 @@ export async function POST(req: Request) {
           authorized: false,
           status: "FAILED_UNAUTHORIZED",
           message: "No target lab specified.",
+          loginUrl: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`,
         },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -152,7 +202,7 @@ export async function POST(req: Request) {
         userId: user.id,
         userEmail: user.email || undefined,
         labId: labIdInput || "unknown",
-        tokenPrefix,
+        tokenPrefix: tokenSignature,
         status: "FAILED_UNAUTHORIZED",
         reason: `Lab identifier ${labIdInput || domainUrlInput} not found or disabled`,
         ipAddress,
@@ -163,8 +213,9 @@ export async function POST(req: Request) {
           authorized: false,
           status: "FAILED_UNAUTHORIZED",
           message: "Requested lab not found or disabled.",
+          loginUrl: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`,
         },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -176,7 +227,7 @@ export async function POST(req: Request) {
         userEmail: user.email || undefined,
         labId: lab.id,
         labSlug: lab.slug || undefined,
-        tokenPrefix,
+        tokenPrefix: tokenSignature,
         status: "FAILED_UNAUTHORIZED",
         reason: `User ${user.email} (${user.role}) is not assigned to lab ${lab.name}`,
         ipAddress,
@@ -187,8 +238,9 @@ export async function POST(req: Request) {
           authorized: false,
           status: "FAILED_UNAUTHORIZED",
           message: "You are not authorized to access this lab.",
+          loginUrl: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`,
         },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -198,7 +250,7 @@ export async function POST(req: Request) {
       userEmail: user.email || undefined,
       labId: lab.id,
       labSlug: lab.slug || undefined,
-      tokenPrefix,
+      tokenPrefix: tokenSignature,
       status: "SUCCESS",
       reason: "Access granted",
       ipAddress,
@@ -220,13 +272,13 @@ export async function POST(req: Request) {
           name: lab.name,
         },
       },
-      { status: 200 }
+      { status: 200, headers: corsHeaders }
     );
   } catch (err: any) {
     console.error("Error in authorize-lab API:", err);
     return NextResponse.json(
       { authorized: false, message: "Internal server error during authorization verification." },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
