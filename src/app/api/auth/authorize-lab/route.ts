@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
 
     const tokenString = body.token || bearerToken;
-    const labIdInput = body.labId || body.labSlug;
+    let labIdInput = body.labId || body.labSlug;
     const domainUrlInput = body.domainUrl || req.headers.get("origin") || req.headers.get("referer");
 
     if (!tokenString) {
@@ -94,6 +94,9 @@ export async function POST(req: Request) {
     const launchPayload = verifyLabToken(tokenString);
     if (launchPayload?.userId) {
       userId = launchPayload.userId;
+      if (launchPayload.labId) {
+        labIdInput = launchPayload.labId;
+      }
     } else {
       // Try decoding as NextAuth JWT session cookie
       try {
