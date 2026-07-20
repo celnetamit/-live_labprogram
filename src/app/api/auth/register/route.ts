@@ -37,6 +37,21 @@ export async function POST(req: Request) {
       },
     });
 
+    // Automatically grant access to all current labs for the new user
+    const allLabs = await prisma.lab.findMany({
+      where: { enabled: true }
+    });
+    
+    if (allLabs.length > 0) {
+      await prisma.labAccess.createMany({
+        data: allLabs.map(lab => ({
+          userId: user.id,
+          labId: lab.id,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
     return NextResponse.json(
       { message: "User created successfully", userId: user.id },
       { status: 201 }
