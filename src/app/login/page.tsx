@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
@@ -19,6 +19,48 @@ export default function Login() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    getSession().then((session) => {
+      if (session?.user) {
+        const role = (session.user as { role?: string } | undefined)?.role;
+        handleRedirect(role, true);
+      }
+    });
+  }, []);
+
+  const handleRedirect = async (role: string | undefined, forceRedirect = true) => {
+    let dest = role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
+    const cbRaw = new URLSearchParams(window.location.search).get("callbackUrl");
+    
+    if (cbRaw) {
+      try {
+        const u = new URL(cbRaw, window.location.origin);
+        if (u.origin === window.location.origin) {
+          dest = u.pathname + u.search;
+        } else {
+          // Cross-origin callback, try to resolve it as a lab domain
+          const res = await fetch("/api/auth/resolve-callback", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ callbackUrl: cbRaw })
+          });
+          const data = await res.json();
+          if (data.success && data.launchUrl) {
+            dest = data.launchUrl;
+          }
+        }
+      } catch {
+        /* ignore malformed callbackUrl */
+      }
+    }
+    
+    if (forceRedirect) {
+      router.push(dest);
+      router.refresh();
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,19 +82,7 @@ export default function Login() {
       const session = await getSession();
       const role = (session?.user as { role?: string } | undefined)?.role;
 
-      // If the user was sent here trying to open a specific page, return them there.
-      let dest = role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
-      const cbRaw = new URLSearchParams(window.location.search).get("callbackUrl");
-      if (cbRaw) {
-        try {
-          const u = new URL(cbRaw, window.location.origin);
-          if (u.origin === window.location.origin) dest = u.pathname + u.search;
-        } catch {
-          /* ignore malformed callbackUrl */
-        }
-      }
-      router.push(dest);
-      router.refresh();
+      await handleRedirect(role, true);
     } catch (err: any) {
       setError(err.message);
     } finally {
