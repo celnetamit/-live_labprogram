@@ -22,7 +22,7 @@ async function run() {
   });
   console.log("Token:", token);
 
-  const res = await fetch("https://labs.celnet.in/api/auth/authorize-lab", {
+  const res = await fetch("https://live-labs.org/api/auth/authorize-lab", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

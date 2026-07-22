@@ -1,13 +1,13 @@
 # @panoptical/lab-auth-middleware
 
-Drop-in server-side authorization middleware for independently deployed Panoptical workshop labs (`https://lab1.labs.celnet.in`, `https://interview.panoptical.org`, etc.).
+Drop-in server-side authorization middleware for independently deployed Panoptical workshop labs (`https://lab1.live-labs.org`, `https://interview.panoptical.org`, etc.).
 
 ## Overview
 
 This middleware ensures that **individually deployed lab URLs cannot be accessed simply by sharing or guessing their links**. Every request to your standalone lab server is authenticated and validated against the central Panoptical Authorization API (`POST /api/auth/authorize-lab`).
 
 If a user visits your lab URL without authorization:
-1. They are redirected to sign in at `https://labs.celnet.in/login`.
+1. They are redirected to sign in at `https://live-labs.org/login`.
 2. Their token and permissions (`user_lab_access`) are verified server-side.
 3. If unauthorized, they receive a **403 Forbidden - Access Denied** page instantly.
 
@@ -34,8 +34,8 @@ const app = express();
 // Protect all routes with Panoptical Central Authorization
 app.use(
   createLabAuthMiddleware({
-    centralAuthUrl: "https://labs.celnet.in/api/auth/authorize-lab",
-    loginUrl: "https://labs.celnet.in/login",
+    centralAuthUrl: "https://live-labs.org/api/auth/authorize-lab",
+    loginUrl: "https://live-labs.org/login",
     labId: "lab1", // Or your lab slug / domain name
   })
 );
@@ -53,7 +53,7 @@ app.listen(3001, () => console.log("Lab server running on 3001"));
 ## How It Works
 
 ```text
-User Visits Lab URL (e.g. https://lab1.labs.celnet.in)
+User Visits Lab URL (e.g. https://lab1.live-labs.org)
                  │
                  ▼
      Extract Token (cookie / query)

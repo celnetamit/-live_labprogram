@@ -8,14 +8,14 @@ const https = require('node:https');
  * with the central Panoptical authorization API before allowing requests.
  *
  * @param {Object} options
- * @param {string} options.centralAuthUrl - e.g. "https://labs.celnet.in/api/auth/authorize-lab"
- * @param {string} options.loginUrl - e.g. "https://labs.celnet.in/login"
+ * @param {string} options.centralAuthUrl - e.g. "https://live-labs.org/api/auth/authorize-lab"
+ * @param {string} options.loginUrl - e.g. "https://live-labs.org/login"
  * @param {string|function} options.labId - e.g. "lab1" or (req) => "lab1"
  * @param {string} [options.cookieName="__lab_auth_token"] - Cookie name for session caching
  */
 function createLabAuthMiddleware(options = {}) {
-  const centralAuthUrl = options.centralAuthUrl || process.env.CENTRAL_AUTH_URL || "https://labs.celnet.in/api/auth/authorize-lab";
-  const loginUrl = options.loginUrl || process.env.CENTRAL_LOGIN_URL || "https://labs.celnet.in/login";
+  const centralAuthUrl = options.centralAuthUrl || process.env.CENTRAL_AUTH_URL || "https://live-labs.org/api/auth/authorize-lab";
+  const loginUrl = options.loginUrl || process.env.CENTRAL_LOGIN_URL || "https://live-labs.org/login";
   const cookieName = options.cookieName || "__lab_auth_token";
 
   let accessDeniedHtml = "";
