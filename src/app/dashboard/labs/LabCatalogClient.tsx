@@ -47,36 +47,45 @@ export default function LabCatalogClient({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return labs.filter((l) => {
+      // If the user is on the 'My Labs' dashboard and is not an admin, only show owned labs
+      if (!publicMode && !isAdmin && !l.owned) return false;
+
       if (subject !== "All" && l.subject !== subject) return false;
       if (difficulty !== "All" && l.difficulty !== difficulty) return false;
       if (q && !(`${l.title} ${l.synopsis} ${l.keySkills.join(" ")}`.toLowerCase().includes(q)))
         return false;
       return true;
     });
-  }, [labs, query, subject, difficulty]);
+  }, [labs, query, subject, difficulty, publicMode, isAdmin]);
 
   const ownedCount = labs.filter((l) => l.owned).length;
 
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-          {publicMode ? "Explore Labs" : "Lab Catalog"}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          {labs.length} premium workshop labs.{" "}
-          {publicMode ? (
-            <>Browse everything free — <span className="text-primary font-medium">sign in</span> to open a lab and unlock its resources.</>
-          ) : isAdmin ? (
-            <span className="text-primary font-medium">Admin — full access to all labs.</span>
-          ) : (
-            <>
-              You own <span className="text-primary font-medium">{ownedCount}</span>. Buy a lab to
-              unlock its full resources and launch link.
-            </>
-          )}
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            {publicMode ? "Explore Labs" : "My Labs"}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {publicMode ? (
+              <>{labs.length} premium workshop labs. Browse everything free — <span className="text-primary font-medium">sign in</span> to open a lab and unlock its resources.</>
+            ) : isAdmin ? (
+              <span className="text-primary font-medium">Admin — full access to all {labs.length} labs.</span>
+            ) : (
+              <>
+                You own <span className="text-primary font-medium">{ownedCount}</span> {ownedCount === 1 ? 'lab' : 'labs'}.
+              </>
+            )}
+          </p>
+        </div>
+        {!publicMode && (
+          <Link href="/labs" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 px-6 py-2 shrink-0 group">
+            Explore more labs
+            <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        )}
       </div>
 
       {/* Filters */}
@@ -115,7 +124,7 @@ export default function LabCatalogClient({
       </div>
 
       <p className="text-sm text-muted-foreground mb-4">
-        Showing {filtered.length} of {labs.length}
+        Showing {filtered.length} {filtered.length === 1 ? 'lab' : 'labs'}
       </p>
 
       {/* Grid */}
