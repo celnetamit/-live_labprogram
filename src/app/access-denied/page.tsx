@@ -45,7 +45,7 @@ function AccessDeniedContent() {
           </Link>
 
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => signOut({ callbackUrl: `${window.location.origin}/login` })}
             className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 font-medium text-sm transition-all"
           >
             <LogOut className="w-4 h-4" />
