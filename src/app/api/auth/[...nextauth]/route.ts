@@ -53,6 +53,25 @@ export const authOptions = {
         session.user.role = token.role;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }: any) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return new URL(url, baseUrl).toString();
+      
+      // If the url contains live-labs.org, allow it to bypass the baseUrl restriction
+      // This fixes issues if NEXTAUTH_URL in the environment is still set to an old domain
+      try {
+        const urlObj = new URL(url);
+        if (urlObj.hostname.includes("live-labs.org") || urlObj.hostname === "localhost") {
+          return url;
+        }
+      } catch (e) {
+        // Invalid URL, fallback
+      }
+      
+      // Default behavior
+      if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     }
   },
   pages: {
