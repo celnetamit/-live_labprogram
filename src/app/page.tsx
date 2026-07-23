@@ -35,10 +35,10 @@ const stats = [
 ];
 
 const domains = [
-  "cognicore.celnet.in",
-  "denovo.celnet.in",
-  "ai6g.celnet.in",
-  "fraudshield.celnet.in",
+  "cognicore.live-labs.org",
+  "denovo.live-labs.org",
+  "ai6g.live-labs.org",
+  "fraudshield.live-labs.org",
 ];
 
 const features = [

@@ -6,8 +6,8 @@ async function main() {
   console.log('Seeding database...')
 
   const labs = [
-    { name: "Cognicore AI", domainUrl: "https://cognicore.celnet.in/", sourceUrl: "https://cognicore.celnet.in/", slug: "cognicore-ai", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Intermediate" },
-    { name: "Denovo GenAI Lab", domainUrl: "https://denovo.celnet.in/", sourceUrl: "https://denovo.celnet.in/", slug: "denovo-genai-lab", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Beginner" }
+    { name: "Cognicore AI", domainUrl: "https://cognicore.live-labs.org/", sourceUrl: "https://cognicore.live-labs.org/", slug: "cognicore-ai", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Intermediate" },
+    { name: "Denovo GenAI Lab", domainUrl: "https://denovo.live-labs.org/", sourceUrl: "https://denovo.live-labs.org/", slug: "denovo-genai-lab", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Beginner" }
   ];
 
   for (const lab of labs) {

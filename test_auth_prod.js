@@ -27,7 +27,7 @@ async function run() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       token,
-      domainUrl: "https://denovo.celnet.in",
+      domainUrl: "https://denovo.live-labs.org",
     }),
   });
 

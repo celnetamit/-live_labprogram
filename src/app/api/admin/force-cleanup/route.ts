@@ -9,32 +9,32 @@ export async function GET() {
     await prisma.lab.updateMany({
       where: { slug: "cognicore-ai" },
       data: {
-        domainUrl: "https://cognicore.celnet.in/",
-        sourceUrl: "https://cognicore.celnet.in/"
+        domainUrl: "https://cognicore.live-labs.org/",
+        sourceUrl: "https://cognicore.live-labs.org/"
       }
     });
 
     await prisma.lab.updateMany({
       where: { slug: "denovo-genai-lab" },
       data: {
-        domainUrl: "https://denovo.celnet.in/",
-        sourceUrl: "https://denovo.celnet.in/"
+        domainUrl: "https://denovo.live-labs.org/",
+        sourceUrl: "https://denovo.live-labs.org/"
       }
     });
 
     await prisma.lab.updateMany({
       where: { slug: "ai-6g" },
       data: {
-        domainUrl: "https://ai6g.celnet.in/",
-        sourceUrl: "https://ai6g.celnet.in/"
+        domainUrl: "https://ai6g.live-labs.org/",
+        sourceUrl: "https://ai6g.live-labs.org/"
       }
     });
 
     await prisma.lab.updateMany({
       where: { slug: "fraudshield" },
       data: {
-        domainUrl: "https://fraudshield.celnet.in/",
-        sourceUrl: "https://fraudshield.celnet.in/"
+        domainUrl: "https://fraudshield.live-labs.org/",
+        sourceUrl: "https://fraudshield.live-labs.org/"
       }
     });
 
@@ -47,7 +47,7 @@ export async function GET() {
     
     return NextResponse.json({ 
       success: true, 
-      message: `Successfully deleted ${deleted.count} old labs and updated URLs to celnet.in!`,
+      message: `Successfully deleted ${deleted.count} old labs and updated URLs to live-labs.org!`,
       kept: keepSlugs
     });
   } catch (err: any) {
