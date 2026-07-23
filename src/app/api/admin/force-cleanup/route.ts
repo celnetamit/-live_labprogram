@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const keepSlugs = ["cognicore-ai", "denovo-genai-lab", "ai-6g", "fraudshield", "logiclab", "micro-ai", "battery-ai"];
+    const keepSlugs = ["cognicore-ai", "denovo-genai-lab", "ai-6g", "fraudshield", "logiclab", "micro-ai", "battery-ai", "virtual-ai"];
     
     // Force update the correct URLs for the valid labs
     await prisma.lab.updateMany({
@@ -59,6 +59,14 @@ export async function GET() {
       data: {
         domainUrl: "https://battery.live-labs.org/",
         sourceUrl: "https://battery.live-labs.org/"
+      }
+    });
+
+    await prisma.lab.updateMany({
+      where: { slug: "virtual-ai" },
+      data: {
+        domainUrl: "https://virtual.live-labs.org/",
+        sourceUrl: "https://virtual.live-labs.org/"
       }
     });
 

@@ -180,5 +180,31 @@
     "createdAt": "2026-07-23T06:00:00.000Z",
     "updatedAt": "2026-07-23T06:00:00.000Z",
     "ownerId": null
+  },
+  {
+    "id": "cmrpue8ux666xonea76xg8p8n",
+    "slug": "virtual-ai",
+    "name": "XRD Virtual Laboratory",
+    "description": "Explore the XRD Virtual Laboratory, an advanced platform for simulating X-Ray Diffraction experiments using AI.",
+    "synopsis": "Explore the XRD Virtual Laboratory, an advanced platform for simulating X-Ray Diffraction experiments using AI.",
+    "subject": "Physics",
+    "difficulty": "Intermediate",
+    "points": 550,
+    "instructions": "\n# Explore the App\n\n1. Open the linked app for XRD Virtual Laboratory.\n2. Review the workflow, inputs, and outputs inside the experience.\n3. Compare it with similar projects using the subject filters in the catalog.\n4. Capture what makes this project useful for your learning or evaluation goals.\n",
+    "starterCode": "\nconst project = {\n  title: 'XRD Virtual Laboratory',\n  subject: 'Physics',\n};\n\nconsole.log(`Launch ${project.title} to explore a live ${project.subject} workflow.`);\n",
+    "sourceUrl": "https://virtual.live-labs.org/",
+    "tags": "[\"physics\",\"ai\",\"xrd\",\"simulation\"]",
+    "keySkills": "[\"AI Applications\",\"Materials Science\",\"Simulations\"]",
+    "priceMinor": 99900,
+    "currency": "INR",
+    "enabled": true,
+    "domainUrl": "https://virtual.live-labs.org/",
+    "category": "Physics",
+    "thumbnail": null,
+    "accessType": "PRIVATE",
+    "status": "ACTIVE",
+    "createdAt": "2026-07-23T06:00:00.000Z",
+    "updatedAt": "2026-07-23T06:00:00.000Z",
+    "ownerId": null
   }
 ]
