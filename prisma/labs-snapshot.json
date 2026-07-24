@@ -232,5 +232,31 @@
     "createdAt": "2026-07-24T06:00:00.000Z",
     "updatedAt": "2026-07-24T06:00:00.000Z",
     "ownerId": null
+  },
+  {
+    "id": "cmrpue8ux888xonea76xga0a0",
+    "slug": "ai-program-navigator",
+    "name": "Live-Lab Learning: AI Program Navigator",
+    "description": "An experiential learning platform's AI-powered navigator to help users find the most suitable learning paths and workshops based on their profile and aspirations.",
+    "synopsis": "An experiential learning platform's AI-powered navigator to help users find the most suitable learning paths and workshops based on their profile and aspirations.",
+    "subject": "Computer Science",
+    "difficulty": "Beginner",
+    "points": 200,
+    "instructions": "\n# Explore the App\n\n1. Open the linked app for AI Program Navigator.\n2. Review the workflow, inputs, and outputs inside the experience.\n3. Compare it with similar projects using the subject filters in the catalog.\n4. Capture what makes this project useful for your learning or evaluation goals.\n",
+    "starterCode": "\nconst project = {\n  title: 'AI Program Navigator',\n  subject: 'Computer Science',\n};\n\nconsole.log(`Launch ${project.title} to explore a live ${project.subject} workflow.`);\n",
+    "sourceUrl": "https://aiprogram.live-labs.org/",
+    "tags": "[\"ai\",\"navigation\",\"learning\"]",
+    "keySkills": "[\"AI Applications\",\"Learning Paths\"]",
+    "priceMinor": 29900,
+    "currency": "INR",
+    "enabled": true,
+    "domainUrl": "https://aiprogram.live-labs.org/",
+    "category": "Computer Science",
+    "thumbnail": null,
+    "accessType": "PRIVATE",
+    "status": "ACTIVE",
+    "createdAt": "2026-07-24T06:00:00.000Z",
+    "updatedAt": "2026-07-24T06:00:00.000Z",
+    "ownerId": null
   }
 ]
