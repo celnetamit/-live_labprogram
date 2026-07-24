@@ -206,5 +206,31 @@
     "createdAt": "2026-07-23T06:00:00.000Z",
     "updatedAt": "2026-07-23T06:00:00.000Z",
     "ownerId": null
+  },
+  {
+    "id": "cmrpue8ux777xonea76xg9p9o",
+    "slug": "smartfactory-ai",
+    "name": "SmartFactory AI",
+    "description": "Explore SmartFactory AI, an advanced platform for simulating and optimizing production line operations using AI workflows.",
+    "synopsis": "Explore SmartFactory AI, an advanced platform for simulating and optimizing production line operations using AI workflows.",
+    "subject": "Engineering",
+    "difficulty": "Advanced",
+    "points": 650,
+    "instructions": "\n# Explore the App\n\n1. Open the linked app for SmartFactory AI.\n2. Review the workflow, inputs, and outputs inside the experience.\n3. Compare it with similar projects using the subject filters in the catalog.\n4. Capture what makes this project useful for your learning or evaluation goals.\n",
+    "starterCode": "\nconst project = {\n  title: 'SmartFactory AI',\n  subject: 'Engineering',\n};\n\nconsole.log(`Launch ${project.title} to explore a live ${project.subject} workflow.`);\n",
+    "sourceUrl": "https://smartfactory.live-labs.org/",
+    "tags": "[\"engineering\",\"ai\",\"manufacturing\"]",
+    "keySkills": "[\"AI Applications\",\"Manufacturing\",\"Optimization\"]",
+    "priceMinor": 149900,
+    "currency": "INR",
+    "enabled": true,
+    "domainUrl": "https://smartfactory.live-labs.org/",
+    "category": "Engineering",
+    "thumbnail": null,
+    "accessType": "PRIVATE",
+    "status": "ACTIVE",
+    "createdAt": "2026-07-24T06:00:00.000Z",
+    "updatedAt": "2026-07-24T06:00:00.000Z",
+    "ownerId": null
   }
 ]
