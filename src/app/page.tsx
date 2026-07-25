@@ -28,7 +28,7 @@ const fadeUp = {
 };
 
 const stats = [
-  { value: "11", label: "Premium Labs" },
+  { value: "12", label: "Premium Labs" },
   { value: "40k", label: "Active Learners" },
   { value: "99.98%", label: "Uptime SLA" },
   { value: "11", label: "Domains" },
@@ -80,7 +80,7 @@ const features = [
 ];
 
 const steps = [
-  { icon: FlaskConical, title: "Browse the catalog", desc: "Explore 11 labs across AI, robotics, biotech, semiconductors and more — filter by subject and level." },
+  { icon: FlaskConical, title: "Browse the catalog", desc: "Explore 12 labs across AI, robotics, biotech, semiconductors and more — filter by subject and level." },
   { icon: CreditCard, title: "Unlock access", desc: "Buy a lab in seconds, or get access granted by an admin. Overview is always free to explore." },
   { icon: Rocket, title: "Launch instantly", desc: "Open the live lab environment with one click, plus step-by-step instructions and starter code." },
 ];
@@ -146,7 +146,7 @@ function ProductPreview() {
           <div className="p-4 space-y-3">
             <div className="grid grid-cols-3 gap-2">
               {[
-                { v: "11", l: "Labs", t: "from-brand-1/30" },
+                { v: "12", l: "Labs", t: "from-brand-1/30" },
                 { v: "₹499", l: "Revenue", t: "from-emerald-500/30" },
                 { v: "40k", l: "Users", t: "from-brand-3/30" },
               ].map((c) => (
@@ -225,7 +225,7 @@ export default function Home() {
                 <span className="text-gradient-animated">Control every access.</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-xl mb-8">
-                One portal for <strong className="text-foreground font-semibold">11 workshop labs</strong> across AI,
+                One portal for <strong className="text-foreground font-semibold">12 workshop labs</strong> across AI,
                 robotics, biotech and more. Sell per-lab access, manage users and go live in minutes.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
@@ -350,11 +350,10 @@ export default function Home() {
                   initial="hidden"
                   whileInView="show"
                   viewport={{ once: true }}
-                  className={`relative rounded-2xl border p-6 ${
-                    p.highlight
+                  className={`relative rounded-2xl border p-6 ${p.highlight
                       ? "border-primary/40 bg-gradient-to-b from-primary/10 to-card shadow-xl shadow-primary/10 md:-translate-y-3"
                       : "border-border bg-card"
-                  }`}
+                    }`}
                 >
                   {p.highlight && (
                     <span className="absolute -top-3 left-1/2 -translate-x-1/2 pill text-primary bg-primary/10 border border-primary/20 px-3">
@@ -376,9 +375,8 @@ export default function Home() {
                   </ul>
                   <Link
                     href="/labs"
-                    className={`w-full inline-flex items-center justify-center py-2.5 rounded-xl font-semibold transition-colors ${
-                      p.highlight ? "btn-brand" : "border border-border hover:bg-accent"
-                    }`}
+                    className={`w-full inline-flex items-center justify-center py-2.5 rounded-xl font-semibold transition-colors ${p.highlight ? "btn-brand" : "border border-border hover:bg-accent"
+                      }`}
                   >
                     Browse {p.tier} labs
                   </Link>
