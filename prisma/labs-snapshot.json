@@ -258,5 +258,31 @@
     "createdAt": "2026-07-24T06:00:00.000Z",
     "updatedAt": "2026-07-24T06:00:00.000Z",
     "ownerId": null
+  },
+  {
+    "id": "cmrpue8ux999xonea76xgb1b1",
+    "slug": "drugdiscovery-ai",
+    "name": "RepurposeAI: Drug Discovery Lab",
+    "description": "An interactive educational platform for Drug Repurposing using Knowledge Graphs and AI. Features 3D visualization, biological data integration, and AI-powered link prediction analysis.",
+    "synopsis": "An interactive educational platform for Drug Repurposing using Knowledge Graphs and AI. Features 3D visualization, biological data integration, and AI-powered link prediction analysis.",
+    "subject": "Biology",
+    "difficulty": "Advanced",
+    "points": 700,
+    "instructions": "\n# Explore the App\n\n1. Open the linked app for RepurposeAI.\n2. Review the workflow, inputs, and outputs inside the experience.\n3. Compare it with similar projects using the subject filters in the catalog.\n4. Capture what makes this project useful for your learning or evaluation goals.\n",
+    "starterCode": "\nconst project = {\n  title: 'RepurposeAI',\n  subject: 'Biology',\n};\n\nconsole.log(`Launch ${project.title} to explore a live ${project.subject} workflow.`);\n",
+    "sourceUrl": "https://drugdiscovery.live-labs.org/",
+    "tags": "[\"biology\",\"ai\",\"drug-discovery\"]",
+    "keySkills": "[\"AI Applications\",\"Bioinformatics\",\"Knowledge Graphs\"]",
+    "priceMinor": 149900,
+    "currency": "INR",
+    "enabled": true,
+    "domainUrl": "https://drugdiscovery.live-labs.org/",
+    "category": "Biology",
+    "thumbnail": null,
+    "accessType": "PRIVATE",
+    "status": "ACTIVE",
+    "createdAt": "2026-07-25T06:00:00.000Z",
+    "updatedAt": "2026-07-25T06:00:00.000Z",
+    "ownerId": null
   }
 ]

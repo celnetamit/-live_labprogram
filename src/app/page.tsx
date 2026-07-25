@@ -28,10 +28,10 @@ const fadeUp = {
 };
 
 const stats = [
-  { value: "10", label: "Premium Labs" },
+  { value: "11", label: "Premium Labs" },
   { value: "40k", label: "Active Learners" },
   { value: "99.98%", label: "Uptime SLA" },
-  { value: "10", label: "Domains" },
+  { value: "11", label: "Domains" },
 ];
 
 const domains = [
@@ -45,6 +45,7 @@ const domains = [
   "virtual.live-labs.org",
   "smartfactory.live-labs.org",
   "aiprogram.live-labs.org",
+  "drugdiscovery.live-labs.org",
 ];
 
 const features = [
@@ -79,7 +80,7 @@ const features = [
 ];
 
 const steps = [
-  { icon: FlaskConical, title: "Browse the catalog", desc: "Explore 10 labs across AI, robotics, biotech, semiconductors and more — filter by subject and level." },
+  { icon: FlaskConical, title: "Browse the catalog", desc: "Explore 11 labs across AI, robotics, biotech, semiconductors and more — filter by subject and level." },
   { icon: CreditCard, title: "Unlock access", desc: "Buy a lab in seconds, or get access granted by an admin. Overview is always free to explore." },
   { icon: Rocket, title: "Launch instantly", desc: "Open the live lab environment with one click, plus step-by-step instructions and starter code." },
 ];
@@ -145,7 +146,7 @@ function ProductPreview() {
           <div className="p-4 space-y-3">
             <div className="grid grid-cols-3 gap-2">
               {[
-                { v: "10", l: "Labs", t: "from-brand-1/30" },
+                { v: "11", l: "Labs", t: "from-brand-1/30" },
                 { v: "₹499", l: "Revenue", t: "from-emerald-500/30" },
                 { v: "40k", l: "Users", t: "from-brand-3/30" },
               ].map((c) => (
@@ -162,6 +163,7 @@ function ProductPreview() {
               { n: "LogicLab AI", s: "Electronics", p: "₹499" },
               { n: "MicrobeAI Lab", s: "Biology", p: "₹999" },
               { n: "XRD Virtual Lab", s: "Physics", p: "₹999" },
+              { n: "RepurposeAI", s: "Biology", p: "₹1,499" },
             ].map((r) => (
               <div key={r.n} className="flex items-center gap-2 rounded-lg border border-border bg-card p-2">
                 <div className="w-7 h-7 rounded-md avatar-grad flex items-center justify-center shrink-0">
@@ -223,7 +225,7 @@ export default function Home() {
                 <span className="text-gradient-animated">Control every access.</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-xl mb-8">
-                One portal for <strong className="text-foreground font-semibold">10 workshop labs</strong> across AI,
+                One portal for <strong className="text-foreground font-semibold">11 workshop labs</strong> across AI,
                 robotics, biotech and more. Sell per-lab access, manage users and go live in minutes.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
