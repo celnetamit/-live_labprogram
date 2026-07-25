@@ -284,5 +284,31 @@
     "createdAt": "2026-07-25T06:00:00.000Z",
     "updatedAt": "2026-07-25T06:00:00.000Z",
     "ownerId": null
+  },
+  {
+    "id": "cmrpue8uxaaaxonea76xgc2c2",
+    "slug": "metamaterials",
+    "name": "Pioneering Acoustic Metamaterials",
+    "description": "Explore Pioneering Acoustic Metamaterials, an advanced platform for inverse design and simulation of acoustic structures using AI and Effective Medium Theory.",
+    "synopsis": "Explore Pioneering Acoustic Metamaterials, an advanced platform for inverse design and simulation of acoustic structures using AI and Effective Medium Theory.",
+    "subject": "Materials",
+    "difficulty": "Advanced",
+    "points": 750,
+    "instructions": "\n# Explore the App\n\n1. Open the linked app for Pioneering Acoustic Metamaterials.\n2. Review the workflow, inputs, and outputs inside the experience.\n3. Compare it with similar projects using the subject filters in the catalog.\n4. Capture what makes this project useful for your learning or evaluation goals.\n",
+    "starterCode": "\nconst project = {\n  title: 'Pioneering Acoustic Metamaterials',\n  subject: 'Materials',\n};\n\nconsole.log(`Launch ${project.title} to explore a live ${project.subject} workflow.`);\n",
+    "sourceUrl": "https://metamaterial.live-labs.org/",
+    "tags": "[\"materials\",\"ai\",\"simulation\"]",
+    "keySkills": "[\"AI Applications\",\"Materials Science\",\"Acoustics\"]",
+    "priceMinor": 149900,
+    "currency": "INR",
+    "enabled": true,
+    "domainUrl": "https://metamaterial.live-labs.org/",
+    "category": "Materials",
+    "thumbnail": null,
+    "accessType": "PRIVATE",
+    "status": "ACTIVE",
+    "createdAt": "2026-07-25T15:00:00.000Z",
+    "updatedAt": "2026-07-25T15:00:00.000Z",
+    "ownerId": null
   }
 ]
