@@ -70,7 +70,7 @@ export default function LabCatalogClient({
           </h1>
           <p className="text-muted-foreground mt-1">
             {publicMode ? (
-              <>{labs.length} premium workshop labs. Browse everything free — <span className="text-primary font-medium">sign in</span> to open a lab and unlock its resources.</>
+              <>{labs.length} premium workshop labs. Browse everything free — <Link href="/login" className="text-primary font-medium hover:underline cursor-pointer">sign in</Link> to open a lab and unlock its resources.</>
             ) : isAdmin ? (
               <span className="text-primary font-medium">Admin — full access to all {labs.length} labs.</span>
             ) : (
