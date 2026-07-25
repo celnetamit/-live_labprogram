@@ -45,7 +45,7 @@ const domains = [
   "virtual.live-labs.org",
   "smartfactory.live-labs.org",
   "aiprogram.live-labs.org",
-  "drugdiscovery.live-labs.org",
+  "drug.live-labs.org",
 ];
 
 const features = [

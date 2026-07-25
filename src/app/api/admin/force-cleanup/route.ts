@@ -89,8 +89,8 @@ export async function GET() {
     await prisma.lab.updateMany({
       where: { slug: "drugdiscovery-ai" },
       data: {
-        domainUrl: "https://drugdiscovery.live-labs.org/",
-        sourceUrl: "https://drugdiscovery.live-labs.org/"
+        domainUrl: "https://drug.live-labs.org/",
+        sourceUrl: "https://drug.live-labs.org/"
       }
     });
 
