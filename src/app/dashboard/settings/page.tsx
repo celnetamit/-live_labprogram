@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { User, Mail, Building, Briefcase, Shield, Key, Bell, CreditCard, LogOut } from "lucide-react";
 import Link from "next/link";
+import { SignOutButton } from "@/components/SignOutButton";
 
 export default async function SettingsPage() {
   const session = await getServerSession(authOptions);
@@ -43,9 +44,7 @@ export default async function SettingsPage() {
             <CreditCard className="w-4 h-4" /> Billing & Subscriptions
           </Link>
           <div className="pt-4 mt-4 border-t border-border">
-            <Link href="/api/auth/signout" className="flex items-center gap-3 px-3 py-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
-              <LogOut className="w-4 h-4" /> Sign Out
-            </Link>
+            <SignOutButton className="flex w-full items-center gap-3 px-3 py-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors text-left" />
           </div>
         </div>
 
