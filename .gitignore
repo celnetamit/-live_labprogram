@@ -43,3 +43,9 @@ next-env.d.ts
 
 # obsolete SQLite DB (migrated to PostgreSQL)
 prisma/*.db
+
+# demo shot-list generator scratch output
+.demo-build
+
+# intermediate screencast output (only .mp4/.jpg are published)
+public/demos/*.webm

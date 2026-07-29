@@ -24,9 +24,12 @@ function loadRazorpayScript(): Promise<boolean> {
 export default function CheckoutButton({
   labId,
   priceLabel,
+  compact = false,
 }: {
   labId: string;
   priceLabel: string;
+  /** Keep the button its intrinsic width and centre it, for standalone panels. */
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -100,18 +103,25 @@ export default function CheckoutButton({
   }
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    /*
+      Stretches to its container by default so it can sit in the sticky rail and
+      the mobile action bar without a bespoke wrapper; the standalone paywall
+      panel passes `compact` to keep the button its own width and centred.
+    */
+    <div className={`flex flex-col gap-2 ${compact ? "items-center" : "items-stretch"}`}>
       <button
         onClick={handleBuy}
         disabled={loading}
-        className="inline-flex items-center justify-center gap-2 px-8 py-3.5 btn-brand rounded-xl font-semibold disabled:opacity-60 disabled:pointer-events-none"
+        className={`btn-brand inline-flex h-11 items-center justify-center gap-2 rounded-xl font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-60 ${
+          compact ? "px-8" : "w-full px-6"
+        }`}
       >
         {loading ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
+          <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
-          <ShoppingCart className="w-5 h-5" />
+          <ShoppingCart className="h-5 w-5" />
         )}
-        {loading ? "Processing…" : `Buy Course · ${priceLabel}`}
+        <span className="truncate">{loading ? "Processing…" : `Unlock · ${priceLabel}`}</span>
       </button>
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
