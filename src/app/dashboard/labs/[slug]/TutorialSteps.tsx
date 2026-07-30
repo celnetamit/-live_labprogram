@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useSyncExternalStore } from "react";
-import { Check, Clock, Eye, Lightbulb, ListChecks, Lock, RotateCcw } from "lucide-react";
+import { Check, Eye, Lightbulb, ListChecks, Lock, RotateCcw } from "lucide-react";
 import type { LabGuide } from "@/content/labs";
 import { RichText } from "@/components/rich-text";
 
@@ -48,14 +48,14 @@ function parseDone(raw: string | null): Set<number> {
 /**
  * The step-by-step tutorial, with per-step completion.
  *
- * These tutorials run 35–95 minutes, which is longer than one sitting. Progress
- * is kept in localStorage per lab so a learner can close the tab and come back
- * to where they were — there is no server-side progress model to hang it on,
- * and inventing one is out of scope for a content page.
+ * A tutorial is longer than one sitting, so progress is kept in localStorage
+ * per lab and a learner can close the tab and come back to where they were.
+ * There is no server-side progress model to hang it on, and inventing one is
+ * out of scope for a content page.
  *
- * When `locked`, step titles, goals and durations still render, but the
- * actions, expected results and explanations are not emitted at all. Gating by
- * omission rather than by CSS: content that ships to the browser is not gated.
+ * When `locked`, step titles and goals still render, but the actions, expected
+ * results and explanations are not emitted at all. Gating by omission rather
+ * than by CSS: content that ships to the browser is not gated.
  */
 export default function TutorialSteps({ guide, locked }: { guide: LabGuide; locked: boolean }) {
   const storageKey = `lab-progress:${guide.slug}`;
@@ -95,16 +95,8 @@ export default function TutorialSteps({ guide, locked }: { guide: LabGuide; lock
     [storageKey, persist],
   );
 
-  const totalMinutes = useMemo(
-    () => guide.steps.reduce((sum, s) => sum + s.minutes, 0),
-    [guide.steps],
-  );
   const completed = done.size;
   const pct = guide.steps.length ? Math.round((completed / guide.steps.length) * 100) : 0;
-  const remaining = useMemo(
-    () => guide.steps.reduce((sum, s, i) => (done.has(i) ? sum : sum + s.minutes), 0),
-    [guide.steps, done],
-  );
 
   return (
     <section
@@ -119,9 +111,8 @@ export default function TutorialSteps({ guide, locked }: { guide: LabGuide; lock
         >
           <ListChecks className="w-5 h-5 text-primary shrink-0" /> Step-by-step tutorial
         </h2>
-        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Clock className="w-3.5 h-3.5" />
-          {guide.steps.length} steps · about {totalMinutes} min
+        <span className="text-xs text-muted-foreground">
+          {guide.steps.length} steps
         </span>
       </div>
 
@@ -145,9 +136,7 @@ export default function TutorialSteps({ guide, locked }: { guide: LabGuide; lock
                 </>
               )}
             </span>
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {completed > 0 && completed < guide.steps.length ? `~${remaining} min left` : `${pct}%`}
-            </span>
+            <span className="text-xs text-muted-foreground tabular-nums">{pct}%</span>
           </div>
           <div
             role="progressbar"
@@ -225,9 +214,6 @@ export default function TutorialSteps({ guide, locked }: { guide: LabGuide; lock
                   <p className="mt-0.5 text-sm text-muted-foreground">
                     <RichText>{step.goal}</RichText>
                   </p>
-                  <span className="mt-1.5 inline-flex items-center gap-1 text-xs text-muted-foreground/80">
-                    <Clock className="h-3 w-3" /> ~{step.minutes} min
-                  </span>
 
                   {locked ? (
                     <p className="mt-3 inline-flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">

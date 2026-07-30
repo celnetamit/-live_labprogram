@@ -1,6 +1,6 @@
 # Demo video shot list — `micro-ai`
 
-Target runtime **00:47**. Generated from `src/content/labs/micro-ai.ts` — edit the guide, not this file, then re-run `npm run demo:scripts`.
+Target runtime **01:33**. Generated from `src/content/labs/micro-ai.ts` — edit the guide, not this file, then re-run `npm run demo:scripts`.
 
 ## Before recording
 
@@ -11,21 +11,24 @@ Target runtime **00:47**. Generated from `src/content/labs/micro-ai.ts` — edit
 
 Set up in advance so no shot is spent waiting:
 
-- Introductory biology — what DNA is, and roughly what a species is
+- School-level biology — what DNA is, and roughly what a species is
 - A desktop browser for the 3D visualiser
-- About 55 minutes for both halves of the Virtual Lab
-- Nothing to upload: the lab ships demo sequencing data, though you may supply your own file
+- Nothing to download. The eight demo datasets run offline, instantly
 
 ## Shots
 
 | In | Out | Chapter | On screen |
 | --- | --- | --- | --- |
-| 00:00 | 00:04 | Sequencing a community you cannot culture | _fill in during storyboard_ |
-| 00:04 | 00:12 | Knowledge Bank — the concepts first | _fill in during storyboard_ |
-| 00:12 | 00:19 | Visualizer — 3D models and data | _fill in during storyboard_ |
-| 00:19 | 00:32 | Virtual Lab — the Metagenomic Profiler | _fill in during storyboard_ |
-| 00:32 | 00:41 | Bioreactor Simulator — temperature, pH, substrate | _fill in during storyboard_ |
-| 00:41 | 00:47 | Assessment | _fill in during storyboard_ |
+| 00:00 | 00:09 | Why this lab exists | _fill in during storyboard_ |
+| 00:09 | 00:14 | Knowledge Bank — the words you need first | _fill in during storyboard_ |
+| 00:14 | 00:24 | Experiment 1 — the Metagenomic Profiler | _fill in during storyboard_ |
+| 00:24 | 00:28 | Pick a demo dataset and run it | _fill in during storyboard_ |
+| 00:28 | 00:40 | Reading a healthy gut profile | _fill in during storyboard_ |
+| 00:40 | 00:53 | Compare it with an acid mine drainage site | _fill in during storyboard_ |
+| 00:53 | 00:57 | Experiment 2 — the Bioreactor Simulator | _fill in during storyboard_ |
+| 00:57 | 01:09 | A baseline at 37 °C and pH 7 | _fill in during storyboard_ |
+| 01:09 | 01:28 | Drop pH to 5.5 and watch it sour | _fill in during storyboard_ |
+| 01:28 | 01:33 | What to do next | _fill in during storyboard_ |
 
 ## Narration source
 
@@ -33,127 +36,127 @@ The opening line comes from the guide summary; each subsequent beat mirrors a tu
 
 **Open with:**
 
-> A spoonful of soil or a sample of sludge contains thousands of microbial species, almost none of which will grow in a petri dish. Modern microbiology sequences all of their DNA at once instead, then uses computation to work out who is present and what they are doing. This lab runs that whole workflow: you take raw sequencing reads through a metagenomics pipeline to a species breakdown, then use a bioreactor simulator to tune the conditions those microbes live in and see what it does to biogas yield.
+> Most microbes refuse to grow in a dish, so scientists read their DNA instead. This lab lets you do both halves of that job: first find out who lives in a sample of gut, sludge or soil, then run a digester and watch how temperature, pH and feed change the amount of biogas those microbes produce.
 
 **Then work the 8 tutorial steps** (73 min in written form, compressed to the runtime above — demonstrate, do not narrate every click):
 
-### 1. Build vocabulary in the Knowledge Bank
+### 1. Learn the words first
 
-_Learn the six or seven terms the rest of the lab uses without explanation._
+_Pick up the handful of terms the experiments use without explaining._
 
 Show, in order:
 
 - Open Knowledge Bank in the sidebar.
 - Read the entries on metagenomics, taxonomic ranks, anaerobic digestion and the 16S rRNA gene.
-- Make sure you can order the taxonomic ranks from Kingdom down to Species.
+- Check you can order the ranks from Kingdom down to Species.
 
-**Hold the shot on:** You can say what distinguishes a genus from a species, and what a metagenome is as opposed to a genome.
+**Hold the shot on:** You can say how a genus differs from a species, and how a metagenome differs from a genome.
 
-**Say over it:** The profiler reports results at several taxonomic levels at once. Without the hierarchy in mind, a composition chart is just coloured bars.
+**Say over it:** Results come back at several taxonomic levels at once. Without the hierarchy in your head, a composition chart is just coloured bars.
 
-### 2. Open the Metagenomic Profiler and load data
+### 2. Run your first sample
 
-_Get sequencing reads into the pipeline._
-
-Show, in order:
-
-- Open Virtual Lab in the sidebar. It opens on the Profiler tab.
-- Use the demo dataset rather than your own file for the first run, so you have a known result to compare against.
-- Start the pipeline.
-
-**Hold the shot on:** The pipeline visualiser lights up and begins advancing through its stages.
-
-**Say over it:** Real metagenomics starts with a FASTQ file of millions of short reads, each a fragment of some organism's genome, with no label saying which. Everything the pipeline does is an attempt to put those fragments back together and attribute them.
-
-### 3. Follow all six pipeline stages
-
-_Understand what each stage contributes, rather than watching an animation._
+_Get a community profile out of the machine._
 
 Show, in order:
 
-- Watch the stage indicator move through Data Ingestion, QC & Trimming, Assembly, Binning, Taxonomy and Analysis.
-- Pause on each and write one sentence on what it does.
-- Pay particular attention to Binning — it is the step most people cannot explain afterwards.
+- Open Virtual Lab. It opens on the Metagenomic Profiler tab.
+- Under Or select example data, choose Demo Data: Healthy Gut Microbiome.
+- Click Run Analysis.
 
-**Hold the shot on:** Six stages complete in order, each marked done before the next begins.
+**Hold the shot on:** A composition chart, a ranked species list and a short written interpretation. Bacteroidetes and Firmicutes together take about 80% of a healthy gut.
 
-**Say over it:** In brief: ingestion reads the file; QC discards low-quality bases and adapter sequence; assembly stitches overlapping reads into longer contigs; binning groups those contigs by which organism they probably came from, using composition and coverage; taxonomy assigns names to the bins; analysis summarises. Skip QC and every later stage inherits the errors.
+**Say over it:** The demo datasets are computed on your own machine, so they are instant, work offline, and give the same answer every time. That matters: you need a fixed reference before you can tell whether anything you change later made a difference.
 
-### 4. Read the taxonomic result properly
+### 3. Read the result, don't just look at it
 
-_Turn a composition chart into a statement about the community._
-
-Show, in order:
-
-- Read the composition breakdown and identify the dominant groups.
-- Look at the top species list and their abundances.
-- Read the interpretation the lab provides, then check it against the chart yourself.
-- Open the Krona plot link to explore the hierarchy interactively.
-
-**Hold the shot on:** A composition chart, a ranked species list with abundances, and a written interpretation.
-
-**Say over it:** Abundance is relative, not absolute — it tells you the proportions in your sample, not how many cells are in the reactor. Two samples with identical composition can differ by orders of magnitude in total biomass, and conflating the two is a common misreading.
-
-### 5. Switch to the Bioreactor Simulator and establish a baseline
-
-_Get one reference run before you start changing things._
+_Turn the chart into a sentence about the sample._
 
 Show, in order:
 
-- Click the Simulator tab inside the Virtual Lab.
-- Leave the defaults: temperature 37 °C, pH 7.0, substrate glucose, hydraulic retention time 20 days.
-- Run it and watch the five stages — Initialize, Thermodynamics, Kinetics, Mass Balance, Yield Calc.
-- Write down the total yield and the methane percentage.
+- Find the two phyla that dominate, and note roughly what share they hold.
+- Look down the species list — several are butyrate producers, which feed the cells lining your colon.
+- Read the lab's interpretation, then check it against the chart yourself.
 
-**Hold the shot on:** A biogas production curve over time, a total yield figure, a methane percentage and a written suggestion.
+**Hold the shot on:** You can describe the sample in one sentence, and point to the numbers that back it up.
 
-**Say over it:** 37 °C and pH 7 are the mesophilic optimum — the conditions most anaerobic digesters actually run at, and close to human body temperature for the same underlying reason. Starting anywhere else makes your later comparisons meaningless.
+**Say over it:** These percentages are relative, not absolute. They tell you the proportions in the sample, never how many cells there are. Two samples with identical charts can differ enormously in total biomass — mixing those up is the most common beginner error.
 
-### 6. Change one parameter at a time
+### 4. Compare two very different worlds
 
-_Attribute each change in yield to a specific cause._
-
-Show, in order:
-
-- Drop the pH to around 5.5, leaving everything else alone. Run and compare against your baseline.
-- Restore pH 7.0, then raise the temperature towards the thermophilic range. Run and compare.
-- Restore the temperature, then switch the substrate from glucose to cellulose. Run and compare.
-- Finally, shorten the retention time substantially and see what happens to yield.
-
-**Hold the shot on:** Acidic pH cuts yield sharply. Higher temperature speeds the reaction but is less forgiving. Cellulose yields more slowly than glucose. Short retention times cut yield because the process is stopped before it finishes.
-
-**Say over it:** Methanogens — the archaea that make the methane — are the most fragile organisms in the reactor and the first to fail outside pH 6.8–7.2. Acidification is the classic digester failure: acid-producing bacteria run faster than methanogens can consume their output, pH drops, methanogens die, pH drops further. Cellulose is slower simply because it must be hydrolysed to sugars before anything can ferment it.
-
-### 7. Optimise deliberately, then check the visualiser
-
-_Combine what you learned into a best run and confirm your model of it._
+_See how much the shape of a profile tells you on its own._
 
 Show, in order:
 
-- Choose parameters you predict will maximise yield, and write the prediction down before running.
-- Run and compare with the lab's own suggestion.
-- Open Visualizer in the sidebar to explore the 3D models and supporting data.
+- Run Demo Data: Acid Mine Drainage and look at how few groups there are.
+- Now run Demo Data: Bioreactor Sludge and notice the archaea — nearly a third of it.
+- Compare both against the gut sample you started with.
 
-**Hold the shot on:** Your best run beats the baseline, and the lab's suggestion is close to what you reasoned your way to.
+**Hold the shot on:** Acid mine drainage is dominated by one genus. Sludge is rich in methanogens. The gut sits in between.
 
-### 8. Take the assessment
+**Say over it:** A flat, even profile means many niches and a stable habitat. A spiky one means harsh conditions where only a few organisms cope. You can read that off the shape before you know a single species name.
 
-_Confirm the mechanisms stuck, not just the settings._
+### 5. Set a bioreactor baseline
+
+_Get one reference run before changing anything._
 
 Show, in order:
 
-- Open Assessment in the sidebar and complete it.
-- For anything you get wrong, return to the relevant module rather than guessing again.
+- Click the Bioreactor Simulator tab.
+- Leave the defaults: 37 °C, pH 7.0, glucose, HRT 20 days.
+- Click Start Simulation and write down the total yield and methane percentage.
 
-**Hold the shot on:** A completed assessment with explanations for incorrect answers.
+**Hold the shot on:** About 0.78 m³/kg of biogas at roughly 55% methane, with a curve that rises steeply then flattens.
+
+**Say over it:** 37 °C and pH 7 are where most real digesters run. Starting anywhere else makes every later comparison meaningless.
+
+### 6. Sour the digester on purpose
+
+_See the failure that ruins real plants, safely._
+
+Show, in order:
+
+- Change pH to 5.5 and leave everything else alone. Run it.
+- Compare the yield against your baseline, and read the suggestion.
+- Put pH back to 7.0 and confirm it recovers.
+
+**Hold the shot on:** Yield collapses from about 0.78 to about 0.13 — roughly a sixth — and the methane percentage drops too.
+
+**Say over it:** Methanogens are the fussiest organisms in the tank and fail outside about pH 6.8–7.2. This is how digesters die: acid-forming bacteria outrun the methanogens, pH falls, more methanogens die, pH falls further. Notice the methane share drops as well — a struggling reactor vents proportionally more CO₂.
+
+### 7. Change the feed and the clock
+
+_Learn why the same reactor gives different answers._
+
+Show, in order:
+
+- Back at pH 7.0, switch the substrate to cellulose and run. Compare with glucose.
+- Now raise HRT to 60 days and run again.
+- Try 15 °C at 20 days, then the same 15 °C at a much longer HRT.
+
+**Hold the shot on:** Cellulose gives less than glucose in 20 days (~0.66 vs ~0.78) but catches up by 60. Cold is slow rather than hopeless — hold it longer and it recovers.
+
+**Say over it:** Cellulose has to be broken down into sugars before anything can ferment it, and that hydrolysis step is the slow one. Temperature and pH set the *rate*; how much gas a kilogram can ever give is fixed by the feed. So a cold reactor is not broken, just slow — which is exactly why retention time is a design decision.
+
+### 8. Find your best settings, then test yourself
+
+_Put it together and check it stuck._
+
+Show, in order:
+
+- Predict the settings that maximise yield, write the prediction down, then run it.
+- Open Visualizer for the 3D models and supporting data.
+- Open Assessment and complete it.
+
+**Hold the shot on:** Your best run beats the baseline, and you can explain why rather than having found it by trial and error.
 
 ## Close with
 
-- Name the stages of a metagenomics pipeline and say what each one does to the data
-- Read a taxonomic composition result and identify which organisms dominate a community
-- Predict how temperature, pH, substrate and retention time affect anaerobic digestion
-- Find operating conditions that raise biogas yield, and explain the mechanism rather than just the number
-- Explain why culture-based microbiology misses the great majority of species present
+- Say what each stage of a metagenomics pipeline does to the data
+- Read a community profile and name the organisms that dominate it
+- Predict how temperature, pH, feed and retention time change biogas yield
+- Explain why a digester goes sour, and how to spot it in the numbers
+- Explain why growing microbes in a dish misses almost all of them
 
 ## Publishing
 

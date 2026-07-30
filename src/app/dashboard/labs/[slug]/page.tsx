@@ -13,16 +13,15 @@ import {
   FlaskConical,
   ListChecks,
   Lock,
-  Timer,
+  Play,
 } from "lucide-react";
 import { hasLabAccess, parseList, formatPrice } from "@/lib/access";
-import { getLabGuide, totalMinutes } from "@/content/labs";
+import { getLabGuide } from "@/content/labs";
 import CheckoutButton from "./CheckoutButton";
 import DemoVideo from "./DemoVideo";
 import SectionNav, { type Section } from "./SectionNav";
 import TutorialSteps from "./TutorialSteps";
 import {
-  FurtherReadingSection,
   LabSummarySection,
   PrerequisitesSection,
   TroubleshootingSection,
@@ -40,7 +39,7 @@ function Stat({
   value,
   label,
 }: {
-  icon: typeof Timer;
+  icon: typeof Award;
   value: string;
   label: string;
 }) {
@@ -79,11 +78,24 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
         ...(owned && guide.troubleshooting.length
           ? [{ id: "troubleshooting", label: "Troubleshooting" }]
           : []),
-        ...(guide.furtherReading.length ? [{ id: "resources", label: "Resources" }] : []),
       ]
     : [];
 
   const price = formatPrice(lab.priceMinor, lab.currency);
+
+  const videoLength = guide?.video.durationSec
+    ? `${Math.floor(guide.video.durationSec / 60)}:${String(
+        guide.video.durationSec % 60,
+      ).padStart(2, "0")}`
+    : null;
+
+  const stats = [
+    ...(guide ? [{ icon: ListChecks, value: `${guide.steps.length}`, label: "Steps" }] : []),
+    videoLength
+      ? { icon: Clapperboard, value: videoLength, label: "Demo" }
+      : { icon: BarChart3, value: lab.difficulty ?? "—", label: "Level" },
+    { icon: Award, value: `${lab.points}`, label: "Points" },
+  ];
 
   /**
    * The launch link. `width` differs by placement: the hero sizes to content
@@ -106,12 +118,6 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
       <span className="text-sm text-muted-foreground">No launch URL configured.</span>
     );
 
-  const heroCta = owned ? (
-    launchButton("auto")
-  ) : (
-    <CheckoutButton labId={lab.id} priceLabel={price} />
-  );
-
   return (
     /* Bottom padding clears the fixed mobile action bar. */
     <div className="mx-auto max-w-7xl pb-24 xl:pb-0">
@@ -125,7 +131,13 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
       {/* Hero */}
       <header className="glass brand-ring relative overflow-hidden rounded-2xl p-5 sm:p-7">
         <div className="aurora-blob animate-aurora bg-brand-1 -top-24 -right-10 h-72 w-72 opacity-30" />
-        <div className="relative">
+        {/*
+          Two columns from `lg`: the copy never needs the full width at this
+          size, and the right half was empty. A poster preview there shows the
+          learner what the lab actually looks like before they commit.
+        */}
+        <div className="relative lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8">
+          <div className="min-w-0">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
               <FlaskConical className="h-3.5 w-3.5" />
@@ -150,47 +162,41 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
           <h1 className="text-balance text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
             {lab.name}
           </h1>
-          <p className="mt-2.5 max-w-3xl text-pretty leading-relaxed text-muted-foreground">
-            {lab.synopsis ?? lab.description}
+          {/* The guide's own tagline when it has one — the seeded synopsis is
+              generic marketing copy that tells a newcomer very little. */}
+          <p className="mt-2.5 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+            {guide?.summary.tagline ?? lab.synopsis ?? lab.description}
           </p>
 
-          {/* At a glance — the questions every learner asks before committing. */}
-          <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-            {guide && (
-              <Stat icon={Timer} value={`${totalMinutes(guide)} min`} label="Duration" />
-            )}
-            {guide && (
-              <Stat icon={ListChecks} value={`${guide.steps.length}`} label="Steps" />
-            )}
-            {guide?.video.durationSec ? (
-              <Stat
-                icon={Clapperboard}
-                value={`${Math.floor(guide.video.durationSec / 60)}:${String(
-                  guide.video.durationSec % 60,
-                ).padStart(2, "0")}`}
-                label="Demo"
-              />
-            ) : (
-              <Stat icon={BarChart3} value={lab.difficulty ?? "—"} label="Level" />
-            )}
-            <Stat icon={Award} value={`${lab.points}`} label="Points" />
+          {/*
+            At a glance. Built as a list so the column count follows the number
+            of tiles — a fixed 4-up grid left a hole once the duration tile was
+            dropped.
+          */}
+          <div
+            className={`mt-5 grid grid-cols-2 gap-2 sm:gap-3 ${
+              stats.length >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"
+            }`}
+          >
+            {stats.map((s) => (
+              <Stat key={s.label} icon={s.icon} value={s.value} label={s.label} />
+            ))}
           </div>
 
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-            {heroCta}
-            {!owned && (
-              <span className="text-sm text-muted-foreground">
-                <span className="text-lg font-bold text-foreground">{price}</span> · one-time,
-                lifetime access
-              </span>
-            )}
-            {owned && (
+          {/*
+            Owners only. The hero used to carry the price and an Unlock button
+            for locked visitors; the purchase path still lives in the sticky
+            rail, the mobile bar and the paywall panel below.
+          */}
+          {owned && (
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+              {launchButton("auto")}
               <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 text-[color:var(--color-success)]" />
                 Opens in a new tab
               </span>
-            )}
-          </div>
+            </div>
+          )}
 
           {skills.length > 0 && (
             <ul className="mt-5 flex flex-wrap gap-1.5">
@@ -203,6 +209,42 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                 </li>
               ))}
             </ul>
+          )}
+          </div>
+
+          {/*
+            Poster preview. Anchors to the demo section rather than playing here
+            — one player on the page, one place the video lives. Hidden below
+            `lg`, where the real player is only a short scroll away anyway.
+          */}
+          {guide?.video.poster && (
+            <a
+              href="#demo"
+              aria-label="Jump to the demo video"
+              className="group relative hidden self-start overflow-hidden rounded-xl border border-border bg-black lg:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element -- a local
+                  static asset; next/image adds a loader for no benefit here. */}
+              <img
+                src={guide.video.poster}
+                alt=""
+                className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              />
+              <span className="absolute inset-0 grid place-items-center bg-black/30 transition-colors group-hover:bg-black/15">
+                <span className="grid h-14 w-14 place-items-center rounded-full btn-brand shadow-lg">
+                  <Play className="h-6 w-6 translate-x-0.5" fill="currentColor" />
+                </span>
+              </span>
+              <span className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/80 to-transparent px-3 pb-2 pt-6 text-xs font-medium text-white">
+                <span>Watch the walkthrough</span>
+                {guide.video.durationSec ? (
+                  <span className="tabular-nums">
+                    {Math.floor(guide.video.durationSec / 60)}:
+                    {String(guide.video.durationSec % 60).padStart(2, "0")}
+                  </span>
+                ) : null}
+              </span>
+            </a>
           )}
         </div>
       </header>
@@ -235,7 +277,6 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                   </p>
                 </section>
               )}
-              <FurtherReadingSection guide={guide} />
 
               {owned && lab.starterCode && (
                 <section className="glass rounded-2xl p-5 sm:p-6">

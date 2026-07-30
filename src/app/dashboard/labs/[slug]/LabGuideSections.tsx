@@ -1,12 +1,9 @@
-import Link from "next/link";
 import {
-  ArrowUpRight,
   BookOpen,
   CheckCircle2,
   CircleHelp,
   ClipboardList,
   Lightbulb,
-  Link2,
   Target,
   Users,
   Wrench,
@@ -171,37 +168,6 @@ export function TroubleshootingSection({ guide }: { guide: LabGuide }) {
           </details>
         ))}
       </div>
-    </Panel>
-  );
-}
-
-export function FurtherReadingSection({ guide }: { guide: LabGuide }) {
-  if (guide.furtherReading.length === 0) return null;
-
-  return (
-    <Panel id="resources" icon={Link2} title="Further reading">
-      <ul className="grid gap-2 sm:grid-cols-2">
-        {guide.furtherReading.map((item) => {
-          const internal = item.href.startsWith("/");
-          const className =
-            "group flex items-start gap-2 rounded-lg border border-border bg-background/40 p-3 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground";
-          return (
-            <li key={item.href}>
-              {internal ? (
-                <Link href={item.href} className={className}>
-                  <span className="flex-1 leading-snug">{item.label}</span>
-                  <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
-                </Link>
-              ) : (
-                <a href={item.href} target="_blank" rel="noopener noreferrer" className={className}>
-                  <span className="flex-1 leading-snug">{item.label}</span>
-                  <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
-                </a>
-              )}
-            </li>
-          );
-        })}
-      </ul>
     </Panel>
   );
 }

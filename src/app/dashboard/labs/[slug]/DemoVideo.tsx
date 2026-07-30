@@ -143,7 +143,11 @@ export default function DemoVideo({ video, labName }: { video: LabVideo; labName
         </h2>
         <div className="flex items-center gap-2">
           {video.url && (
-            <span className="pill border-border text-muted-foreground">Silent walkthrough</span>
+            /* No audio track, but the guidance is burned into the picture — so
+               say it plays fine without sound rather than just "silent". */
+            <span className="pill border-border text-muted-foreground">
+              Captioned · no sound needed
+            </span>
           )}
           {video.durationSec ? (
             <span className="text-xs text-muted-foreground tabular-nums">

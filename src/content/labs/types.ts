@@ -54,6 +54,12 @@ export type LabVideo = {
 };
 
 export type LabSummary = {
+  /**
+   * One punchy sentence for the hero, in the lab's own words. Falls back to the
+   * database `synopsis`, which is seeded marketing copy and usually says far
+   * less. Keep it under about 25 words — it sits directly under the title.
+   */
+  tagline?: string;
   /** What the lab *is*, for a reader who does not know the field. No jargon. */
   what: string;
   /** Why the problem matters outside the classroom. */
