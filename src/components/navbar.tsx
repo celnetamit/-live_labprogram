@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, ArrowRight, Search } from "lucide-react";
+import ThemeToggle from "@/components/theme-toggle";
 
 const navLinks = [
   { href: "/labs", label: "Labs" },
@@ -92,6 +93,7 @@ export default function Navbar() {
 
           {/* Desktop actions */}
           <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
             <Link
               href="/login"
               className="text-sm font-medium px-3 py-2 rounded-lg hover:text-primary transition-colors"
@@ -106,7 +108,9 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile toggle */}
+          {/* Mobile actions */}
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
           <button
             onClick={() => setOpen((v) => !v)}
             className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg glass text-foreground"
@@ -115,6 +119,7 @@ export default function Navbar() {
           >
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
+          </div>
         </div>
       </div>
 

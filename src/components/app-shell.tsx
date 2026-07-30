@@ -6,6 +6,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bell, ChevronRight, Menu, X, type LucideIcon } from "lucide-react";
 import { SignOutButton } from "@/components/SignOutButton";
+import ThemeToggle from "@/components/theme-toggle";
 
 export type NavItem = {
   href: string;
@@ -24,7 +25,6 @@ type AppShellProps = {
   brandTitle: string;
   navGroups: NavGroup[];
   breadcrumbRoot: string;
-  userInitials: string;
   accentUser?: boolean;
   showBell?: boolean;
   children: React.ReactNode;
@@ -94,7 +94,6 @@ export default function AppShell({
   brandTitle,
   navGroups,
   breadcrumbRoot,
-  userInitials,
   accentUser = false,
   showBell = false,
   children,
@@ -187,15 +186,15 @@ export default function AppShell({
                 <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
               </button>
             )}
-            <div
-              className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border ${
+            {/* The theme control occupies the avatar slot rather than sitting
+                beside it — one circle in the corner, not two. */}
+            <ThemeToggle
+              className={`w-9 h-9 ${
                 accentUser
                   ? "bg-primary/15 text-primary border-primary/30"
                   : "bg-secondary text-secondary-foreground border-border"
               }`}
-            >
-              {userInitials}
-            </div>
+            />
           </div>
         </header>
 

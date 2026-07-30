@@ -21,7 +21,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       brandTitle="Student Hub"
       navGroups={navGroups}
       breadcrumbRoot="Dashboard"
-      userInitials="AC"
       accentUser
     >
       {children}

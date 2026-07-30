@@ -32,7 +32,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       brandTitle="Admin Center"
       navGroups={navGroups}
       breadcrumbRoot="Admin"
-      userInitials="JD"
       showBell
     >
       {children}
