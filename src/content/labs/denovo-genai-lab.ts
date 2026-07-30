@@ -11,6 +11,8 @@ const guide: LabGuide = {
   slug: "denovo-genai-lab",
 
   summary: {
+    tagline:
+      "Design new drug molecules with generative AI — and find out where the chemistry breaks down.",
     what: "Designing a new drug molecule from scratch is a search problem: there are more possible small molecules than there are atoms in the solar system, and almost all of them are useless. This lab teaches the generative-AI approach to that search. You learn how a molecule is written down as text a model can read, how a neural network compresses millions of molecules into a smooth map you can navigate, and then how to generate genuinely new candidates that satisfy the constraints a chemist actually cares about.",
     why: "Bringing one drug to market takes over a decade and costs billions, and the earliest stage — deciding which molecules are even worth making — has traditionally relied on chemists' intuition applied to a vanishingly small fraction of the possibilities. Generative models change what is searchable. Understanding how they represent chemistry, and where that representation breaks down, is now foundational for computational chemistry and cheminformatics work.",
     whoFor: "Chemistry, pharmacy, biotechnology and computer science students. It is the gentlest entry point in the catalogue: the labs build from \"how do you write a molecule as a string\" upwards, and no machine-learning background is assumed. Some familiarity with chemical structures helps but is not required.",

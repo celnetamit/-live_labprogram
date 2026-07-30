@@ -11,6 +11,8 @@ const guide: LabGuide = {
   slug: "ai-6g",
 
   summary: {
+    tagline:
+      "The three ideas behind 6G — smart surfaces, sending meaning instead of bits — each with a simulator you can push until it fails.",
     what: "Every generation of mobile network so far has worked the same way: transmit bits faithfully and let the application worry about what they mean. 6G research questions that. This lab covers three ideas that break the old assumption — smart surfaces that reflect radio waves where you want them, systems that transmit *meaning* rather than bits, and codecs that stop treating compression and error protection as separate problems. Each comes with a browser simulator you can push until it fails.",
     why: "Wireless capacity is running into physics. You cannot keep adding spectrum and power indefinitely, so the next gains have to come from being cleverer about what gets sent and how it propagates. These three techniques are the leading candidates in current 6G standardisation research, and they all depend on machine learning in ways that earlier generations did not — which means the people who build them need both radio and ML fluency.",
     whoFor: "Electronics, telecommunications and computer engineering students, plus practising RF engineers who want a working intuition for what 6G research is actually proposing. You should be comfortable with the idea of signal-to-noise ratio; the lab supplies the rest.",

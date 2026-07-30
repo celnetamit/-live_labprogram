@@ -12,6 +12,8 @@ const guide: LabGuide = {
   slug: "ai-program-navigator",
 
   summary: {
+    tagline:
+      "Not sure where to start? Describe your background and get a route through the catalogue built for you.",
     what: "This is the lab that helps you choose the other labs. Rather than scrolling a catalogue and guessing, you describe your background and what you want to be able to do, and the navigator recommends a route through the available workshops. It also analyses a résumé against a target role to find the gaps, produces a career report, and lets you launch any workshop directly once you have decided.",
     why: "The commonest way technical training is wasted is starting in the wrong place — a course too advanced to follow, or one that teaches what you already know. Choosing well requires an honest picture of what you can currently do and what the role you want actually demands, and most people have neither to hand. Making that assessment explicit is the point of this tool.",
     whoFor: "Anyone approaching the Live Labs catalogue for the first time, students planning a specialisation, and professionals mapping a career move. It is the recommended starting point and assumes no technical background at all.",

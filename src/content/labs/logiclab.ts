@@ -12,6 +12,8 @@ const guide: LabGuide = {
   slug: "logiclab",
 
   summary: {
+    tagline:
+      "Describe a chip in plain English, get working Verilog back, and learn to read what it produced.",
     what: "Chips are not drawn, they are described. Engineers write hardware description languages — Verilog and VHDL — that specify what a circuit does, and tools turn that description into actual gates on silicon. This lab is where you learn to read and write that description with an AI assistant alongside you: describe a module in plain English and get HDL back, paste unfamiliar HDL and get it explained line by line, generate a testbench to verify it, and keep the good results in a snippet library.",
     why: "HDL trips up almost everyone at first, because it looks like software and is not. Two lines that appear to do the same thing produce completely different hardware, and the mistake usually surfaces days later as a timing failure nobody can localise. Having a tool that explains what a block of HDL actually synthesises to — and that generates a testbench so you can check — shortens that learning curve dramatically.",
     whoFor: "Electronics and computer engineering students meeting digital design for the first time, and software engineers moving toward FPGA work. This is the most beginner-friendly lab in the catalogue: it assumes you know what a logic gate is and builds from there.",

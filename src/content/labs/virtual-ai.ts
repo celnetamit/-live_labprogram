@@ -12,6 +12,8 @@ const guide: LabGuide = {
   slug: "virtual-ai",
 
   summary: {
+    tagline:
+      "Run a real X-ray diffraction experiment: mount a powder, scan it, and measure how big its crystals are.",
     what: "X-ray diffraction is how scientists find out what a powder actually is, and how big its crystal grains are, without dissolving or destroying it. You shine X-rays at the sample, and the regular rows of atoms inside scatter them into a pattern of sharp peaks — a fingerprint of the material. This lab is a complete diffractometer in your browser: you mount a specimen, choose the X-ray tube, run the scan, clean up the raw data and measure the result, with the real physics running underneath rather than a canned animation.",
     why: "Almost every manufactured solid is checked this way — battery cathodes, pharmaceutical tablets, cement, steel, semiconductor films. A real diffractometer costs upwards of a quarter of a million dollars and beam time is rationed, so most learners never get to make the mistakes that teach the technique: scanning too narrow a range, forgetting to strip the Kα2 satellite, or trusting a crystallite size that strain has quietly ruined. Here those mistakes are free and immediately visible.",
     whoFor: "Materials science, chemistry, physics and engineering students meeting diffraction for the first time, and lab staff who want a safe place to rehearse before touching the instrument. You need no prior XRD experience. School-level trigonometry is enough — the lab explains Bragg's law where you first need it.",

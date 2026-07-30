@@ -12,6 +12,8 @@ const guide: LabGuide = {
   slug: "smartfactory-ai",
 
   summary: {
+    tagline:
+      "Find the bottleneck on a production line, predict a breakdown before it happens, and work out what the fix is worth.",
     what: "A factory is a chain of machines where one slow station sets the pace for everything behind it, and one unplanned breakdown stops the lot. This lab is a simulated production facility where you can find that bottleneck, run a digital twin of the line, predict failures from sensor data before they happen, and argue — with numbers — about how much maintenance is worth doing. It also carries three machine simulators: a robotic arm, a 3D printer and a CNC mill.",
     why: "Unplanned downtime is the most expensive thing that happens in manufacturing, and the traditional answer — service everything on a fixed schedule — wastes an enormous amount of perfectly good component life. Sensor data plus prediction offers a third option, but only if someone can tell the difference between a model that is genuinely predictive and one that is expensively re-describing the schedule you already had. That judgement is what this lab trains.",
     whoFor: "Mechanical, industrial and manufacturing engineering students, plus operations and maintenance staff moving into data-driven work. It is advanced in scope rather than in mathematics — you should be comfortable reading throughput and utilisation figures and thinking about cost.",

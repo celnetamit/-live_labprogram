@@ -12,6 +12,8 @@ const guide: LabGuide = {
   slug: "cognicore-ai",
 
   summary: {
+    tagline:
+      "Summarise a contract, compare two drafts, and search a whole pile of documents by meaning rather than keyword.",
     what: "Contracts, invoices and financial reports are long, repetitive, and expensive to read carefully — which is why important details in them get missed. This lab is a document-intelligence workbench: upload a document and get it summarised, put two versions side by side and get the differences that matter surfaced, or search a whole corpus for a clause by meaning rather than by keyword. It ships two modules, one tuned for legal documents and one for financial ones.",
     why: "Semantic search is the part worth understanding. Keyword search for 'termination' misses a clause that says 'either party may bring this agreement to an end on thirty days' notice'. Meaning-based retrieval finds it. That single capability is what makes AI genuinely useful on document piles, and knowing both its power and its failure modes is now a basic professional skill in law, finance and compliance.",
     whoFor: "Computer science students interested in applied LLM systems, plus legal, finance and compliance professionals evaluating these tools. You need no machine-learning background; the lab is about using and judging the system rather than building it.",

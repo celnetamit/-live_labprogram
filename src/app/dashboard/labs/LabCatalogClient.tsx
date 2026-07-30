@@ -29,12 +29,15 @@ export default function LabCatalogClient({
   labs,
   isAdmin,
   publicMode = false,
+  initialQuery = "",
 }: {
   labs: CatalogLab[];
   isAdmin: boolean;
   publicMode?: boolean;
+  /** Seeds the search box, so the header search can deep-link filtered results. */
+  initialQuery?: string;
 }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [subject, setSubject] = useState("All");
   const [difficulty, setDifficulty] = useState("All");
 

@@ -11,6 +11,8 @@ const guide: LabGuide = {
   slug: "battery-ai",
 
   summary: {
+    tagline:
+      "Decide what happens to a retired EV battery: a second life powering something else, or the shredder.",
     what: "An electric-vehicle battery is retired when it can no longer hold about 80% of its original charge — but at that point it is still a large, expensive, perfectly functional energy store. This lab is about what happens next. You assess a used pack's health, decide whether it should get a second life in a less demanding application or go straight to material recovery, simulate the recycling process, and check the whole plan against safety and compliance standards.",
     why: "The first big wave of EV batteries is reaching end of life now, and the decision made about each pack has consequences measured in both money and lithium. Sending a healthy pack to a shredder destroys value; putting a degraded one into a building's energy storage creates a fire risk. Getting this right is a live commercial problem with no settled answer, and it is where circular-economy thinking meets hard electrochemical limits.",
     whoFor: "Engineering, sustainability, materials and energy-systems students, and professionals in EV or energy-storage supply chains. It is an advanced lab: you should be comfortable with the idea of battery capacity and internal resistance, and willing to reason about cost as well as chemistry.",

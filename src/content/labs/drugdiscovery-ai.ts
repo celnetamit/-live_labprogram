@@ -12,6 +12,8 @@ const guide: LabGuide = {
   slug: "drugdiscovery-ai",
 
   summary: {
+    tagline:
+      "Map drugs, genes and diseases as one graph, then predict the connections nobody has recorded yet.",
     what: "Some of the most important drugs in use today were developed for something else entirely and found their real purpose later. Drug repurposing tries to make that happen deliberately instead of by accident. This lab teaches the network approach: represent drugs, genes, diseases and side effects as a connected graph, learn a numerical embedding of that graph, and then predict the connections that ought to exist but have not been recorded yet — each one a repurposing hypothesis.",
     why: "A repurposed drug has already cleared safety trials in humans, which removes years and a large fraction of the cost from development. The obstacle is that the useful connections are buried in millions of papers and databases that no individual can hold in their head. Graph methods are how that search is made tractable, and they are now standard in pharmaceutical informatics.",
     whoFor: "Biology, pharmacy, bioinformatics and computer science students. It is an advanced lab, but the difficulty is conceptual rather than mathematical — you need curiosity about how biological knowledge gets represented, not linear algebra.",

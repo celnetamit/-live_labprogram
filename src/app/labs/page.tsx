@@ -12,7 +12,14 @@ export const metadata: Metadata = {
 // Reads the DB per-request; never prerender at build time.
 export const dynamic = "force-dynamic";
 
-export default async function PublicLabs() {
+export default async function PublicLabs({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string | string[] }>;
+}) {
+  const { q } = await searchParams;
+  const initialQuery = Array.isArray(q) ? (q[0] ?? "") : (q ?? "");
+
   const labs = await prisma.lab.findMany({
     where: { enabled: true, status: "ACTIVE" },
     orderBy: [{ points: "desc" }, { name: "asc" }],
@@ -36,7 +43,7 @@ export default async function PublicLabs() {
     <>
       <Navbar />
       <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
-        <LabCatalogClient labs={catalog} isAdmin={false} publicMode />
+        <LabCatalogClient labs={catalog} isAdmin={false} publicMode initialQuery={initialQuery} />
       </main>
     </>
   );

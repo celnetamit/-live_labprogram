@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight, Search } from "lucide-react";
 
 const navLinks = [
   { href: "/labs", label: "Labs" },
@@ -12,8 +13,22 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [term, setTerm] = useState("");
+
+  /*
+   * Global catalogue search, always reachable from the header. It hands the
+   * term to `/labs`, which owns the full filtering UI — one search
+   * implementation, reachable from every page.
+   */
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = term.trim();
+    router.push(q ? `/labs?q=${encodeURIComponent(q)}` : "/labs");
+    setOpen(false);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -26,8 +41,8 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "glass border-b border-border shadow-sm"
-          : "bg-transparent border-b border-transparent"
+          ? "bg-background/95 backdrop-blur-md border-b border-border"
+          : "bg-background/80 backdrop-blur-sm border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,6 +67,28 @@ export default function Navbar() {
               </Link>
             ))}
           </div>
+
+          {/* Desktop search */}
+          <form
+            onSubmit={submitSearch}
+            role="search"
+            className="hidden lg:flex items-center flex-1 max-w-xs mx-6"
+          >
+            <label htmlFor="nav-search" className="sr-only">
+              Search labs
+            </label>
+            <div className="flex w-full items-center rounded-full border border-border bg-muted/60 px-3 transition-colors focus-within:border-primary/40 focus-within:bg-background focus-within:ring-2 focus-within:ring-ring">
+              <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+              <input
+                id="nav-search"
+                type="search"
+                value={term}
+                onChange={(e) => setTerm(e.target.value)}
+                placeholder="Search labs"
+                className="h-9 w-full bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground/70 [&::-webkit-search-cancel-button]:hidden"
+              />
+            </div>
+          </form>
 
           {/* Desktop actions */}
           <div className="hidden md:flex items-center gap-3">
@@ -92,6 +129,22 @@ export default function Navbar() {
             className="md:hidden overflow-hidden glass border-b border-border"
           >
             <div className="px-4 py-4 space-y-1">
+              <form onSubmit={submitSearch} role="search" className="mb-3">
+                <label htmlFor="nav-search-mobile" className="sr-only">
+                  Search labs
+                </label>
+                <div className="flex items-center rounded-xl border border-border bg-muted/60 px-3 focus-within:ring-2 focus-within:ring-ring">
+                  <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <input
+                    id="nav-search-mobile"
+                    type="search"
+                    value={term}
+                    onChange={(e) => setTerm(e.target.value)}
+                    placeholder="Search labs"
+                    className="h-11 w-full bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground/70 [&::-webkit-search-cancel-button]:hidden"
+                  />
+                </div>
+              </form>
               {navLinks.map((l) => (
                 <Link
                   key={l.href}

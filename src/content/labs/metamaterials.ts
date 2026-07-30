@@ -12,6 +12,8 @@ const guide: LabGuide = {
   slug: "metamaterials",
 
   summary: {
+    tagline:
+      "Design a lattice that blocks sound by its shape rather than its thickness — and check a printer could actually make it.",
     what: "Ordinary sound absorbers work by being thick — the low notes need a lot of material. Acoustic metamaterials cheat that by getting their properties from geometry rather than from the substance they are made of, so a carefully shaped lattice a few centimetres thick can stop frequencies that would otherwise demand a wall. This lab is a design workbench for those structures: you set an acoustic target, choose a lattice topology, and the physics engine returns an absorption spectrum, a bandgap analysis, and a verdict on whether the thing could actually be printed.",
     why: "Noise is a serious engineering constraint — in aircraft cabins, in vehicles, in buildings near infrastructure — and the conventional answer of adding mass conflicts with every other requirement, especially in aerospace. Metamaterials offer targeted attenuation at a fraction of the weight. The catch is that they are inseparable from additive manufacturing: these lattices cannot be made any other way, and a design that ignores printability is not a design.",
     whoFor: "Materials science, mechanical and acoustical engineering students, and product designers working with additive manufacturing. It is an advanced lab. Familiarity with frequency and wavelength is assumed; the lab explains the metamaterial-specific physics.",

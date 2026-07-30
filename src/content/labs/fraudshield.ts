@@ -12,6 +12,8 @@ const guide: LabGuide = {
   slug: "fraudshield",
 
   summary: {
+    tagline:
+      "Score live transactions for fraud, tune the threshold, then attack your own detector to see how it breaks.",
     what: "Banks and payment networks cannot review every transaction by hand — there are billions of them — so they train models to flag the suspicious ones. This lab is a working fraud-detection bench: you score live transactions for anomalies, classify phishing emails, verify identity documents, match voices against enrolled samples, tune a model's decision threshold, and then attack your own detector to see how easily it breaks.",
     why: "Fraud detection is the rare machine-learning problem where the data actively fights back. Fraudsters adapt to your model within days, genuine customers get locked out of their own accounts when you tighten thresholds, and the cost of a false negative is nothing like the cost of a false positive. Learning to hold that trade-off deliberately — rather than optimising accuracy and hoping — is the actual professional skill, and it is very hard to practise on real production systems.",
     whoFor: "Data scientists, security analysts, fintech engineers and risk teams. It is the most advanced lab in the catalogue: you should already know what a classifier is, and be comfortable reading a precision/recall trade-off. No fraud-domain background is assumed.",
