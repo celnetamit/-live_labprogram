@@ -52,14 +52,30 @@ function shotList(guide: LabGuide): string {
 
   lines.push("## Shots");
   lines.push("");
-  lines.push("| In | Out | Chapter | On screen |");
-  lines.push("| --- | --- | --- | --- |");
-  chapters.forEach((chapter, index) => {
-    const end = chapters[index + 1]?.at ?? durationSec ?? chapter.at;
-    lines.push(
-      `| ${timecode(chapter.at)} | ${timecode(end)} | ${chapter.label} | _fill in during storyboard_ |`,
-    );
-  });
+
+  const storyboarded = chapters.some((chapter) => chapter.shot || chapter.say);
+
+  if (storyboarded) {
+    // A guide that supplies `shot`/`say` gets a table you can record straight
+    // from, narration included.
+    lines.push("| In | Out | Chapter | On screen | Say over it |");
+    lines.push("| --- | --- | --- | --- | --- |");
+    chapters.forEach((chapter, index) => {
+      const end = chapters[index + 1]?.at ?? durationSec ?? chapter.at;
+      const shot = (chapter.shot ?? "_fill in during storyboard_").replace(/\|/g, "\\|");
+      const say = (chapter.say ?? "—").replace(/\|/g, "\\|");
+      lines.push(`| ${timecode(chapter.at)} | ${timecode(end)} | ${chapter.label} | ${shot} | ${say} |`);
+    });
+  } else {
+    lines.push("| In | Out | Chapter | On screen |");
+    lines.push("| --- | --- | --- | --- |");
+    chapters.forEach((chapter, index) => {
+      const end = chapters[index + 1]?.at ?? durationSec ?? chapter.at;
+      lines.push(
+        `| ${timecode(chapter.at)} | ${timecode(end)} | ${chapter.label} | _fill in during storyboard_ |`,
+      );
+    });
+  }
   lines.push("");
 
   lines.push("## Narration source");

@@ -35,6 +35,14 @@ export type VideoChapter = {
   /** Offset from the start of the video, in seconds. */
   at: number;
   label: string;
+  /**
+   * What is on screen for this chapter — the actual clicks, in order. Supplying
+   * it turns the generated shot list into something a person can record from,
+   * instead of a table of "fill in during storyboard".
+   */
+  shot?: string;
+  /** The line spoken over this chapter. Keep it to what the shot shows. */
+  say?: string;
 };
 
 export type LabVideo = {
