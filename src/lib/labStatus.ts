@@ -37,8 +37,12 @@ export function isLabStatus(value: string): value is LabStatus {
   return (LAB_STATUSES as readonly string[]).includes(value);
 }
 
-/** Statuses a learner is allowed to see in the catalogue. */
+/** Statuses shown on "My Labs" — what a learner can open now, plus what's coming. */
 export const CATALOG_STATUSES = ["ACTIVE", "UPCOMING"] as const;
+
+/** Statuses shown on "Explore Labs": everything except archived labs, each in
+ *  its own named section. */
+export const EXPLORE_STATUSES = ["ACTIVE", "UPCOMING", "MAINTENANCE"] as const;
 
 export const CUSTOM_REQUEST_STATUSES = [
   "PENDING",

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Lock, CheckCircle2, Award, ArrowRight, FlaskConical, CalendarClock } from "lucide-react";
+import { Search, Lock, CheckCircle2, Award, ArrowRight, FlaskConical, CalendarClock, Wrench } from "lucide-react";
 import { formatPrice } from "@/lib/access";
 import CustomLabRequestPanel, { type MyLabRequest } from "./CustomLabRequestPanel";
 
@@ -18,7 +18,7 @@ export type CatalogLab = {
   priceMinor: number;
   currency: string;
   owned: boolean;
-  /** "ACTIVE" (buyable now) or "UPCOMING" (announced, not yet open). */
+  /** ACTIVE (open now), UPCOMING (announced) or MAINTENANCE (temporarily down). */
   status: string;
   /** Pre-formatted launch date for upcoming labs; null when none is set. */
   launchLabel: string | null;
@@ -34,12 +34,15 @@ export default function LabCatalogClient({
   labs,
   isAdmin,
   publicMode = false,
+  signedIn = false,
   initialQuery = "",
   myRequests = [],
 }: {
   labs: CatalogLab[];
   isAdmin: boolean;
   publicMode?: boolean;
+  /** Whether the visitor has a session — Explore is reachable both ways. */
+  signedIn?: boolean;
   /** Seeds the search box, so the header search can deep-link filtered results. */
   initialQuery?: string;
   /** The signed-in learner's own custom lab requests. Empty in public mode. */
@@ -85,6 +88,12 @@ export default function LabCatalogClient({
     [labs, matchesFilters]
   );
 
+  /** Temporarily down. Only Explore loads these; "My Labs" never receives them. */
+  const maintenance = useMemo(
+    () => labs.filter((l) => l.status === "MAINTENANCE" && matchesFilters(l)),
+    [labs, matchesFilters]
+  );
+
   const activeCount = labs.filter((l) => l.status === "ACTIVE").length;
   const ownedCount = labs.filter((l) => l.owned && l.status === "ACTIVE").length;
 
@@ -97,7 +106,9 @@ export default function LabCatalogClient({
             {publicMode ? "Explore Labs" : "My Labs"}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {publicMode ? (
+            {publicMode && signedIn ? (
+              <>{activeCount} premium workshop labs. You own <span className="text-primary font-medium">{ownedCount}</span> — open {ownedCount === 1 ? 'it' : 'them'} from <Link href="/dashboard/labs" className="text-primary font-medium hover:underline cursor-pointer">My Labs</Link>.</>
+            ) : publicMode ? (
               <>{activeCount} premium workshop labs. Browse everything free — <Link href="/login" className="text-primary font-medium hover:underline cursor-pointer">sign in</Link> to open a lab and unlock its resources.</>
             ) : isAdmin ? (
               <span className="text-primary font-medium">Admin — full access to all {activeCount} labs.</span>
@@ -151,9 +162,19 @@ export default function LabCatalogClient({
         </select>
       </div>
 
-      <p className="text-sm text-muted-foreground mb-4">
-        Showing {filtered.length} {filtered.length === 1 ? 'lab' : 'labs'}
-      </p>
+      {/* On Explore the grid is one of three status sections, so it gets a name
+          of its own. "My Labs" keeps the plain count it always had. */}
+      {publicMode ? (
+        <div className="mb-4 flex items-center gap-2">
+          <FlaskConical className="h-5 w-5 text-emerald-400" />
+          <h2 className="text-xl font-bold tracking-tight">Active labs</h2>
+          <span className="pill text-emerald-400">{filtered.length}</span>
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground mb-4">
+          Showing {filtered.length} {filtered.length === 1 ? 'lab' : 'labs'}
+        </p>
+      )}
 
       {/* Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -287,7 +308,67 @@ export default function LabCatalogClient({
         </section>
       )}
 
-      <CustomLabRequestPanel publicMode={publicMode} initialRequests={myRequests} />
+      {/* Temporarily unavailable. Same treatment as upcoming — visible, but not
+          openable or buyable while the status holds. */}
+      {maintenance.length > 0 && (
+        <section className="mt-12">
+          <div className="mb-4 flex items-center gap-2">
+            <Wrench className="h-5 w-5 text-amber-400" />
+            <h2 className="text-xl font-bold tracking-tight">Under maintenance</h2>
+            <span className="pill text-amber-400">{maintenance.length}</span>
+          </div>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Temporarily offline while we work on them — back shortly.
+          </p>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {maintenance.map((lab) => (
+              <div
+                key={lab.id}
+                className="hairline-top flex flex-col overflow-hidden rounded-2xl border border-dashed border-border bg-card/60"
+              >
+                <div className="flex-1 p-5">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <FlaskConical className="h-3.5 w-3.5" />
+                      {lab.subject}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400">
+                      <Wrench className="h-3.5 w-3.5" /> Maintenance
+                    </span>
+                  </div>
+                  <h3 className="mb-2 line-clamp-2 text-lg font-bold leading-snug">{lab.title}</h3>
+                  <p className="mb-4 line-clamp-3 text-sm text-muted-foreground">{lab.synopsis}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {lab.keySkills.slice(0, 3).map((s) => (
+                      <span
+                        key={s}
+                        className="rounded-full bg-secondary px-2 py-0.5 text-[11px] text-secondary-foreground"
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-t border-border px-5 py-3">
+                  <span
+                    className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                      difficultyColor[lab.difficulty] ?? "text-muted-foreground border-border"
+                    }`}
+                  >
+                    {lab.difficulty}
+                  </span>
+                  <span className="text-xs text-muted-foreground">Temporarily unavailable</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Explore is reachable while signed in, so the request form works there
+          too — only a true anonymous visitor gets pointed at sign-in. */}
+      <CustomLabRequestPanel publicMode={publicMode && !signedIn} initialRequests={myRequests} />
     </div>
   );
 }

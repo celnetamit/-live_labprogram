@@ -13,7 +13,13 @@ const navLinks = [
   { href: "/#pricing", label: "Pricing" },
 ];
 
-export default function Navbar() {
+/** The signed-in visitor, when there is one. Passed down from the server page
+ *  because the app has no SessionProvider — without it the public header always
+ *  rendered "Sign In", which made a signed-in learner think they'd been logged
+ *  out just by opening the catalogue. */
+export type NavbarUser = { name?: string | null; email?: string | null } | null;
+
+export default function Navbar({ user = null }: { user?: NavbarUser }) {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -94,18 +100,37 @@ export default function Navbar() {
           {/* Desktop actions */}
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
-            <Link
-              href="/login"
-              className="text-sm font-medium px-3 py-2 rounded-lg hover:text-primary transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              className="text-sm font-semibold btn-brand px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
-            >
-              Get Started <ArrowRight className="w-4 h-4" />
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="text-sm font-medium px-3 py-2 rounded-lg hover:text-primary transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/dashboard/labs"
+                  className="text-sm font-semibold btn-brand px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
+                >
+                  My Labs <ArrowRight className="w-4 h-4" />
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm font-medium px-3 py-2 rounded-lg hover:text-primary transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="text-sm font-semibold btn-brand px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
+                >
+                  Get Started <ArrowRight className="w-4 h-4" />
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile actions */}
@@ -161,20 +186,41 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="pt-2 flex flex-col gap-2">
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
-                  className="w-full text-center px-4 py-2.5 rounded-lg text-sm font-medium border border-border hover:bg-accent transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setOpen(false)}
-                  className="w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold btn-brand inline-flex items-center justify-center gap-1.5"
-                >
-                  Get Started <ArrowRight className="w-4 h-4" />
-                </Link>
+                {user ? (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setOpen(false)}
+                      className="w-full text-center px-4 py-2.5 rounded-lg text-sm font-medium border border-border hover:bg-accent transition-colors"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/dashboard/labs"
+                      onClick={() => setOpen(false)}
+                      className="w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold btn-brand inline-flex items-center justify-center gap-1.5"
+                    >
+                      My Labs <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setOpen(false)}
+                      className="w-full text-center px-4 py-2.5 rounded-lg text-sm font-medium border border-border hover:bg-accent transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setOpen(false)}
+                      className="w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold btn-brand inline-flex items-center justify-center gap-1.5"
+                    >
+                      Get Started <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
