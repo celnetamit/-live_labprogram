@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Lock, CheckCircle2, Award, ArrowRight, FlaskConical } from "lucide-react";
+import { Search, Lock, CheckCircle2, Award, ArrowRight, FlaskConical, CalendarClock } from "lucide-react";
 import { formatPrice } from "@/lib/access";
+import CustomLabRequestPanel, { type MyLabRequest } from "./CustomLabRequestPanel";
 
 export type CatalogLab = {
   id: string;
@@ -17,6 +18,10 @@ export type CatalogLab = {
   priceMinor: number;
   currency: string;
   owned: boolean;
+  /** "ACTIVE" (buyable now) or "UPCOMING" (announced, not yet open). */
+  status: string;
+  /** Pre-formatted launch date for upcoming labs; null when none is set. */
+  launchLabel: string | null;
 };
 
 const difficultyColor: Record<string, string> = {
@@ -30,12 +35,15 @@ export default function LabCatalogClient({
   isAdmin,
   publicMode = false,
   initialQuery = "",
+  myRequests = [],
 }: {
   labs: CatalogLab[];
   isAdmin: boolean;
   publicMode?: boolean;
   /** Seeds the search box, so the header search can deep-link filtered results. */
   initialQuery?: string;
+  /** The signed-in learner's own custom lab requests. Empty in public mode. */
+  myRequests?: MyLabRequest[];
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [subject, setSubject] = useState("All");
@@ -47,21 +55,38 @@ export default function LabCatalogClient({
   );
   const difficulties = ["All", "Beginner", "Intermediate", "Advanced"];
 
-  const filtered = useMemo(() => {
+  /** Search + subject + level. Ownership is applied separately, since it only
+      constrains the labs that are already live. */
+  const matchesFilters = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return labs.filter((l) => {
-      // If the user is on the 'My Labs' dashboard and is not an admin, only show owned labs
-      if (!publicMode && !isAdmin && !l.owned) return false;
-
+    return (l: CatalogLab) => {
       if (subject !== "All" && l.subject !== subject) return false;
       if (difficulty !== "All" && l.difficulty !== difficulty) return false;
       if (q && !(`${l.title} ${l.synopsis} ${l.keySkills.join(" ")}`.toLowerCase().includes(q)))
         return false;
       return true;
-    });
-  }, [labs, query, subject, difficulty, publicMode, isAdmin]);
+    };
+  }, [query, subject, difficulty]);
 
-  const ownedCount = labs.filter((l) => l.owned).length;
+  const filtered = useMemo(
+    () =>
+      labs.filter((l) => {
+        if (l.status !== "ACTIVE") return false;
+        // On the 'My Labs' dashboard a non-admin only sees the labs they own.
+        if (!publicMode && !isAdmin && !l.owned) return false;
+        return matchesFilters(l);
+      }),
+    [labs, matchesFilters, publicMode, isAdmin]
+  );
+
+  /** Announced but not yet open — shown to everyone, owned or not. */
+  const upcoming = useMemo(
+    () => labs.filter((l) => l.status === "UPCOMING" && matchesFilters(l)),
+    [labs, matchesFilters]
+  );
+
+  const activeCount = labs.filter((l) => l.status === "ACTIVE").length;
+  const ownedCount = labs.filter((l) => l.owned && l.status === "ACTIVE").length;
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -73,9 +98,9 @@ export default function LabCatalogClient({
           </h1>
           <p className="text-muted-foreground mt-1">
             {publicMode ? (
-              <>{labs.length} premium workshop labs. Browse everything free — <Link href="/login" className="text-primary font-medium hover:underline cursor-pointer">sign in</Link> to open a lab and unlock its resources.</>
+              <>{activeCount} premium workshop labs. Browse everything free — <Link href="/login" className="text-primary font-medium hover:underline cursor-pointer">sign in</Link> to open a lab and unlock its resources.</>
             ) : isAdmin ? (
-              <span className="text-primary font-medium">Admin — full access to all {labs.length} labs.</span>
+              <span className="text-primary font-medium">Admin — full access to all {activeCount} labs.</span>
             ) : (
               <>
                 You own <span className="text-primary font-medium">{ownedCount}</span> {ownedCount === 1 ? 'lab' : 'labs'}.
@@ -201,6 +226,68 @@ export default function LabCatalogClient({
           No labs match your filters.
         </div>
       )}
+
+      {/* Coming soon. Admins schedule these from Lab Management; they are
+          visible to everyone but can't be opened or bought yet. */}
+      {upcoming.length > 0 && (
+        <section className="mt-12">
+          <div className="mb-4 flex items-center gap-2">
+            <CalendarClock className="h-5 w-5 text-sky-400" />
+            <h2 className="text-xl font-bold tracking-tight">Upcoming labs</h2>
+            <span className="pill text-sky-400">{upcoming.length}</span>
+          </div>
+          <p className="mb-4 text-sm text-muted-foreground">
+            In the works — announced here before they open.
+          </p>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {upcoming.map((lab) => (
+              <div
+                key={lab.id}
+                className="hairline-top flex flex-col overflow-hidden rounded-2xl border border-dashed border-border bg-card/60"
+              >
+                <div className="flex-1 p-5">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <FlaskConical className="h-3.5 w-3.5" />
+                      {lab.subject}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-sky-400">
+                      <CalendarClock className="h-3.5 w-3.5" /> Coming soon
+                    </span>
+                  </div>
+                  <h3 className="mb-2 line-clamp-2 text-lg font-bold leading-snug">{lab.title}</h3>
+                  <p className="mb-4 line-clamp-3 text-sm text-muted-foreground">{lab.synopsis}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {lab.keySkills.slice(0, 3).map((s) => (
+                      <span
+                        key={s}
+                        className="rounded-full bg-secondary px-2 py-0.5 text-[11px] text-secondary-foreground"
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-t border-border px-5 py-3">
+                  <span
+                    className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                      difficultyColor[lab.difficulty] ?? "text-muted-foreground border-border"
+                    }`}
+                  >
+                    {lab.difficulty}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {lab.launchLabel ? `Expected ${lab.launchLabel}` : "Date to be announced"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <CustomLabRequestPanel publicMode={publicMode} initialRequests={myRequests} />
     </div>
   );
 }

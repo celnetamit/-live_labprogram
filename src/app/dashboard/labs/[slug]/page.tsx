@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Award,
   BarChart3,
+  CalendarClock,
   CheckCircle2,
   Clapperboard,
   ExternalLink,
@@ -16,6 +17,7 @@ import {
   Play,
 } from "lucide-react";
 import { hasLabAccess, parseList, formatPrice } from "@/lib/access";
+import { formatLaunchDate } from "@/lib/labStatus";
 import { getLabGuide } from "@/content/labs";
 import CheckoutButton from "./CheckoutButton";
 import DemoVideo from "./DemoVideo";
@@ -62,6 +64,45 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
 
   const lab = await prisma.lab.findUnique({ where: { slug } });
   if (!lab || !lab.enabled) notFound();
+
+  // Announced but not open yet: there is nothing to launch or buy, so the page
+  // is just the pitch and the date.
+  if (lab.status === "UPCOMING") {
+    const launch = formatLaunchDate(lab.launchAt);
+    return (
+      <div className="mx-auto max-w-3xl">
+        <Link
+          href="/dashboard/labs"
+          className="-ml-2 mb-2 inline-flex h-9 items-center gap-2 rounded-lg px-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back to catalog
+        </Link>
+
+        <section className="glass brand-ring relative overflow-hidden rounded-2xl p-6 sm:p-8">
+          <div className="aurora-blob animate-aurora bg-brand-2 -top-24 -right-10 h-64 w-64 opacity-25" />
+          <div className="relative">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1 text-xs font-medium text-sky-400">
+              <CalendarClock className="h-3.5 w-3.5" /> Coming soon
+            </span>
+            <h1 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">{lab.name}</h1>
+            <p className="mt-2.5 max-w-2xl leading-relaxed text-muted-foreground">
+              {lab.synopsis ?? lab.description ?? "This lab is being built."}
+            </p>
+            <p className="mt-5 text-sm text-muted-foreground">
+              {launch ? (
+                <>
+                  Expected to open on{" "}
+                  <span className="font-semibold text-foreground">{launch}</span>.
+                </>
+              ) : (
+                "The launch date hasn't been announced yet."
+              )}
+            </p>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   const owned = await hasLabAccess(user.id, user.role, lab.id);
   const skills = parseList(lab.keySkills);

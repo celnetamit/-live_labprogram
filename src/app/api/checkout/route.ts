@@ -20,6 +20,18 @@ export async function POST(req: Request) {
   if (!lab || !lab.enabled) {
     return NextResponse.json({ message: "Lab not found" }, { status: 404 });
   }
+  // Upcoming / archived / under-maintenance labs are not for sale.
+  if (lab.status !== "ACTIVE") {
+    return NextResponse.json(
+      {
+        message:
+          lab.status === "UPCOMING"
+            ? "This lab hasn't launched yet."
+            : "This lab isn't available right now.",
+      },
+      { status: 409 }
+    );
+  }
 
   // Already owns it?
   const existing = await prisma.labAccess.findUnique({

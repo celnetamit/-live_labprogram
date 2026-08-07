@@ -16,7 +16,9 @@ export default async function AdminDashboard() {
 
   const [userCount, labCount, paidOrders, pendingOrders, recentOrders] = await Promise.all([
     prisma.user.count(),
-    prisma.lab.count({ where: { enabled: true } }),
+    // "Active Labs" now means exactly that — upcoming labs are counted separately
+    // in Lab Management rather than inflating this figure.
+    prisma.lab.count({ where: { enabled: true, status: "ACTIVE" } }),
     prisma.order.findMany({ where: { status: "PAID" }, select: { amountMinor: true } }),
     prisma.order.count({ where: { status: "PENDING" } }),
     prisma.order.findMany({

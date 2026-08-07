@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import Navbar from "@/components/navbar";
 import { parseList } from "@/lib/access";
+import { CATALOG_STATUSES, formatLaunchDate } from "@/lib/labStatus";
 import LabCatalogClient, { type CatalogLab } from "@/app/dashboard/labs/LabCatalogClient";
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export default async function PublicLabs({
   const initialQuery = Array.isArray(q) ? (q[0] ?? "") : (q ?? "");
 
   const labs = await prisma.lab.findMany({
-    where: { enabled: true, status: "ACTIVE" },
+    where: { enabled: true, status: { in: [...CATALOG_STATUSES] } },
     orderBy: [{ points: "desc" }, { name: "asc" }],
   });
 
@@ -37,6 +38,8 @@ export default async function PublicLabs({
     priceMinor: lab.priceMinor,
     currency: lab.currency,
     owned: false,
+    status: lab.status,
+    launchLabel: formatLaunchDate(lab.launchAt),
   }));
 
   return (

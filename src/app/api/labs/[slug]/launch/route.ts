@@ -15,6 +15,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     return NextResponse.json({ authorized: false, message: "Lab not found" }, { status: 404 });
   }
 
+  // A lab that isn't live has nothing to launch, even for an owner or admin.
+  if (lab.status !== "ACTIVE") {
+    const notLiveUrl = new URL(`/dashboard/labs/${slug}`, _req.url || "http://localhost:3000");
+    notLiveUrl.searchParams.set("error", "not_live");
+    return NextResponse.redirect(notLiveUrl);
+  }
+
   const authorized = await hasLabAccess(user?.id, user?.role, lab.id);
   if (!authorized || !user?.id) {
     const errorUrl = new URL(`/dashboard/labs/${slug}`, _req.url || "http://localhost:3000");

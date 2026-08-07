@@ -1,6 +1,14 @@
 "use client";
 
-import { LayoutDashboard, Users, FlaskConical, ShieldAlert, Settings, Receipt } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  FlaskConical,
+  ShieldAlert,
+  Settings,
+  Receipt,
+  Lightbulb,
+} from "lucide-react";
 import AppShell, { type NavGroup } from "@/components/app-shell";
 
 const navGroups: NavGroup[] = [
@@ -18,6 +26,7 @@ const navGroups: NavGroup[] = [
       { href: "/admin/users", label: "Users & Access", icon: Users },
       { href: "/admin/orders", label: "Orders", icon: Receipt },
       { href: "/admin/access", label: "Access Requests", icon: ShieldAlert },
+      { href: "/admin/lab-requests", label: "Custom Lab Requests", icon: Lightbulb },
     ],
   },
   {

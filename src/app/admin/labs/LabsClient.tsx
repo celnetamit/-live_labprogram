@@ -12,40 +12,54 @@ import {
   Loader2,
   RefreshCw,
   ExternalLink,
+  CalendarClock,
 } from "lucide-react";
 import { Lab } from "@prisma/client";
 import { createLab, updateLab, deleteLab, syncLabs } from "./actions";
+import {
+  LAB_STATUSES,
+  LAB_STATUS_LABEL,
+  formatLaunchDate,
+  labStatusTone,
+  toDateInputValue,
+} from "@/lib/labStatus";
 
 const PAGE_SIZE = 15;
 
-function pillTone(status: string) {
-  const s = status.toUpperCase();
-  if (s === "ACTIVE") return "text-emerald-400";
-  if (s === "MAINTENANCE") return "text-amber-400";
-  if (s === "DISABLED") return "text-muted-foreground";
-  return "text-rose-400";
-}
+const FILTERS = ["ALL", ...LAB_STATUSES] as const;
+type Filter = (typeof FILTERS)[number];
 
 export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<Filter>("ALL");
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLab, setEditingLab] = useState<Lab | null>(null);
+  const [modalStatus, setModalStatus] = useState("ACTIVE");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [notice, setNotice] = useState("");
 
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { ALL: initialLabs.length };
+    for (const s of LAB_STATUSES) c[s] = 0;
+    for (const lab of initialLabs) c[lab.status] = (c[lab.status] ?? 0) + 1;
+    return c;
+  }, [initialLabs]);
+
   const filteredLabs = useMemo(() => {
     const q = search.toLowerCase();
-    return initialLabs.filter(
-      (lab) =>
+    return initialLabs.filter((lab) => {
+      if (statusFilter !== "ALL" && lab.status !== statusFilter) return false;
+      return (
         lab.name.toLowerCase().includes(q) ||
         (lab.subject ?? "").toLowerCase().includes(q) ||
         (lab.domainUrl ?? "").toLowerCase().includes(q)
-    );
-  }, [initialLabs, search]);
+      );
+    });
+  }, [initialLabs, search, statusFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filteredLabs.length / PAGE_SIZE));
   const current = Math.min(page, totalPages);
@@ -53,10 +67,12 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
 
   const openAddModal = () => {
     setEditingLab(null);
+    setModalStatus(statusFilter === "ALL" ? "ACTIVE" : statusFilter);
     setIsModalOpen(true);
   };
   const openEditModal = (lab: Lab) => {
     setEditingLab(lab);
+    setModalStatus(lab.status);
     setIsModalOpen(true);
   };
   const closeModal = () => {
@@ -153,7 +169,7 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
       )}
 
       <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-border bg-muted/20">
+        <div className="p-4 border-b border-border bg-muted/20 flex flex-col lg:flex-row lg:items-center gap-3">
           <div className="relative max-w-md w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
@@ -166,6 +182,28 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
                 setPage(1);
               }}
             />
+          </div>
+
+          {/* Lifecycle tabs — the primary way an admin separates what is live
+              today from what is still on the roadmap. */}
+          <div className="flex flex-wrap gap-1.5 lg:ml-auto">
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => {
+                  setStatusFilter(f);
+                  setPage(1);
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                  statusFilter === f
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "border-input text-muted-foreground hover:bg-accent"
+                }`}
+              >
+                {f === "ALL" ? "All" : LAB_STATUS_LABEL[f]}
+                <span className="ml-1.5 opacity-70 tabular-nums">{counts[f] ?? 0}</span>
+              </button>
+            ))}
           </div>
         </div>
 
@@ -224,9 +262,15 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
                     ₹{(lab.priceMinor / 100).toLocaleString("en-IN")}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`pill ${pillTone(lab.enabled ? lab.status : "DISABLED")}`}>
+                    <span className={`pill ${labStatusTone(lab.enabled ? lab.status : "DISABLED")}`}>
                       {lab.enabled ? lab.status : "DISABLED"}
                     </span>
+                    {lab.status === "UPCOMING" && (
+                      <div className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+                        <CalendarClock className="w-3 h-3" />
+                        {formatLaunchDate(lab.launchAt) ?? "No date set"}
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 sm:px-6 py-3 text-right">
                     <div className="flex justify-end gap-1">
@@ -274,9 +318,16 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
                     {lab.subject || "—"} · {lab.difficulty || "—"}
                   </div>
                 </div>
-                <span className={`pill ${pillTone(lab.enabled ? lab.status : "DISABLED")}`}>
-                  {lab.enabled ? lab.status : "DISABLED"}
-                </span>
+                <div className="text-right shrink-0">
+                  <span className={`pill ${labStatusTone(lab.enabled ? lab.status : "DISABLED")}`}>
+                    {lab.enabled ? lab.status : "DISABLED"}
+                  </span>
+                  {lab.status === "UPCOMING" && (
+                    <div className="mt-1 text-[11px] text-muted-foreground">
+                      {formatLaunchDate(lab.launchAt) ?? "No date set"}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="flex items-center justify-between mt-3">
                 <span className="font-bold">₹{(lab.priceMinor / 100).toLocaleString("en-IN")}</span>
@@ -417,15 +468,35 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
                   <label className="text-sm font-medium">Status</label>
                   <select
                     name="status"
-                    defaultValue={editingLab?.status || "ACTIVE"}
+                    value={modalStatus}
+                    onChange={(e) => setModalStatus(e.target.value)}
                     className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
-                    <option value="ACTIVE">Active</option>
-                    <option value="MAINTENANCE">Maintenance</option>
-                    <option value="ARCHIVED">Archived</option>
+                    {LAB_STATUSES.map((s) => (
+                      <option key={s} value={s}>
+                        {LAB_STATUS_LABEL[s]}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
+
+              {/* Only upcoming labs carry a date — it is what the catalogue
+                  shows learners under "Coming soon". */}
+              {modalStatus === "UPCOMING" && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Expected launch date</label>
+                  <input
+                    type="date"
+                    name="launchAt"
+                    defaultValue={toDateInputValue(editingLab?.launchAt)}
+                    className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Optional. Left blank, learners just see “Coming soon”.
+                  </p>
+                </div>
+              )}
 
               <input type="hidden" name="accessType" value={editingLab?.accessType || "PRIVATE"} />
               <input type="hidden" name="category" value={editingLab?.category || ""} />
