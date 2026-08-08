@@ -4,6 +4,13 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { revalidatePath } from "next/cache";
+import { notifyUser, simpleEmail } from "@/lib/notifications";
+
+/** Where a learner should land from an email about their lab access. */
+function labsUrl() {
+  const base = (process.env.NEXTAUTH_URL || "http://localhost:3000").replace(/\/$/, "");
+  return `${base}/dashboard/labs`;
+}
 
 export async function approveRequest(requestId: string) {
   const session = await getServerSession(authOptions);
@@ -50,6 +57,21 @@ export async function approveRequest(requestId: string) {
     }
   });
 
+  const lab = await prisma.lab.findUnique({
+    where: { id: request.labId },
+    select: { name: true },
+  });
+
+  await notifyUser(
+    request.userId,
+    "accessDecisions",
+    simpleEmail(
+      "Your lab access was approved",
+      `You now have access to <strong>${lab?.name ?? "the lab you requested"}</strong>. It's ready to open from My Labs.`,
+      { label: "Open My Labs", href: labsUrl() }
+    )
+  );
+
   revalidatePath("/admin/access");
   revalidatePath("/dashboard");
   return { success: true };
@@ -57,19 +79,30 @@ export async function approveRequest(requestId: string) {
 
 export async function rejectRequest(requestId: string) {
   const session = await getServerSession(authOptions);
-  
+
   if (!session?.user || session.user.role !== "SUPER_ADMIN") {
     throw new Error("Unauthorized");
   }
 
-  await prisma.accessRequest.update({
+  const rejected = await prisma.accessRequest.update({
     where: { id: requestId },
     data: {
       status: "REJECTED",
       reviewedAt: new Date(),
       reviewedBy: session.user.id as string
-    }
+    },
+    include: { lab: { select: { name: true } } }
   });
+
+  await notifyUser(
+    rejected.userId,
+    "accessDecisions",
+    simpleEmail(
+      "Update on your lab access request",
+      `Your request for <strong>${rejected.lab.name}</strong> wasn't approved this time. You can still browse the catalogue or purchase access directly.`,
+      { label: "Browse labs", href: labsUrl() }
+    )
+  );
 
   revalidatePath("/admin/access");
   return { success: true };
