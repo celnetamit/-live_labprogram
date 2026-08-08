@@ -263,7 +263,11 @@ export default function Login() {
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => signIn(p.id, { callbackUrl: "/dashboard" })}
+                  onClick={() =>
+                    // Absolute, for the same reason sign-out is: a relative URL
+                    // resolves against NEXTAUTH_URL, not the current host.
+                    signIn(p.id, { callbackUrl: `${window.location.origin}/dashboard` })
+                  }
                   className="inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Continue with {p.name}

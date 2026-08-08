@@ -56,26 +56,11 @@ export async function POST(req: Request) {
     });
 
     /*
-      Existing demo behaviour: a new account is handed every enabled lab. With
-      "Require admin approval for all labs" switched on that is exactly what the
-      administrator asked us not to do, so the grant is skipped and the learner
-      requests access instead.
+      A new account starts with no labs. Registration used to hand out every
+      enabled lab, which gave paid content away to anyone who signed up; access
+      now comes only from a purchase or an admin grant, the same two sources
+      `hasLabAccess` has always recognised.
     */
-    if (!settings.requireAdminApproval) {
-      const allLabs = await prisma.lab.findMany({
-        where: { enabled: true }
-      });
-
-      if (allLabs.length > 0) {
-        await prisma.labAccess.createMany({
-          data: allLabs.map(lab => ({
-            userId: user.id,
-            labId: lab.id,
-          })),
-          skipDuplicates: true,
-        });
-      }
-    }
 
     await dispatchWebhook("user.registered", {
       userId: user.id,

@@ -24,8 +24,13 @@ export default function DangerZone({ email }: { email: string }) {
         setError(res.message);
         return;
       }
-      // The account is gone; drop the session cookie with it.
-      await signOut({ callbackUrl: "/" });
+      /*
+        The account is gone; drop the session cookie with it. The callback is
+        built from the live origin rather than left relative, because NextAuth
+        would otherwise resolve it against NEXTAUTH_URL and send the user to
+        whatever domain that names — not necessarily the one they are on.
+      */
+      await signOut({ callbackUrl: `${window.location.origin}/` });
     } catch {
       setError("Could not delete the account");
     } finally {
