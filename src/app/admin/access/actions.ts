@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { revalidatePath } from "next/cache";
 import { notifyUser, simpleEmail } from "@/lib/notifications";
+import { dispatchWebhook } from "@/lib/webhooks";
 
 /** Where a learner should land from an email about their lab access. */
 function labsUrl() {
@@ -72,6 +73,12 @@ export async function approveRequest(requestId: string) {
     )
   );
 
+  await dispatchWebhook("access.approved", {
+    userId: request.userId,
+    labId: request.labId,
+    labName: lab?.name ?? null,
+  });
+
   revalidatePath("/admin/access");
   revalidatePath("/dashboard");
   return { success: true };
@@ -103,6 +110,12 @@ export async function rejectRequest(requestId: string) {
       { label: "Browse labs", href: labsUrl() }
     )
   );
+
+  await dispatchWebhook("access.rejected", {
+    userId: rejected.userId,
+    labId: rejected.labId,
+    labName: rejected.lab.name,
+  });
 
   revalidatePath("/admin/access");
   return { success: true };

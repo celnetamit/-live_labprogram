@@ -1,29 +1,30 @@
-"use client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getSettings } from "@/lib/platformSettings";
+import MaintenanceNotice from "@/components/maintenance-notice";
+import DashboardShell from "./DashboardShell";
 
-import { User, BookOpen, FlaskConical, Award, Settings } from "lucide-react";
-import AppShell, { type NavGroup } from "@/components/app-shell";
+/**
+ * Server wrapper around the learner shell. It exists so maintenance mode has a
+ * single enforcement point covering every dashboard route — the check cannot
+ * live in the proxy, which runs on the edge without database access.
+ */
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [session, settings] = await Promise.all([
+    getServerSession(authOptions),
+    getSettings(),
+  ]);
 
-const navGroups: NavGroup[] = [
-  {
-    items: [
-      { href: "/dashboard", label: "My Profile", icon: User },
-      { href: "/dashboard/programs", label: "My Programs", icon: BookOpen },
-      { href: "/dashboard/labs", label: "My Labs", icon: FlaskConical },
-      { href: "/dashboard/certificates", label: "Certificates", icon: Award },
-      { href: "/dashboard/settings", label: "Account Settings", icon: Settings },
-    ],
-  },
-];
+  const isAdmin = (session?.user as { role?: string } | undefined)?.role === "SUPER_ADMIN";
+  if (settings.maintenanceMode && !isAdmin) {
+    return (
+      <MaintenanceNotice
+        message={settings.maintenanceMessage}
+        supportEmail={settings.supportEmail}
+        platformName={settings.platformName}
+      />
+    );
+  }
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <AppShell
-      brandTitle="Student Hub"
-      navGroups={navGroups}
-      breadcrumbRoot="Dashboard"
-      accentUser
-    >
-      {children}
-    </AppShell>
-  );
+  return <DashboardShell>{children}</DashboardShell>;
 }

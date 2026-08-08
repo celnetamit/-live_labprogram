@@ -5,6 +5,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
+import { getSettings } from "@/lib/platformSettings";
 
 async function requireUser(): Promise<{ id: string; email?: string; role?: string }> {
   const session = await getServerSession(authOptions);
@@ -46,8 +47,6 @@ export async function updateProfile(formData: FormData) {
   return { success: true as const, message: "Profile saved." };
 }
 
-const MIN_PASSWORD = 8;
-
 /**
  * Change the password, or set a first one for an account that has only ever
  * signed in through SSO or a passkey.
@@ -64,10 +63,11 @@ export async function changePassword(formData: FormData) {
   const current = String(formData.get("currentPassword") ?? "");
   const next = String(formData.get("newPassword") ?? "");
 
-  if (next.length < MIN_PASSWORD) {
+  const { minPasswordLength } = await getSettings();
+  if (next.length < minPasswordLength) {
     return {
       success: false as const,
-      message: `Choose a password of at least ${MIN_PASSWORD} characters`,
+      message: `Choose a password of at least ${minPasswordLength} characters`,
     };
   }
 

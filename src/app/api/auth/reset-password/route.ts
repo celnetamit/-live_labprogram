@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
-
-const MIN_PASSWORD = 8;
+import { getSettings } from "@/lib/platformSettings";
 
 function hash(token: string): string {
   return createHash("sha256").update(token).digest("hex");
@@ -28,9 +27,11 @@ export async function POST(req: Request) {
   if (typeof token !== "string" || !token) {
     return NextResponse.json({ message: "This reset link is invalid" }, { status: 400 });
   }
-  if (typeof password !== "string" || password.length < MIN_PASSWORD) {
+  // The policy is whatever the administrator set, not a constant.
+  const { minPasswordLength } = await getSettings();
+  if (typeof password !== "string" || password.length < minPasswordLength) {
     return NextResponse.json(
-      { message: `Choose a password of at least ${MIN_PASSWORD} characters` },
+      { message: `Choose a password of at least ${minPasswordLength} characters` },
       { status: 400 }
     );
   }

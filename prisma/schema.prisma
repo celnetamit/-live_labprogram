@@ -60,6 +60,77 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+/// Platform-wide configuration, edited from /admin/settings.
+///
+/// One row, fixed id, created on first read. Every field here is enforced
+/// somewhere — a switch that saved but changed nothing would be worse than no
+/// switch at all.
+model PlatformSetting {
+  id                      String   @id @default("singleton")
+
+  // --- General ---
+  platformName            String   @default("Panoptical Labs Ecosystem")
+  supportEmail            String   @default("support@panoptical.ai")
+  /// Off closes /register and the registration API to new sign-ups.
+  allowPublicRegistration Boolean  @default(true)
+  /// On disables self-serve checkout: labs are obtained by request only.
+  requireAdminApproval    Boolean  @default(false)
+  /// On shuts learners out; SUPER_ADMINs keep working.
+  maintenanceMode         Boolean  @default(false)
+  maintenanceMessage      String?
+
+  // --- Security & Auth ---
+  minPasswordLength       Int      @default(8)
+  /// How long a signed-in session stays valid, in days.
+  sessionDays             Int      @default(30)
+  allowSso                Boolean  @default(true)
+  allowBiometrics         Boolean  @default(true)
+
+  // --- Email ---
+  mailFromName            String   @default("Panoptical Labs")
+  mailReplyTo             String?
+
+  updatedAt               DateTime @updatedAt
+  updatedBy               String?
+}
+
+/// A key for machine access to the read-only admin API.
+///
+/// Only a hash is stored, so a leaked database cannot be used to call the API;
+/// the full key is shown once at creation and never again.
+model ApiKey {
+  id         String    @id @default(cuid())
+  name       String
+  /// Human-recognisable opening characters, e.g. "pk_live_8f3a".
+  prefix     String
+  keyHash    String    @unique
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  createdBy  String?
+
+  @@index([revokedAt])
+}
+
+/// An outbound HTTP endpoint notified when platform events occur.
+///
+/// The secret is stored in readable form because it is needed to compute the
+/// HMAC signature on every delivery — the same trade-off Stripe and GitHub make.
+model Webhook {
+  id            String    @id @default(cuid())
+  url           String
+  secret        String
+  /// JSON array of event names, e.g. ["order.paid","access.approved"].
+  events        String    @default("[]")
+  enabled       Boolean   @default(true)
+  lastStatus    Int?
+  lastAttemptAt DateTime?
+  lastError     String?
+  createdAt     DateTime  @default(now())
+
+  @@index([enabled])
+}
+
 /// Which emails a learner wants. Absent row means "everything on" — the
 /// defaults below are also what a new account gets.
 model NotificationPreference {

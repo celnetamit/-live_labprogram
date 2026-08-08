@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { verifyPasskeyAssertion } from "@/lib/passkeyAuth";
 import { ssoProviders } from "@/lib/ssoProviders";
+import { getSettings } from "@/lib/platformSettings";
 
 export const authOptions = {
   /*
@@ -30,6 +31,9 @@ export const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.response) return null;
+        // An administrator can switch biometric sign-in off platform-wide.
+        const { allowBiometrics } = await getSettings();
+        if (!allowBiometrics) return null;
         return await verifyPasskeyAssertion(credentials.response);
       },
     }),
@@ -68,10 +72,34 @@ export const authOptions = {
     })
   ],
   callbacks: {
+    /*
+      Platform-level gate on SSO. Credentials and passkey sign-ins are handled
+      by their own providers; this only has to refuse OAuth ones.
+    */
+    async signIn({ account }: any) {
+      if (account?.type === "oauth" || account?.type === "oidc") {
+        const { allowSso } = await getSettings();
+        if (!allowSso) return false;
+      }
+      return true;
+    },
     async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        // Stamped once at sign-in so the age check below has a fixed origin.
+        token.signedInAt = Date.now();
+      }
+
+      /*
+        Session lifetime is an admin setting, so it cannot be baked into the
+        static `session.maxAge`. Checking the age here applies a change to
+        everyone on their next request rather than only to new sign-ins.
+      */
+      if (token?.signedInAt) {
+        const { sessionDays } = await getSettings();
+        const age = Date.now() - Number(token.signedInAt);
+        if (age > sessionDays * 24 * 60 * 60 * 1000) return null;
       }
       /*
         An SSO sign-in goes through the adapter, which can hand back a user

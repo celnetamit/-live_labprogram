@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { dispatchWebhook } from "@/lib/webhooks";
 
 /**
  * Mark an order PAID and grant LabAccess for every item. Idempotent:
@@ -38,6 +39,15 @@ export async function fulfillOrder(
       update: {},
     });
   }
+
+  await dispatchWebhook("order.paid", {
+    orderId: order.id,
+    userId: order.userId,
+    amountMinor: order.amountMinor,
+    currency: order.currency,
+    provider: order.provider,
+    items: order.items.map((i) => ({ labSlug: i.labSlug, labTitle: i.labTitle, priceMinor: i.priceMinor })),
+  });
 
   return { ok: true, labSlugs: order.items.map((i) => i.labSlug) };
 }

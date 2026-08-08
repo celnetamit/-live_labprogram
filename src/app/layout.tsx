@@ -5,10 +5,15 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Panoptical Labs Ecosystem",
-  description: "Centralized Program, Lab & Access Management Platform",
-};
+/** Title follows the admin's platform name rather than a hard-coded string. */
+export async function generateMetadata(): Promise<Metadata> {
+  const { getSettings } = await import("@/lib/platformSettings");
+  const { platformName } = await getSettings();
+  return {
+    title: platformName,
+    description: "Centralized Program, Lab & Access Management Platform",
+  };
+}
 
 export default function RootLayout({
   children,

@@ -1,14 +1,32 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { getSettings } from "@/lib/platformSettings";
+import { dispatchWebhook } from "@/lib/webhooks";
 
 export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json();
+    const settings = await getSettings();
+
+    // Closing registration has to hold at the API, not just on the page.
+    if (!settings.allowPublicRegistration) {
+      return NextResponse.json(
+        { message: "Registration is currently closed. Contact your administrator for an invite." },
+        { status: 403 }
+      );
+    }
 
     if (!name || !email || !password) {
       return NextResponse.json(
         { message: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (String(password).length < settings.minPasswordLength) {
+      return NextResponse.json(
+        { message: `Password must be at least ${settings.minPasswordLength} characters` },
         { status: 400 }
       );
     }
@@ -37,20 +55,33 @@ export async function POST(req: Request) {
       },
     });
 
-    // Automatically grant access to all current labs for the new user
-    const allLabs = await prisma.lab.findMany({
-      where: { enabled: true }
-    });
-    
-    if (allLabs.length > 0) {
-      await prisma.labAccess.createMany({
-        data: allLabs.map(lab => ({
-          userId: user.id,
-          labId: lab.id,
-        })),
-        skipDuplicates: true,
+    /*
+      Existing demo behaviour: a new account is handed every enabled lab. With
+      "Require admin approval for all labs" switched on that is exactly what the
+      administrator asked us not to do, so the grant is skipped and the learner
+      requests access instead.
+    */
+    if (!settings.requireAdminApproval) {
+      const allLabs = await prisma.lab.findMany({
+        where: { enabled: true }
       });
+
+      if (allLabs.length > 0) {
+        await prisma.labAccess.createMany({
+          data: allLabs.map(lab => ({
+            userId: user.id,
+            labId: lab.id,
+          })),
+          skipDuplicates: true,
+        });
+      }
     }
+
+    await dispatchWebhook("user.registered", {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+    });
 
     return NextResponse.json(
       { message: "User created successfully", userId: user.id },

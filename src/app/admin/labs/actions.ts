@@ -6,6 +6,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { revalidatePath } from "next/cache";
 import { importLabs } from "@/lib/importLabs";
 import { isLabStatus } from "@/lib/labStatus";
+import { dispatchWebhook } from "@/lib/webhooks";
 
 /** Every surface that renders a lab's status or availability. */
 function revalidateLabSurfaces() {
@@ -74,6 +75,7 @@ export async function createLab(formData: FormData) {
 
 export async function updateLab(id: string, formData: FormData) {
   await requireAdmin();
+  const before = await prisma.lab.findUnique({ where: { id }, select: { status: true } });
   const data = fields(formData);
   if (!data.name || !data.domainUrl) {
     throw new Error("Name and Domain URL are required");
@@ -95,6 +97,11 @@ export async function updateLab(id: string, formData: FormData) {
       enabled: data.enabled,
     },
   });
+
+  // Announce a lab going live, so downstream systems can react.
+  if (before && before.status !== "ACTIVE" && data.status === "ACTIVE") {
+    await dispatchWebhook("lab.published", { labId: id, name: data.name });
+  }
 
   revalidateLabSurfaces();
   return { success: true };

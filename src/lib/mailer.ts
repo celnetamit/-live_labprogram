@@ -18,8 +18,18 @@ export function mailConfigured(): boolean {
   return !!process.env.RESEND_API_KEY;
 }
 
-function fromAddress(): string {
-  return process.env.MAIL_FROM || "Panoptical Labs <onboarding@resend.dev>";
+/**
+ * Sender identity. The address comes from the environment (it must match a
+ * domain verified with the provider), while the display name is an admin
+ * setting — changing who we appear to be shouldn't require a redeploy.
+ */
+export async function fromAddress(): Promise<string> {
+  const configured = process.env.MAIL_FROM;
+  if (configured) return configured;
+
+  const { getSettings } = await import("@/lib/platformSettings");
+  const { mailFromName } = await getSettings();
+  return `${mailFromName} <onboarding@resend.dev>`;
 }
 
 /** Returns true when the message was handed to a real provider. */
@@ -33,13 +43,23 @@ export async function sendMail({ to, subject, html, text }: Mail): Promise<boole
   }
 
   try {
+    const { getSettings } = await import("@/lib/platformSettings");
+    const { mailReplyTo, supportEmail } = await getSettings();
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from: fromAddress(), to: [to], subject, html, text }),
+      body: JSON.stringify({
+        from: await fromAddress(),
+        to: [to],
+        reply_to: mailReplyTo || supportEmail,
+        subject,
+        html,
+        text,
+      }),
       signal: AbortSignal.timeout(10000),
     });
 

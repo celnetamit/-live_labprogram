@@ -3,12 +3,22 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { createRazorpayOrder, razorpayConfigured, razorpayKeyId } from "@/lib/razorpay";
+import { getSettings } from "@/lib/platformSettings";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   const user = session?.user as { id?: string } | undefined;
   if (!user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  // With admin approval required, there is no self-serve purchase path at all.
+  const settings = await getSettings();
+  if (settings.requireAdminApproval) {
+    return NextResponse.json(
+      { message: "Labs are granted by an administrator here. Request access instead." },
+      { status: 403 }
+    );
   }
 
   const { labId } = await req.json().catch(() => ({}));
