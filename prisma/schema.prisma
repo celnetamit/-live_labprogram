@@ -23,6 +23,9 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
+  authenticators Authenticator[]
+  passwordResets PasswordResetToken[]
+  notificationPreference NotificationPreference?
   labAccess     LabAccess[]
   ownedLabs     Lab[]     @relation("LabOwner")
   accessRequests AccessRequest[]
@@ -55,6 +58,91 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// Which emails a learner wants. Absent row means "everything on" — the
+/// defaults below are also what a new account gets.
+model NotificationPreference {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  /// Lab access request approved or declined.
+  accessDecisions   Boolean  @default(true)
+  /// Payment receipts and order confirmations.
+  orderReceipts     Boolean  @default(true)
+  /// Replies on a custom lab request.
+  labRequestUpdates Boolean  @default(true)
+  /// An upcoming lab opening for enrolment.
+  labLaunches       Boolean  @default(true)
+  /// Occasional product news. Off by default — opt in, not out.
+  productNews       Boolean  @default(false)
+  updatedAt         DateTime @updatedAt
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// A pending "forgot my password" request.
+///
+/// Only a SHA-256 hash of the token is stored: the raw value exists solely in
+/// the emailed link, so a leaked database cannot be used to reset anyone's
+/// password. Tokens are single-use and short-lived.
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// A registered WebAuthn credential — a passkey, unlocked on the user's device
+/// by Touch ID, Windows Hello, an Android fingerprint or a security key.
+///
+/// Only the *public* key is stored. The private key never leaves the device and
+/// the biometric itself is never transmitted: the device verifies the finger or
+/// face locally, then signs our challenge. A stolen database therefore yields
+/// nothing that can be used to sign in.
+model Authenticator {
+  id           String   @id @default(cuid())
+  userId       String
+  /// Base64URL credential ID returned by the authenticator.
+  credentialId String   @unique
+  /// COSE public key bytes used to verify assertion signatures.
+  publicKey    Bytes
+  /// Signature counter; a value that fails to advance suggests a cloned key.
+  counter      Int      @default(0)
+  /// JSON array, e.g. ["internal","hybrid"].
+  transports   String?
+  /// "singleDevice" | "multiDevice" (a synced passkey).
+  deviceType   String?
+  backedUp     Boolean  @default(false)
+  /// What the user calls it, e.g. "MacBook Touch ID".
+  label        String?
+  createdAt    DateTime @default(now())
+  lastUsedAt   DateTime?
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// A one-time WebAuthn challenge. Kept server-side and deleted on use so a
+/// captured assertion cannot be replayed.
+model WebAuthnChallenge {
+  id        String   @id @default(cuid())
+  challenge String   @unique
+  /// Set for registration flows (who is enrolling a device).
+  userId    String?
+  /// Set for login flows when the user typed an email first.
+  email     String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
 }
 
 model VerificationToken {
