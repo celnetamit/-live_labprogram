@@ -3,6 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { ownedLabIds, ownsLab, parseList } from "@/lib/access";
+import { getLabPreview } from "@/lib/labPreview";
 import { CATALOG_STATUSES, formatLaunchDate } from "@/lib/labStatus";
 import LabCatalogClient, { type CatalogLab } from "./LabCatalogClient";
 import { type MyLabRequest } from "./CustomLabRequestPanel";
@@ -52,6 +53,8 @@ export default async function LabsCatalog() {
     owned: lab.status === "ACTIVE" && ownsLab(owned, lab.id),
     status: lab.status,
     launchLabel: formatLaunchDate(lab.launchAt),
+    // Hover reveal is for labs you can actually open today.
+    preview: lab.status === "ACTIVE" ? getLabPreview(lab.slug) : null,
   }));
 
   const myRequests: MyLabRequest[] = requests.map((r) => ({

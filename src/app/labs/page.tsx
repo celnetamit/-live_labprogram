@@ -4,6 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import Navbar from "@/components/navbar";
 import { ownedLabIds, ownsLab, parseList } from "@/lib/access";
+import { getLabPreview } from "@/lib/labPreview";
 import { EXPLORE_STATUSES, formatLaunchDate } from "@/lib/labStatus";
 import LabCatalogClient, { type CatalogLab } from "@/app/dashboard/labs/LabCatalogClient";
 
@@ -57,6 +58,8 @@ export default async function PublicLabs({
     owned: lab.status === "ACTIVE" && !!user?.id && ownsLab(owned, lab.id),
     status: lab.status,
     launchLabel: formatLaunchDate(lab.launchAt),
+    // Hover reveal is for labs you can actually open today.
+    preview: lab.status === "ACTIVE" ? getLabPreview(lab.slug) : null,
   }));
 
   return (

@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Lock, CheckCircle2, Award, ArrowRight, FlaskConical, CalendarClock, Wrench } from "lucide-react";
+import { Search, Lock, CheckCircle2, Award, ArrowRight, FlaskConical, CalendarClock, Wrench, ListChecks, Clapperboard, Clock } from "lucide-react";
 import { formatPrice } from "@/lib/access";
+import type { LabPreview } from "@/lib/labPreview";
 import CustomLabRequestPanel, { type MyLabRequest } from "./CustomLabRequestPanel";
 
 export type CatalogLab = {
@@ -22,6 +23,8 @@ export type CatalogLab = {
   status: string;
   /** Pre-formatted launch date for upcoming labs; null when none is set. */
   launchLabel: string | null;
+  /** What's inside the lab, revealed on hover. Active labs only. */
+  preview?: LabPreview | null;
 };
 
 const difficultyColor: Record<string, string> = {
@@ -182,8 +185,73 @@ export default function LabCatalogClient({
           <Link
             key={lab.id}
             href={`/dashboard/labs/${lab.slug}`}
-            className="card-glow hairline-top group flex flex-col rounded-2xl border border-border bg-card overflow-hidden"
+            className="card-glow hairline-top group relative flex flex-col rounded-2xl border border-border bg-card overflow-hidden"
           >
+            {/*
+              What's actually inside the lab, revealed on hover (and on keyboard
+              focus, so it isn't mouse-only). Built from the authored guide, so
+              it shows the real tutorial rather than a second lot of blurb.
+            */}
+            {lab.preview && (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 z-10 flex flex-col gap-3 overflow-hidden bg-card/97 p-5 opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
+              >
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+                  <ListChecks className="h-3.5 w-3.5" />
+                  Inside this lab
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <ListChecks className="h-3 w-3" /> {lab.preview.stepCount} steps
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <Clock className="h-3 w-3" /> ~{lab.preview.minutes} min
+                  </span>
+                  {lab.preview.videoLabel && (
+                    <span className="inline-flex items-center gap-1">
+                      <Clapperboard className="h-3 w-3" /> {lab.preview.videoLabel} demo
+                    </span>
+                  )}
+                </div>
+
+                {/* The card already shows the synopsis, so the reveal spends its
+                    space on what the synopsis can't say: the actual outcomes and
+                    the opening moves of the tutorial. */}
+                <div className="min-h-0 flex-1 overflow-hidden">
+                  <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
+                    You&apos;ll be able to
+                  </p>
+                  <ul className="mb-2 space-y-0.5">
+                    {lab.preview.outcomes.map((o) => (
+                      <li key={o} className="flex gap-1.5 text-xs leading-tight text-muted-foreground">
+                        <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" />
+                        <span className="line-clamp-1">{o}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
+                    Starts with
+                  </p>
+                  <ol className="space-y-0.5">
+                    {lab.preview.steps.map((s, i) => (
+                      <li key={s} className="flex gap-1.5 text-xs leading-tight text-muted-foreground">
+                        <span className="shrink-0 tabular-nums text-primary">{i + 1}.</span>
+                        <span className="line-clamp-1">{s}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                  {lab.owned ? "Open the lab" : "See the full tutorial"}
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+            )}
+
             <div className="p-5 flex-1">
               <div className="flex items-center justify-between mb-3">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wider">
