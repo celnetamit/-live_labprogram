@@ -21,6 +21,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       brandTitle="Student Hub"
       navGroups={navGroups}
       breadcrumbRoot="Dashboard"
+      breadcrumbRootHref="/dashboard"
       accentUser
     >
       {children}

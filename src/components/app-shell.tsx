@@ -25,18 +25,39 @@ type AppShellProps = {
   brandTitle: string;
   navGroups: NavGroup[];
   breadcrumbRoot: string;
+  /**
+   * Where the first breadcrumb points, and the section root for nav
+   * highlighting. Previously the two root paths were hardcoded inside
+   * `NavLinks`, so the component only worked for the two sections that happened
+   * to be listed there.
+   */
+  breadcrumbRootHref: string;
   accentUser?: boolean;
   showBell?: boolean;
   children: React.ReactNode;
 };
 
+/**
+ * A nav entry is current when the path is it, or sits beneath it.
+ *
+ * The section root is excluded from prefix matching — "/dashboard" is a prefix
+ * of every page in the section and would otherwise always match. The trailing
+ * slash matters too: without it "/admin/lab" would match "/admin/lab-requests".
+ */
+function isCurrent(href: string, pathname: string, rootHref: string): boolean {
+  if (pathname === href) return true;
+  return href !== rootHref && pathname.startsWith(`${href}/`);
+}
+
 function NavLinks({
   navGroups,
   pathname,
+  rootHref,
   onNavigate,
 }: {
   navGroups: NavGroup[];
   pathname: string;
+  rootHref: string;
   onNavigate?: () => void;
 }) {
   return (
@@ -49,11 +70,7 @@ function NavLinks({
             </p>
           )}
           {group.items.map((item) => {
-            const active =
-              pathname === item.href ||
-              (item.href !== "/admin" &&
-                item.href !== "/dashboard" &&
-                pathname.startsWith(item.href));
+            const active = isCurrent(item.href, pathname, rootHref);
             const Icon = item.icon;
             return (
               <Link
@@ -94,12 +111,28 @@ export default function AppShell({
   brandTitle,
   navGroups,
   breadcrumbRoot,
+  breadcrumbRootHref,
   accentUser = false,
   showBell = false,
   children,
 }: AppShellProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  /**
+   * The second crumb used to be the literal string "Overview" on every page, so
+   * the header read "Dashboard › Overview" while you were looking at My
+   * Programs. Deriving it from the nav means it names the page you are actually
+   * on, and stays correct as nav items are added.
+   *
+   * Deepest match wins: /dashboard/settings/security resolves to "Account
+   * Settings" rather than to the section root.
+   */
+  const currentLabel =
+    navGroups
+      .flatMap((group) => group.items)
+      .filter((item) => isCurrent(item.href, pathname, breadcrumbRootHref))
+      .sort((a, b) => b.href.length - a.href.length)[0]?.label ?? "Overview";
 
   const Brand = (
     <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
@@ -115,7 +148,7 @@ export default function AppShell({
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-64 border-r border-sidebar-border bg-sidebar flex-col fixed inset-y-0 z-40">
         {Brand}
-        <NavLinks navGroups={navGroups} pathname={pathname} />
+        <NavLinks navGroups={navGroups} pathname={pathname} rootHref={breadcrumbRootHref} />
         <div className="p-4 border-t border-sidebar-border">
           <SignOutButton />
         </div>
@@ -152,6 +185,7 @@ export default function AppShell({
               <NavLinks
                 navGroups={navGroups}
                 pathname={pathname}
+                rootHref={breadcrumbRootHref}
                 onNavigate={() => setOpen(false)}
               />
               <div className="p-4 border-t border-sidebar-border">
@@ -173,11 +207,31 @@ export default function AppShell({
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="flex items-center text-sm text-muted-foreground min-w-0">
-              <span className="truncate">{breadcrumbRoot}</span>
-              <ChevronRight className="h-4 w-4 mx-2 shrink-0" />
-              <span className="text-foreground font-medium truncate">Overview</span>
-            </div>
+            {/*
+              A real breadcrumb: the root is a link back to the section, not a
+              dead label. `aria-current="page"` marks the leaf so assistive tech
+              can tell where you are without relying on the font weight.
+            */}
+            <nav aria-label="Breadcrumb" className="min-w-0">
+              <ol className="flex items-center text-sm text-muted-foreground min-w-0">
+                <li className="min-w-0">
+                  <Link
+                    href={breadcrumbRootHref}
+                    className="block truncate rounded-sm transition-colors hover:text-foreground hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {breadcrumbRoot}
+                  </Link>
+                </li>
+                <li aria-hidden="true">
+                  <ChevronRight className="h-4 w-4 mx-2 shrink-0" />
+                </li>
+                <li className="min-w-0">
+                  <span aria-current="page" className="block truncate font-medium text-foreground">
+                    {currentLabel}
+                  </span>
+                </li>
+              </ol>
+            </nav>
           </div>
           <div className="flex items-center gap-3">
             {showBell && (

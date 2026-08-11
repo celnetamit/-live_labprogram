@@ -41,6 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       brandTitle="Admin Center"
       navGroups={navGroups}
       breadcrumbRoot="Admin"
+      breadcrumbRootHref="/admin"
       showBell
     >
       {children}
