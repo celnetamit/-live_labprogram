@@ -27,6 +27,16 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
+# Bind every interface, not the container's own hostname.
+#
+# Next's standalone server does `process.env.HOSTNAME || '0.0.0.0'`, and Docker
+# sets HOSTNAME to the container ID in every container — so the fallback never
+# applies and the server binds to whatever that ID resolves to in /etc/hosts.
+# The container comes up, logs "Ready", and is unreachable: a health check on
+# 127.0.0.1 fails and the deploy is marked failed with nothing in the logs to
+# explain it.
+ENV HOSTNAME=0.0.0.0
+
 # Copy standalone runtime server and minimal node_modules (~69MB total)
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static

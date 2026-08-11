@@ -23,9 +23,19 @@ done
 echo "[entrypoint] Seeding / syncing labs (idempotent) ..."
 node scripts/import-labs.mjs || echo "[entrypoint] lab import skipped (continuing)"
 
-echo "[entrypoint] Starting Next.js on 0.0.0.0:${PORT:-3000} ..."
+# Next's standalone server reads HOSTNAME, and Docker sets that variable to the
+# container ID — so without this it binds to the container's own hostname and
+# nothing can reach it. Set from BIND_HOST so the address stays overridable and
+# the message below is actually true.
+BIND_HOST="${BIND_HOST:-0.0.0.0}"
+export HOSTNAME="$BIND_HOST"
+
+echo "[entrypoint] Starting Next.js on ${BIND_HOST}:${PORT:-3000} ..."
 if [ -f server.js ]; then
   exec node server.js
 else
-  exec npx next start -H 0.0.0.0 -p "${PORT:-3000}"
+  echo "[entrypoint] WARNING: no standalone server.js — falling back to 'next start'."
+  echo "[entrypoint] This usually means the build did not emit .next/standalone at the"
+  echo "[entrypoint] image root (check output:'standalone' and outputFileTracingRoot)."
+  exec npx next start -H "$BIND_HOST" -p "${PORT:-3000}"
 fi
