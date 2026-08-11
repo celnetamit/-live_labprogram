@@ -32,10 +32,15 @@ export default function WebhooksClient({
 
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Captured before the await: `currentTarget` is null once React has
+    // finished dispatching the event, so touching it afterwards threw and
+    // `router.refresh()` below never ran — the new webhook stayed invisible
+    // until a manual reload.
+    const formEl = e.currentTarget;
     setAdding(true);
     setError("");
     setNotice("");
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(formEl);
     try {
       const res = await createWebhook(formData);
       if (!res.success) {
@@ -43,7 +48,7 @@ export default function WebhooksClient({
         return;
       }
       setNotice(res.message);
-      e.currentTarget.reset();
+      formEl.reset();
       router.refresh();
     } finally {
       setAdding(false);

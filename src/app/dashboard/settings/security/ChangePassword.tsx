@@ -18,10 +18,23 @@ export default function ChangePassword({ hasPassword }: { hasPassword: boolean }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    /**
+     * Capture the form element now, before the first `await`.
+     *
+     * `currentTarget` is only set while React is dispatching the event; once
+     * the handler yields it is null. Calling `e.currentTarget.reset()` after
+     * awaiting the action therefore threw a TypeError — inside the `try`, so
+     * the `catch` reported "Could not change your password" on top of the
+     * success message that had already been set. The password had in fact been
+     * changed; only the UI claimed otherwise.
+     */
+    const formEl = e.currentTarget;
+
     setError("");
     setMessage("");
 
-    const form = new FormData(e.currentTarget);
+    const form = new FormData(formEl);
     const next = String(form.get("newPassword") ?? "");
     if (next.length < MIN_PASSWORD) {
       setError(`Choose a password of at least ${MIN_PASSWORD} characters`);
@@ -33,18 +46,24 @@ export default function ChangePassword({ hasPassword }: { hasPassword: boolean }
     }
 
     setSaving(true);
+    let res: Awaited<ReturnType<typeof changePassword>>;
     try {
-      const res = await changePassword(form);
-      if (res.success) {
-        setMessage(res.message);
-        e.currentTarget.reset();
-      } else {
-        setError(res.message);
-      }
+      res = await changePassword(form);
     } catch {
+      // Only a genuinely failed request reaches here. Anything that goes wrong
+      // *after* the action returned must not be reported as a failed password
+      // change, which is exactly the bug this shape prevents.
       setError("Could not change your password");
+      return;
     } finally {
       setSaving(false);
+    }
+
+    if (res.success) {
+      setMessage(res.message);
+      formEl.reset();
+    } else {
+      setError(res.message);
     }
   };
 
