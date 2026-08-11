@@ -21,6 +21,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  /// When this admin last opened the notification tray. Anything that happened
+  /// after it is unread. Defaulting to now() means the column backfills to the
+  /// migration time, so existing admins do not open the tray to a wall of every
+  /// signup the platform has ever had.
+  notificationsSeenAt DateTime @default(now())
+
   accounts      Account[]
   sessions      Session[]
   authenticators Authenticator[]

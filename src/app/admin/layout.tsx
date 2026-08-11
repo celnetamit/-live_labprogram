@@ -10,6 +10,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import AppShell, { type NavGroup } from "@/components/app-shell";
+import NotificationBell from "./notifications/NotificationBell";
 
 const navGroups: NavGroup[] = [
   {
@@ -42,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       navGroups={navGroups}
       breadcrumbRoot="Admin"
       breadcrumbRootHref="/admin"
-      showBell
+      headerSlot={<NotificationBell />}
     >
       {children}
     </AppShell>

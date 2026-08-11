@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, ChevronRight, Menu, X, type LucideIcon } from "lucide-react";
+import { ChevronRight, Menu, X, type LucideIcon } from "lucide-react";
 import { SignOutButton } from "@/components/SignOutButton";
 import ThemeToggle from "@/components/theme-toggle";
 
@@ -33,7 +33,16 @@ type AppShellProps = {
    */
   breadcrumbRootHref: string;
   accentUser?: boolean;
-  showBell?: boolean;
+  /**
+   * Extra controls for the right of the header, rendered before the theme
+   * toggle.
+   *
+   * A slot rather than a `showBell` flag: the bell now needs admin-only data
+   * and server actions, and this shell is also the student shell. Passing the
+   * rendered element keeps that dependency in the admin layout where it
+   * belongs.
+   */
+  headerSlot?: React.ReactNode;
   children: React.ReactNode;
 };
 
@@ -113,7 +122,7 @@ export default function AppShell({
   breadcrumbRoot,
   breadcrumbRootHref,
   accentUser = false,
-  showBell = false,
+  headerSlot,
   children,
 }: AppShellProps) {
   const pathname = usePathname();
@@ -234,12 +243,7 @@ export default function AppShell({
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            {showBell && (
-              <button className="relative p-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-accent">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
-              </button>
-            )}
+            {headerSlot}
             {/* The theme control occupies the avatar slot rather than sitting
                 beside it — one circle in the corner, not two. */}
             <ThemeToggle
