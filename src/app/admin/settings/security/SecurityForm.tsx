@@ -84,28 +84,11 @@ export default function SecurityForm({ settings }: { settings: PlatformSettings 
               />
             </div>
             <div>
-              <p className="text-sm font-medium">Allow single sign-on</p>
+              <p className="text-sm font-medium">Allow Google sign-in</p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Google and Microsoft sign-in. Turning this off refuses SSO logins even
-                when provider credentials are configured.
-              </p>
-            </div>
-          </label>
-
-          <label className="flex items-start gap-3 p-3 border border-border rounded-lg bg-muted/10 cursor-pointer hover:bg-muted/30 transition-colors">
-            <div className="pt-0.5">
-              <input
-                type="checkbox"
-                name="allowBiometrics"
-                defaultChecked={settings.allowBiometrics}
-                className="w-4 h-4 accent-primary"
-              />
-            </div>
-            <div>
-              <p className="text-sm font-medium">Allow biometric sign-in</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Passkeys unlocked by fingerprint, face or a security key. Turning this off
-                refuses passkey logins and hides enrolment.
+                The &quot;Continue with Google&quot; button on the login and register
+                screens. Turning this off refuses Google logins even when the OAuth
+                credentials are configured.
               </p>
             </div>
           </label>

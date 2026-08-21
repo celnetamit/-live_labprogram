@@ -78,6 +78,8 @@ NEXTAUTH_URL=https://your-domain.com
 DATABASE_URL=postgresql://postgres:PASSWORD@<service-name>:5432/postgres?schema=public
 
 # ---------- Optional ----------
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
 LAB_SOURCE_URL=
@@ -88,6 +90,8 @@ LAB_SOURCE_URL=
 | `NEXTAUTH_SECRET` | ✅ | Session encryption key. Generate: `openssl rand -base64 32` |
 | `NEXTAUTH_URL` | ✅ | Full public URL of your deployment (must match exactly, no trailing slash) |
 | `DATABASE_URL` | ✅ | Internal Postgres URL from Step 1. Append `?schema=public` if missing. |
+| `GOOGLE_CLIENT_ID` | ❌ | "Continue with Google" on the login and register pages. Both Google variables must be set or the button stays disabled. See below. |
+| `GOOGLE_CLIENT_SECRET` | ❌ | Paired with the client ID above. |
 | `RAZORPAY_KEY_ID` | ❌ | Live payments. Leave blank to use built-in mock checkout. |
 | `RAZORPAY_KEY_SECRET` | ❌ | Live payments. |
 | `LAB_SOURCE_URL` | ❌ | External API to re-sync lab data. Falls back to committed snapshot if unset. |
@@ -96,6 +100,28 @@ Generate a secret:
 ```bash
 openssl rand -base64 32
 ```
+
+#### Enabling "Continue with Google"
+
+1. [console.cloud.google.com](https://console.cloud.google.com) → **APIs & Services →
+   OAuth consent screen**. Pick **External**, fill in the app name, support email
+   and developer contact, then add the scopes `openid`, `.../auth/userinfo.email`
+   and `.../auth/userinfo.profile`. While the app is in **Testing** only the
+   accounts listed under *Test users* can sign in — **Publish** it to open sign-in
+   to everyone.
+2. **Credentials → Create credentials → OAuth client ID → Web application**:
+   - *Authorised JavaScript origins*: `https://your-domain.com`
+   - *Authorised redirect URI*: `https://your-domain.com/api/auth/callback/google`
+
+   The redirect URI must match `NEXTAUTH_URL` exactly — same scheme, same host,
+   no trailing slash — or Google answers `redirect_uri_mismatch`.
+3. Put the client ID and secret into the two environment variables above and
+   redeploy. The button on `/login` and `/register` enables itself once
+   `/api/auth/providers` reports the provider.
+4. An admin can still switch it off platform-wide at
+   **/admin/settings/security → Allow Google sign-in**, and with public
+   registration closed a Google address that has no account is refused rather
+   than silently signed up.
 
 ---
 
@@ -180,6 +206,9 @@ Set `LAB_SOURCE_URL` and redeploy, or run inside the Coolify app terminal:
 ```bash
 node scripts/import-labs.mjs
 ```
+
+**Enable Google sign-in**
+Add `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` (see Step 4) and redeploy.
 
 **Enable live payments**
 Add `RAZORPAY_KEY_ID` + `RAZORPAY_KEY_SECRET` in environment variables and redeploy.

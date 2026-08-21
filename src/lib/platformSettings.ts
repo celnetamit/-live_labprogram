@@ -18,7 +18,6 @@ export type PlatformSettings = {
   minPasswordLength: number;
   sessionDays: number;
   allowSso: boolean;
-  allowBiometrics: boolean;
   mailFromName: string;
   mailReplyTo: string | null;
 };
@@ -35,7 +34,6 @@ export const SETTING_DEFAULTS: PlatformSettings = {
   minPasswordLength: 8,
   sessionDays: 30,
   allowSso: true,
-  allowBiometrics: true,
   mailFromName: "Panoptical Labs",
   mailReplyTo: null,
 };
@@ -61,7 +59,6 @@ export async function getSettings(): Promise<PlatformSettings> {
       minPasswordLength: row.minPasswordLength,
       sessionDays: row.sessionDays,
       allowSso: row.allowSso,
-      allowBiometrics: row.allowBiometrics,
       mailFromName: row.mailFromName,
       mailReplyTo: row.mailReplyTo,
     };

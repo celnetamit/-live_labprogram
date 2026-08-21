@@ -49,7 +49,7 @@ export async function updateProfile(formData: FormData) {
 
 /**
  * Change the password, or set a first one for an account that has only ever
- * signed in through SSO or a passkey.
+ * signed in through Google.
  */
 export async function changePassword(formData: FormData) {
   const sessionUser = await requireUser();
@@ -146,8 +146,8 @@ export async function deleteAccount(confirmation: string) {
     }
   }
 
-  // Sessions, lab access, orders, access requests, passkeys and reset tokens
-  // all cascade from the User row.
+  // Sessions, lab access, orders, access requests and reset tokens all cascade
+  // from the User row.
   await prisma.user.delete({ where: { id: user.id } });
 
   return { success: true as const, message: "Account deleted." };

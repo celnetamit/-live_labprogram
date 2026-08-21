@@ -5,23 +5,20 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Lock, Mail, Fingerprint, Key, Loader2 } from "lucide-react";
-import { biometricsAvailable, signInWithPasskey, PasskeyError } from "@/lib/passkeyClient";
+import { ArrowLeft, Lock, Mail, Loader2 } from "lucide-react";
+import GoogleSignInButton from "@/components/google-sign-in-button";
 
-/** Icon-free labels for the SSO buttons, keyed by NextAuth provider id. */
-const SSO_LABELS: Record<string, string> = {
-  google: "Google",
-  "azure-ad": "Microsoft",
+/** What a failed Google round-trip comes back as, in words. */
+const OAUTH_ERRORS: Record<string, string> = {
+  AccessDenied: "Google sign-in is switched off for this platform",
+  OAuthAccountNotLinked:
+    "That Google address already belongs to an account created another way",
 };
 
 export default function Login() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [bioBusy, setBioBusy] = useState(false);
-  const [bioSupported, setBioSupported] = useState(false);
-  const [ssoProviders, setSsoProviders] = useState<{ id: string; name: string }[]>([]);
-  const [showSso, setShowSso] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -38,45 +35,17 @@ export default function Login() {
       if (session?.user) {
         const role = (session.user as { role?: string } | undefined)?.role;
         handleRedirect(role, true);
+        return;
       }
+
+      /*
+        Google sends the user back here with ?error=… when it refuses; without
+        this they would land on a blank login form with no idea what went wrong.
+      */
+      const code = new URLSearchParams(window.location.search).get("error");
+      if (code) setError(OAUTH_ERRORS[code] ?? "Google sign-in failed");
     });
   }, []);
-
-  /*
-    Offer biometrics only where the device can actually do it, and SSO only for
-    providers the deployment has configured — otherwise the buttons are a dead
-    end, which is what they were before.
-  */
-  useEffect(() => {
-    biometricsAvailable().then(setBioSupported);
-
-    fetch("/api/auth/providers")
-      .then((r) => r.json())
-      .then((all) => {
-        const oauth = Object.values(all ?? {})
-          .filter((p: any) => p?.type === "oauth" || p?.type === "oidc")
-          .map((p: any) => ({ id: p.id, name: SSO_LABELS[p.id] ?? p.name }));
-        setSsoProviders(oauth);
-      })
-      .catch(() => setSsoProviders([]));
-  }, []);
-
-  const handleBiometricLogin = async () => {
-    setBioBusy(true);
-    setError("");
-    try {
-      const res = await signInWithPasskey(formData.email || undefined);
-      if (!res || res.error) {
-        throw new PasskeyError("That device isn't registered for any account here");
-      }
-      const session = await getSession();
-      handleRedirect((session?.user as { role?: string } | undefined)?.role);
-    } catch (err) {
-      setError(err instanceof PasskeyError ? err.message : "Biometric sign-in failed");
-    } finally {
-      setBioBusy(false);
-    }
-  };
 
   const handleRedirect = async (role: string | undefined, forceRedirect = true) => {
     let dest = role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
@@ -218,63 +187,11 @@ export default function Login() {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground rounded-sm">Or continue with</span>
+              <span className="bg-card px-2 text-muted-foreground rounded-sm">Or</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={handleBiometricLogin}
-              disabled={bioBusy || !bioSupported}
-              title={
-                bioSupported
-                  ? "Sign in with your fingerprint, face or security key"
-                  : "This device has no biometric sensor set up"
-              }
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-            >
-              {bioBusy ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Fingerprint className="mr-2 h-4 w-4" />
-              )}
-              Biometrics
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowSso((v) => !v)}
-              disabled={ssoProviders.length === 0}
-              title={
-                ssoProviders.length
-                  ? "Sign in with your organisation account"
-                  : "No SSO provider is configured for this deployment"
-              }
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-            >
-              <Key className="mr-2 h-4 w-4" />
-              SSO
-            </button>
-          </div>
-
-          {showSso && ssoProviders.length > 0 && (
-            <div className="mt-3 space-y-2">
-              {ssoProviders.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() =>
-                    // Absolute, for the same reason sign-out is: a relative URL
-                    // resolves against NEXTAUTH_URL, not the current host.
-                    signIn(p.id, { callbackUrl: `${window.location.origin}/dashboard` })
-                  }
-                  className="inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  Continue with {p.name}
-                </button>
-              ))}
-            </div>
-          )}
+          <GoogleSignInButton />
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             Don't have an account?{" "}

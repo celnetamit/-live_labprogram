@@ -3,40 +3,18 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { verifyPasskeyAssertion } from "@/lib/passkeyAuth";
 import { ssoProviders } from "@/lib/ssoProviders";
 import { getSettings } from "@/lib/platformSettings";
 
 export const authOptions = {
   /*
-    The adapter persists OAuth identities (Account rows) so a Google or
-    Microsoft user is linked to one Panoptical account across sign-ins. Sessions
-    stay JWT-backed — required, because credentials and passkey sign-ins never
-    touch the adapter.
+    The adapter persists OAuth identities (Account rows) so a Google user is
+    linked to one Panoptical account across sign-ins. Sessions stay JWT-backed —
+    required, because credentials sign-ins never touch the adapter.
   */
   adapter: PrismaAdapter(prisma) as never,
   providers: [
     ...ssoProviders(),
-    /*
-      Biometric sign-in. The browser has already had the device verify the
-      user's fingerprint or face locally; what arrives here is a signature over
-      our one-time challenge, which `verifyPasskeyAssertion` checks against the
-      stored public key.
-    */
-    CredentialsProvider({
-      id: "passkey",
-      name: "Passkey",
-      credentials: {
-        response: { label: "Assertion", type: "text" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.response) return null;
-        // An administrator can switch biometric sign-in off platform-wide.
-        const { allowBiometrics } = await getSettings();
-        if (!allowBiometrics) return null;
-        return await verifyPasskeyAssertion(credentials.response);
-      },
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -73,13 +51,23 @@ export const authOptions = {
   ],
   callbacks: {
     /*
-      Platform-level gate on SSO. Credentials and passkey sign-ins are handled
-      by their own providers; this only has to refuse OAuth ones.
+      Platform-level gate on Google sign-in. The credentials provider handles
+      its own rules; this only has to refuse OAuth ones — both when Google is
+      switched off entirely, and when it would silently create an account on a
+      platform whose registration is closed.
     */
-    async signIn({ account }: any) {
+    async signIn({ account, user }: any) {
       if (account?.type === "oauth" || account?.type === "oidc") {
-        const { allowSso } = await getSettings();
+        const { allowSso, allowPublicRegistration } = await getSettings();
         if (!allowSso) return false;
+
+        if (!allowPublicRegistration && user?.email) {
+          const known = await prisma.user.findUnique({
+            where: { email: user.email },
+            select: { id: true },
+          });
+          if (!known) return false;
+        }
       }
       return true;
     },

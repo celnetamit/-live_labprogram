@@ -89,7 +89,10 @@ model PlatformSetting {
   minPasswordLength       Int      @default(8)
   /// How long a signed-in session stays valid, in days.
   sessionDays             Int      @default(30)
+  /// Google sign-in — the "Continue with Google" button on /login and /register.
   allowSso                Boolean  @default(true)
+  /// Unused since biometric sign-in was removed; kept so the column is not
+  /// dropped by `prisma db push` on an existing database.
   allowBiometrics         Boolean  @default(true)
 
   // --- Email ---

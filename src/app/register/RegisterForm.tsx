@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, Lock, Mail, User, ShieldCheck, Loader2 } from "lucide-react";
+import GoogleSignInButton from "@/components/google-sign-in-button";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -139,6 +140,22 @@ export default function RegisterForm() {
               {loading ? "Creating..." : "Create Account"}
             </button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground rounded-sm">Or</span>
+            </div>
+          </div>
+
+          {/*
+            Google accounts skip the request-access form entirely: the provider
+            has already proved the address, so the first sign-in creates the
+            account and lands on the dashboard.
+          */}
+          <GoogleSignInButton label="Sign up with Google" />
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             Already have an account?{" "}

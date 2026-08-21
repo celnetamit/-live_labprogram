@@ -2,15 +2,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import { KeyRound, Fingerprint, Building2, ShieldCheck } from "lucide-react";
-import BiometricSettings from "../BiometricSettings";
+import { KeyRound, Building2, ShieldCheck } from "lucide-react";
 import ChangePassword from "./ChangePassword";
 
 export const dynamic = "force-dynamic";
 
 const PROVIDER_LABEL: Record<string, string> = {
   google: "Google",
-  "azure-ad": "Microsoft",
 };
 
 /** Security — how you get into this account, and how to change it. */
@@ -24,7 +22,6 @@ export default async function SecuritySettingsPage() {
       id: true,
       password: true,
       accounts: { select: { provider: true } },
-      _count: { select: { authenticators: true } },
     },
   });
   if (!user) redirect("/login");
@@ -37,16 +34,8 @@ export default async function SecuritySettingsPage() {
       active: !!user.password,
     },
     {
-      icon: Fingerprint,
-      label: "Biometrics / passkeys",
-      state: user._count.authenticators
-        ? `${user._count.authenticators} device${user._count.authenticators === 1 ? "" : "s"}`
-        : "None enrolled",
-      active: user._count.authenticators > 0,
-    },
-    {
       icon: Building2,
-      label: "Single sign-on",
+      label: "Google",
       state: user.accounts.length
         ? user.accounts.map((a) => PROVIDER_LABEL[a.provider] ?? a.provider).join(", ")
         : "Not linked",
@@ -65,12 +54,12 @@ export default async function SecuritySettingsPage() {
           <div>
             <h2 className="text-lg font-bold">Sign-in methods</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Keep at least two available so losing one doesn&apos;t lock you out.
+              Keep both available so losing one doesn&apos;t lock you out.
             </p>
           </div>
         </div>
 
-        <ul className="mt-5 grid gap-3 sm:grid-cols-3">
+        <ul className="mt-5 grid gap-3 sm:grid-cols-2">
           {methods.map((m) => (
             <li key={m.label} className="rounded-lg border border-border bg-background/40 p-4">
               <div className="flex items-center gap-2 text-muted-foreground">
@@ -90,8 +79,6 @@ export default async function SecuritySettingsPage() {
       </div>
 
       <ChangePassword hasPassword={!!user.password} />
-
-      <BiometricSettings />
     </>
   );
 }

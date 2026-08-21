@@ -72,12 +72,8 @@ export async function saveSecuritySettings(formData: FormData) {
   );
 
   const allowSso = bool(formData, "allowSso");
-  const allowBiometrics = bool(formData, "allowBiometrics");
 
-  await saveSettings(
-    { minPasswordLength, sessionDays, allowSso, allowBiometrics },
-    admin.email
-  );
+  await saveSettings({ minPasswordLength, sessionDays, allowSso }, admin.email);
 
   revalidateSettings();
   return {

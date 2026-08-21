@@ -7,7 +7,7 @@ import { changePassword } from "../actions";
 const MIN_PASSWORD = 8;
 
 /**
- * Change (or, for an SSO-only account, set) the password. Proving the current
+ * Change (or, for a Google-only account, set) the password. Proving the current
  * one first stops a borrowed unlocked laptop being turned into a permanent
  * takeover.
  */
@@ -78,7 +78,7 @@ export default function ChangePassword({ hasPassword }: { hasPassword: boolean }
           <p className="mt-1 max-w-xl text-sm text-muted-foreground">
             {hasPassword
               ? "You'll need your current password to set a new one."
-              : "This account signs in through SSO or a passkey. Adding a password gives you another way in."}
+              : "This account signs in with Google. Adding a password gives you another way in."}
           </p>
         </div>
       </div>
