@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { verifyLabToken } from "@/lib/labTokens";
+import { generateLabSessionToken, verifyLabToken } from "@/lib/labTokens";
 import { decode } from "next-auth/jwt";
 import { hasLabAccess } from "@/lib/access";
 
@@ -260,6 +260,23 @@ export async function POST(req: Request) {
       userAgent,
     });
 
+    /*
+     * A session token for the lab to call back with.
+     *
+     * The launch token cannot serve here: it lives five minutes because it
+     * travels in a URL, and it is replay-checked above, so a lab using it as an
+     * API credential would stop working part-way through the learner's first
+     * project. This one is issued only now — after the token, the account and
+     * the lab access have all been checked — is returned in a body rather than
+     * a URL, and is marked `kind: "session"` so it cannot be replayed as a
+     * launch link.
+     */
+    const SESSION_TTL_SECONDS = 12 * 60 * 60;
+    const sessionToken = generateLabSessionToken(
+      { userId: user.id, email: user.email, role: user.role || "USER", labId: lab.id },
+      SESSION_TTL_SECONDS
+    );
+
     return NextResponse.json(
       {
         authorized: true,
@@ -274,6 +291,8 @@ export async function POST(req: Request) {
           slug: lab.slug,
           name: lab.name,
         },
+        sessionToken,
+        sessionExpiresAt: new Date(Date.now() + SESSION_TTL_SECONDS * 1000).toISOString(),
       },
       { status: 200, headers: corsHeaders }
     );

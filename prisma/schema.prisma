@@ -37,6 +37,7 @@ model User {
   accessRequests AccessRequest[]
   orders        Order[]
   customLabRequests CustomLabRequest[]
+  labProjects   LabProject[]
 }
 
 model Account {
@@ -370,4 +371,39 @@ model AuthorizationLog {
   @@index([userId, status])
   @@index([createdAt])
   @@map("authorization_logs")
+}
+
+/// Work a learner saved inside a lab, so it follows their account rather than
+/// their browser.
+///
+/// Labs run on their own origins and previously kept project history in
+/// localStorage, which meant a learner who signed in from a second machine
+/// found an empty lab. This table is the account-scoped store behind that.
+///
+/// `payload` is opaque to the hub on purpose. Each lab owns the shape of its
+/// own results, and the hub has no business parsing metagenomics output to save
+/// it — it stores what the lab sends and hands it back unchanged. `title` and
+/// `summary` are duplicated out of it only so the hub can list projects without
+/// deserialising every payload.
+///
+/// No raw scientific input is stored here. MicrobeAI, for one, never sends
+/// sequence data: its own retention rule is that reads do not outlive the tab.
+model LabProject {
+  id        String   @id @default(cuid())
+  userId    String
+  labId     String
+  /// The lab's own identifier for the project, unique within a lab per user.
+  projectRef String
+  title     String
+  /// Short human-readable status line for the list view.
+  summary   String?
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, labId, projectRef])
+  @@index([userId, labId, updatedAt])
+  @@map("lab_projects")
 }
