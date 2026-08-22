@@ -18,13 +18,22 @@ import { labCorsHeaders, readLabToken, resolveLabApiSession } from "@/lib/labSes
  * as the only grant, and every other outcome — including this route being
  * unreachable — as a refusal. So a bug here fails closed.
  *
- * Two things grant access, and both are facts already in the database rather
- * than anything the lab could assert:
+ * Two things grant it, and both are facts already in the database rather than
+ * anything the lab could assert:
  *
- *   - a platform administration role, which the hub's own `hasLabAccess`
+ *   - the SUPER_ADMIN platform role, which the hub's own `hasLabAccess`
  *     already short-circuits on;
- *   - a current, non-expired LabAccess row, which is what a purchase writes.
+ *   - a current, non-expired LabAccess row *at the ADVANCED tier*.
+ *
+ * That last qualifier is the whole point, and getting it wrong once already
+ * handed the premium tier to every learner who had merely bought the lab. A
+ * LabAccess row means "may open this lab", which is what a standard purchase
+ * writes; the premium tier is a separate thing sold on top, and it is the
+ * `tier` column that says so.
  */
+
+/** Grants that cover a lab's premium tier. */
+const PREMIUM_TIERS = new Set(["ADVANCED"]);
 
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: labCorsHeaders });
@@ -65,7 +74,7 @@ export async function POST(req: Request) {
 
   if (!access) {
     return NextResponse.json(
-      { entitled: false, reason: "This account does not hold paid access to this lab's premium tier." },
+      { entitled: false, reason: "This account does not hold access to this lab." },
       { headers: labCorsHeaders }
     );
   }
@@ -74,8 +83,24 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         entitled: false,
-        reason: `Paid access to this lab expired on ${access.expiresAt.toISOString().slice(0, 10)}.`,
+        reason: `Access to this lab expired on ${access.expiresAt.toISOString().slice(0, 10)}.`,
         expiresAt: access.expiresAt.toISOString(),
+      },
+      { headers: labCorsHeaders }
+    );
+  }
+
+  if (!PREMIUM_TIERS.has((access.tier || "STANDARD").toUpperCase())) {
+    /*
+     * Has the lab, has not bought the tier. Said in those terms rather than as
+     * a flat refusal, because the learner *is* a paying customer and being told
+     * "you have not paid" would be both wrong and insulting.
+     */
+    return NextResponse.json(
+      {
+        entitled: false,
+        reason:
+          "This account has access to the lab but not to its Advanced tier, which is purchased separately.",
       },
       { headers: labCorsHeaders }
     );
@@ -84,7 +109,7 @@ export async function POST(req: Request) {
   return NextResponse.json(
     {
       entitled: true,
-      plan: access.source === "PURCHASE" ? "purchased" : "granted",
+      plan: access.source === "PURCHASE" ? "advanced-purchased" : "advanced-granted",
       expiresAt: access.expiresAt ? access.expiresAt.toISOString() : null,
     },
     { headers: labCorsHeaders }

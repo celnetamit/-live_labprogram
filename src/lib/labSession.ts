@@ -42,7 +42,12 @@ export type LabApiFailure = {
   message: string;
 };
 
-const ADMIN_ROLES = new Set(["ADMIN", "SUPER_ADMIN"]);
+/*
+ * Only SUPER_ADMIN. `hasLabAccess` short-circuits on that role and no other, so
+ * including ADMIN here would have made this route disagree with the rest of the
+ * platform about what an administrator is.
+ */
+const ADMIN_ROLES = new Set(["SUPER_ADMIN"]);
 
 /** Pull the token from an Authorization header, falling back to the body. */
 export function readLabToken(req: Request, body?: Record<string, unknown>): string | null {

@@ -277,6 +277,16 @@ model LabAccess {
   expiresAt DateTime?
   grantedBy String?  // Admin ID who granted
   source    String   @default("ADMIN") // ADMIN | PURCHASE
+  /// Which tier of the lab this grant covers.
+  ///
+  /// A row in this table means "may open this lab at all", which is what every
+  /// purchaser has. Some labs also sell a premium tier on top — MicrobeAI's
+  /// Advanced Mode is one — and conflating the two hands the premium tier to
+  /// everyone who bought the lab. STANDARD is the default precisely so that
+  /// existing grants do not silently become premium ones.
+  ///
+  /// STANDARD | ADVANCED
+  tier      String   @default("STANDARD")
   orderId   String?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
