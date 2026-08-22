@@ -1,185 +1,320 @@
 import type { LabGuide } from "./types";
 
 /**
- * MicrobeAI Lab — https://micro.live-labs.org/
+ * MicrobeAI BioLab — https://micro.live-labs.org/
  *
- * Four sidebar modules (Knowledge Bank, Visualizer, Virtual Lab, Assessment).
- * The Virtual Lab holds the two experiments: Metagenomic Profiler and
- * Bioreactor Simulator.
+ * Rewritten against the Final Developer Implementation & Public Launch
+ * Document (NSTC / NanoSchool, 19 August 2026). The previous guide described a
+ * lab that no longer exists: it told learners to open a "Metagenomic Profiler"
+ * tab and press "Run Analysis", and neither control is there any more. A
+ * tutorial that names buttons which do not exist is worse than no tutorial,
+ * because the learner assumes they are the ones who have gone wrong.
  *
- * Both experiments now compute locally and deterministically — the eight demo
- * datasets and the whole digester model — so every claim below holds on every
- * run. Only an uploaded file goes to a language model.
+ * §5.1 requires the tutorial to assume the BioLab is open alongside this page
+ * and to walk the exact final workflow, so the eight steps below are §6's eight
+ * steps, in §6's order, using the lab's real control names.
+ *
+ * Every number in an `expect` line was measured by running the lab's own
+ * engines, not estimated. The datasets are generated deterministically, so a
+ * learner sees the same figures — and if the model changes, these lines become
+ * wrong and should be re-measured rather than quietly rounded.
  */
 const guide: LabGuide = {
   slug: "micro-ai",
 
   summary: {
     tagline:
-      "Find out which microbes live in a sample, then feed them in a digester and see how much biogas you can get out.",
-    what: "Most microbes refuse to grow in a dish, so scientists read their DNA instead. This lab lets you do both halves of that job: first find out who lives in a sample of gut, sludge or soil, then run a digester and watch how temperature, pH and feed change the amount of biogas those microbes produce.",
-    why: "Microbes do real industrial work. They turn waste into methane, clean our water, and digest our food. Sequencing them is now cheap — the skill in short supply is reading what comes back and knowing which dial to turn.",
-    whoFor: "Biology, biotech and environmental engineering students. No coding and no command line. If you know roughly what DNA is, you can start here.",
+      "Read the DNA of a whole microbial community, then run the digester those microbes live in and watch what makes it fail.",
+
+    what:
+      "Fewer than one microbe in a hundred will grow in a laboratory dish, so most of what lives in soil, sludge or a human gut has never been cultured. Metagenomics gets around that by skipping cultivation entirely: extract all the DNA in a sample at once and read it. This lab takes you through that workflow end to end — inspect the sequence file, quality-control it, find out which organisms are there and in what proportion, work out what that community could do chemically, and then run an anaerobic digester to see how temperature, pH, feedstock and retention time change how much methane those organisms give you.",
+
+    why:
+      "Anaerobic digestion is microbiology doing industrial work. The same four-stage microbial chain runs sewage works, farm digesters and the biogas plants that turn food waste into fuel, and when it fails it fails for microbiological reasons that show up in the data days before the gas output drops. Sequencing is now cheap enough that the bottleneck is no longer generating the data. It is reading it honestly — knowing what a percentage in a community profile actually refers to, and knowing which claims the data will not support.",
+
+    whoFor:
+      "Biology, biotechnology and environmental engineering students, and process engineers who want to understand what the biology is doing. No coding, no command line. If you know what DNA is and roughly what a species is, you have enough to begin.",
+
     outcomes: [
-      "Say what each stage of a metagenomics pipeline does to the data",
-      "Read a community profile and name the organisms that dominate it",
-      "Predict how temperature, pH, feed and retention time change biogas yield",
-      "Explain why a digester goes sour, and how to spot it in the numbers",
-      "Explain why growing microbes in a dish misses almost all of them",
+      "Inspect a sequence file and say what it is from its contents, not its filename",
+      "Read a quality-control report and explain which analyses it does and does not permit",
+      "Interpret a community profile, including the unclassified fraction and what a relative abundance really measures",
+      "Tell a detected result from an inferred one, and say why the difference matters",
+      "Name the four stages of anaerobic digestion and the organisms that run each",
+      "Predict how temperature, pH, feedstock and retention time change biogas yield, and explain the mechanism",
+      "Recognise the microbial signature of a souring digester before the gas output falls",
     ],
   },
 
   /*
-   * A captioned walkthrough: a title card stating the problem, on-screen
-   * guidance over every action, and a closing card telling the learner what to
-   * do next. The earlier cut was a silent click-through that never explained
-   * why any of it mattered.
+   * The recorded walkthrough shows the previous version of the lab — the old
+   * two-experiment layout, with controls that have since been replaced. Rather
+   * than leave a video that contradicts the running application, the section
+   * renders the chapter list for the walkthrough to be recorded against the
+   * final workflow. A learner following a video of a UI that no longer exists
+   * concludes the lab is broken, which is the opposite of what a demo is for.
    */
   video: {
-    url: "/demos/micro-ai.mp4",
-    poster: "/demos/micro-ai.jpg",
-    durationSec: 93,
+    url: null,
+    /*
+     * No runtime: the walkthrough has not been recorded yet, and a duration for
+     * a video that does not exist would be a guess presented as a fact. The
+     * chapter offsets below are a shot plan for whoever records it, which is
+     * what this section is for until a file lands.
+     */
     chapters: [
-      { at: 0, label: "Why this lab exists" },
-      { at: 9, label: "Knowledge Bank — the words you need first" },
-      { at: 14, label: "Experiment 1 — the Metagenomic Profiler" },
-      { at: 24, label: "Pick a demo dataset and run it" },
-      { at: 28, label: "Reading a healthy gut profile" },
-      { at: 40, label: "Compare it with an acid mine drainage site" },
-      { at: 53, label: "Experiment 2 — the Bioreactor Simulator" },
-      { at: 57, label: "A baseline at 37 °C and pH 7" },
-      { at: 69, label: "Drop pH to 5.5 and watch it sour" },
-      { at: 88, label: "What to do next" },
+      {
+        at: 0,
+        label: "The problem: most microbes will not grow in a dish",
+        shot: "Title card, then the Getting started screen with the three goal cards visible.",
+        say: "Fewer than one percent of microbes will grow in a laboratory. So we read the DNA of the whole community at once instead.",
+      },
+      {
+        at: 20,
+        label: "Choosing a goal, and what a goal actually sets",
+        shot: "Click 'Explore anaerobic digestion', then 'Start with this goal'.",
+        say: "The goal sets the objective, loads a dataset, and decides where you land. It does not skip anything.",
+      },
+      {
+        at: 40,
+        label: "Step 1 of 4 — what was loaded",
+        shot: "The Input summary panel: file name, size, expected type, detected format, SHA-256.",
+        say: "Before any result, the lab shows you what it is about to analyse — including the format it read out of the bytes, not the file extension.",
+      },
+      {
+        at: 65,
+        label: "Steps 2 and 3 — inspection, then format-specific QC",
+        shot: "Click through Inspection and QC. Show the QC route banner and the verdict badge.",
+        say: "The content is inspected, then quality control runs — and which QC runs depends on what the file actually contains.",
+      },
+      {
+        at: 95,
+        label: "Step 4 — what the data will and will not support",
+        shot: "The eligibility table, showing Eligible, Eligible with limitations and Module not built side by side.",
+        say: "Eligibility is decided per analysis. Some things this data cannot support, and some this build does not implement — and those are different statements.",
+      },
+      {
+        at: 125,
+        label: "The community, and drilling into a phylum",
+        shot: "Community profile: pie chart, then click the Euryarchaeota slice to open the species graph.",
+        say: "Thirty-seven percent archaea. Click the slice and you see which three methanogens they are.",
+      },
+      {
+        at: 160,
+        label: "Function is inferred here, not detected",
+        shot: "Functional potential, with the red banner at the top in frame, then Traits and guilds.",
+        say: "No gene was detected anywhere in this build. Everything functional is inferred from which organisms were found, and the screen says so.",
+      },
+      {
+        at: 195,
+        label: "The Bioreactor, and souring it on purpose",
+        shot: "Educational Simulator at pH 7 (0.535), then pH 5.5 (0.056). Show the mandatory label both times.",
+        say: "Drop the pH and the yield falls to about a tenth. That is how a real digester dies — and the label never calls this a prediction.",
+      },
+      {
+        at: 225,
+        label: "Finishing Basic, and what comes next",
+        shot: "Assessment, then the Unlock Moderate Mode button on the Access screen.",
+        say: "Finish the Bioreactor step, take the assessment, and Moderate unlocks. Advanced is a separate paid tier.",
+      },
     ],
   },
 
   prerequisites: [
-    "School-level biology — what DNA is, and roughly what a species is",
-    "A desktop browser for the 3D visualiser",
-    "Nothing to download. The eight demo datasets run offline, instantly",
+    "Open the lab in a second tab and put it side by side with this page — every step below names a control you click in the lab",
+    "School-level biology: what DNA is, and roughly what a species is",
+    "A desktop browser. Nothing to install, and no command line at any point",
+    "No data of your own is needed. The lab ships nine curated datasets, including a deliberately failed sequencing run",
+    "Expect about an hour for the full workflow. It saves as you go, so you can stop and come back",
   ],
 
   steps: [
     {
-      title: "Learn the words first",
-      goal: "Pick up the handful of terms the experiments use without explaining.",
+      title: "Learn the words the results are written in",
+      goal: "Pick up the vocabulary the rest of the workflow uses without stopping to explain.",
       actions: [
-        "Open **Knowledge Bank** in the sidebar.",
-        "Read the entries on metagenomics, taxonomic ranks, anaerobic digestion and the 16S rRNA gene.",
-        "Check you can order the ranks from Kingdom down to Species.",
+        "In the lab sidebar, under **LEARN**, open **Knowledge Bank**.",
+        "Read the entries on metagenomics, taxonomic ranks, functional potential and anaerobic digestion.",
+        "Pay particular attention to four words the lab uses precisely: **detected**, **inferred**, **predicted** and **unknown**.",
       ],
-      expect: "You can say how a genus differs from a species, and how a metagenome differs from a genome.",
-      why: "Results come back at several taxonomic levels at once. Without the hierarchy in your head, a composition chart is just coloured bars.",
+      expect:
+        "You can say how a metagenome differs from a genome, order the taxonomic ranks from domain down to species, and explain why 'this organism was detected' and 'this function was inferred' are different kinds of claim.",
+      why:
+        "Those four words are the backbone of every result screen in this lab. Detected means something in your file matched a rule. Inferred means an organism was identified and a curated reference says organisms like it can do a particular thing — no gene was looked for at all. Confusing the two is the most common way metagenomics gets over-read, in student work and in published papers alike.",
       minutes: 8,
     },
+
     {
-      title: "Run your first sample",
-      goal: "Get a community profile out of the machine.",
+      title: "Start a guided analysis from a goal",
+      goal: "Load a real dataset through the real pipeline, and see what it is before anything is computed from it.",
       actions: [
-        "Open **Virtual Lab**. It opens on the **Metagenomic Profiler** tab.",
-        "Under **Or select example data**, choose **Demo Data: Healthy Gut Microbiome**.",
-        "Click **Run Analysis**.",
+        "Open **Getting started** under **LEARN**.",
+        "Choose **Explore anaerobic digestion**. This is the thread the rest of the tutorial follows.",
+        "Press **Start with this goal**.",
       ],
-      expect: "A composition chart, a ranked species list and a short written interpretation. Bacteroidetes and Firmicutes together take about 80% of a healthy gut.",
-      why: "The demo datasets are computed on your own machine, so they are instant, work offline, and give the same answer every time. That matters: you need a fixed reference before you can tell whether anything you change later made a difference.",
-      minutes: 8,
+      expect:
+        "The lab loads *Anaerobic digester sludge* and takes you to **QC & eligibility**, which opens on step 1 of 4, **Input summary** — the file name, its size in bytes, the input type you declared, the format detected from the content, and a SHA-256 checksum. No microbial result is on screen yet.",
+      why:
+        "The ordering is deliberate and it is the point of this step. You are shown what is about to be analysed before you are shown any conclusion drawn from it. The curated datasets are real files that go through the identical pipeline — validation, inspection, quality control and classification — rather than stored answers. That is what makes them usable as a reference: change the file and every number downstream changes with it.",
+      minutes: 6,
     },
+
     {
-      title: "Read the result, don't just look at it",
-      goal: "Turn the chart into a sentence about the sample.",
+      title: "Walk the four steps that come before any result",
+      goal: "Understand what the data is, whether it is any good, and which analyses that permits.",
       actions: [
-        "Find the two phyla that dominate, and note roughly what share they hold.",
-        "Look down the species list — several are butyrate producers, which feed the cells lining your colon.",
-        "Read the lab's interpretation, then check it against the chart yourself.",
+        "On **Input summary**, note that *Detected format* says it was read from the content, not the extension.",
+        "Press **Next: inspect the content**. Read the measured record count, length range and alphabet.",
+        "Press **Next: run format-specific QC**, then **Run format-specific QC and analysis**.",
+        "When the verdict appears, press **Next: analysis eligibility** and read the whole table.",
       ],
-      expect: "You can describe the sample in one sentence, and point to the numbers that back it up.",
-      why: "These percentages are relative, not absolute. They tell you the proportions in the sample, never how many cells there are. Two samples with identical charts can differ enormously in total biomass — mixing those up is the most common beginner error.",
-      minutes: 8,
-    },
-    {
-      title: "Compare two very different worlds",
-      goal: "See how much the shape of a profile tells you on its own.",
-      actions: [
-        "Run **Demo Data: Acid Mine Drainage** and look at how few groups there are.",
-        "Now run **Demo Data: Bioreactor Sludge** and notice the archaea — nearly a third of it.",
-        "Compare both against the gut sample you started with.",
-      ],
-      expect: "Acid mine drainage is dominated by one genus. Sludge is rich in methanogens. The gut sits in between.",
-      why: "A flat, even profile means many niches and a stable habitat. A spiky one means harsh conditions where only a few organisms cope. You can read that off the shape before you know a single species name.",
+      expect:
+        "Inspection reports 4,000 FASTQ records and confirms every sampled residue is nucleotide. QC returns **PASS** — mean quality Q34, 93.6% of bases at Q30 or above, GC 45.5%. The eligibility table then shows *Community composition: Eligible*, *Functional profiling: Eligible with limitations*, and *Assembly*, *MAG recovery* and *Biosynthetic gene clusters* all as **Module not built**.",
+      why:
+        "Quality control here is not one pass-or-fail stamp. A sample can be perfectly good for asking who is present and useless for asking what genes they carry, so eligibility is decided per analysis and each verdict carries its reason. Read the three kinds of 'no' carefully, because they mean different things: *Not eligible* means this data cannot support it, *Not applicable* means the question does not arise for this kind of file, and *Module not built* means the analysis does not exist in this deployment at all. A platform that blurred those together would be implying capabilities it does not have.",
       minutes: 10,
     },
+
     {
-      title: "Set a bioreactor baseline",
-      goal: "Get one reference run before changing anything.",
+      title: "Read the community, then open up a phylum",
+      goal: "Turn a chart into a defensible sentence about the sample.",
       actions: [
-        "Click the **Bioreactor Simulator** tab.",
-        "Leave the defaults: 37 °C, pH 7.0, glucose, HRT 20 days.",
-        "Click **Start Simulation** and write down the total yield and methane percentage.",
+        "Press **Open the community profile** — or pick **Community profile** from the sidebar under **RESULTS**.",
+        "Look at the phylum pie and the abundant-species bar graph, then read the **Unclassified** figure in the tiles above them.",
+        "Click the **Euryarchaeota** slice — or its chip beneath the chart — to open the species-level graph.",
+        "Read the confidence and evidence chips beside each species in the drill-down.",
       ],
-      expect: "About 0.78 m³/kg of biogas at roughly 55% methane, with a curve that rises steeply then flattens.",
-      why: "37 °C and pH 7 are where most real digesters run. Starting anywhere else makes every later comparison meaningless.",
-      minutes: 7,
-    },
-    {
-      title: "Sour the digester on purpose",
-      goal: "See the failure that ruins real plants, safely.",
-      actions: [
-        "Change pH to **5.5** and leave everything else alone. Run it.",
-        "Compare the yield against your baseline, and read the suggestion.",
-        "Put pH back to 7.0 and confirm it recovers.",
-      ],
-      expect: "Yield collapses from about 0.78 to about 0.13 — roughly a sixth — and the methane percentage drops too.",
-      why: "Methanogens are the fussiest organisms in the tank and fail outside about pH 6.8–7.2. This is how digesters die: acid-forming bacteria outrun the methanogens, pH falls, more methanogens die, pH falls further. Notice the methane share drops as well — a struggling reactor vents proportionally more CO₂.",
-      minutes: 10,
-    },
-    {
-      title: "Change the feed and the clock",
-      goal: "Learn why the same reactor gives different answers.",
-      actions: [
-        "Back at pH 7.0, switch the substrate to **cellulose** and run. Compare with glucose.",
-        "Now raise HRT to **60 days** and run again.",
-        "Try **15 °C** at 20 days, then the same 15 °C at a much longer HRT.",
-      ],
-      expect: "Cellulose gives less than glucose in 20 days (~0.66 vs ~0.78) but catches up by 60. Cold is slow rather than hopeless — hold it longer and it recovers.",
-      why: "Cellulose has to be broken down into sugars before anything can ferment it, and that hydrolysis step is the slow one. Temperature and pH set the *rate*; how much gas a kilogram can ever give is fixed by the feed. So a cold reactor is not broken, just slow — which is exactly why retention time is a design decision.",
+      expect:
+        "Euryarchaeota is about 37% of the sample, Firmicutes 27%, Chloroflexi 15%. Drilling into Euryarchaeota gives three species: *Methanothrix concilii* at 22%, *Methanosarcina barkeri* at 8% and *Methanobacterium formicicum* at 7% — which sum to the 37% on the pie.",
+      why:
+        "Thirty-seven percent archaea is the headline: archaea in a digester are the methanogens, so this community is genuinely making methane rather than merely rotting. Two cautions travel with every number here. First, these are proportions of the **classified** fraction, not cell counts — two samples with identical charts can hold vastly different amounts of biomass, and nothing in a proportion can tell you which. Second, the grey Unclassified slice is charted rather than hidden, because a profile that quietly drops what it could not identify looks far more complete than it is.",
       minutes: 12,
     },
+
     {
-      title: "Find your best settings, then test yourself",
-      goal: "Put it together and check it stuck.",
+      title: "Ask what the community could do — and notice what that does not mean",
+      goal: "Read functional results while keeping hold of how weak the evidence behind them is.",
       actions: [
-        "Predict the settings that maximise yield, write the prediction down, then run it.",
-        "Open **Visualizer** for the 3D models and supporting data.",
-        "Open **Assessment** and complete it.",
+        "Open **Functional potential** under **RESULTS**. Read the red banner at the top before anything else.",
+        "Look at the pathway completeness bars, and at which mandatory steps are ticked.",
+        "Open **Traits & guilds** and read the four anaerobic-digestion guilds in process order.",
       ],
-      expect: "Your best run beats the baseline, and you can explain why rather than having found it by trial and error.",
+      expect:
+        "Methanogenesis shows 100% of its mandatory steps supported, as do carbohydrate degradation to VFA and syntrophic VFA oxidation. On Traits & guilds, hydrolysis and all three methanogenesis guilds are **PRESENT**; acidogenesis, acetogenesis and syntrophic oxidation are **PARTIAL**. Every block is labelled *Taxonomically inferred*.",
+      why:
+        "The banner is the most important thing on the screen. No sequence in your file was searched for any enzyme. What happened is that organisms were identified, and a curated reference records what organisms of that kind are documented to carry — so this is a lookup, one inference removed from a taxonomic call that is itself uncertain. That is why a guild is only ever called PRESENT when every mandatory marker has support, and why nothing here can tell you whether any of it is switched on. Metagenomics measures genetic potential. Activity needs RNA or protein, and neither is in this file.",
       minutes: 10,
+    },
+
+    {
+      title: "Look at the community, and check what each picture is claiming",
+      goal: "Use the visual material without mistaking a teaching diagram for a measurement.",
+      actions: [
+        "Open **Visualiser** under **RESULTS**.",
+        "Find the source label on every panel: *Curated example*, *Derived from project data*, *Live project data* or *Demo only*.",
+        "Open the organism explorer and look at a methanogen you saw in the drill-down.",
+      ],
+      expect:
+        "The cell diagrams and the four-stage schematic are labelled **Curated example** — they are identical whatever you upload. The domain composition strip is labelled **Derived from project data** and changes with your sample.",
+      why:
+        "This screen mixes two very different things on purpose, and labels them, because that is a skill worth practising. A schematic of a methanogen teaches you what it looks like; it is not evidence about your sample. The composition strip is evidence about your sample. Being able to tell at a glance which is which — on any figure, in any paper — is most of what scientific reading is.",
+      minutes: 6,
+    },
+
+    {
+      title: "Run the digester, then break it on purpose",
+      goal: "Connect the community you just profiled to the process it drives, and see the failure that ruins real plants.",
+      actions: [
+        "Open **Bioreactor** under **RESULTS**. It opens on the **Educational Simulator**.",
+        "Leave the defaults — 37 °C, pH 7.0, mixed sludge, HRT 20 days — and press **Run educational simulator**. Write the yield down.",
+        "Change pH to **5.5**, run again, and compare.",
+        "Put pH back to 7.0, set temperature to **25 °C**, and run. Then try **55 °C**.",
+        "Return to 37 °C and pH 7, switch the substrate to **cellulose**, run at HRT 20, then at HRT 60.",
+      ],
+      expect:
+        "Baseline is about **0.535 m³/kg VS at 55% methane**, stability LOW. At pH 5.5 it collapses to about **0.056** — roughly a tenth — the methane share falls to 38.5%, and stability reads HIGH. At 25 °C you get about 0.251; at 55 °C about 0.533, nearly as good as 37 °C. Cellulose gives about 0.658 at HRT 20 and 0.739 at HRT 60. Every run carries the label *Educational simulation - not a plant prediction*.",
+      why:
+        "Each of those is a mechanism worth holding onto. The pH collapse is how digesters actually die: methanogens are the slowest-growing and fussiest organisms in the tank and stall outside roughly pH 6.8–7.2, so when acid formers outrun them the acids accumulate, consume the alkalinity buffering the tank, and drive the pH down further — a runaway that is well advanced by the time gas output visibly drops. Notice the methane share falls too; a struggling reactor vents proportionally more CO₂. The temperature result surprises people: 37 °C and 55 °C both work well while 45 °C between them is worse, because mesophiles and thermophiles are different communities with different optima and the gap belongs to neither. And retention time matters for cellulose but barely for sugars, because cellulose must be hydrolysed before anything can ferment it and that step is the slow one — the feedstock fixes the ceiling, temperature and pH set the rate of approach to it.",
+      minutes: 14,
+    },
+
+    {
+      title: "Finish Basic Mode and unlock Moderate",
+      goal: "Close the loop, and see how access to the next level is earned.",
+      actions: [
+        "From the Bioreactor result, press **Go to the Assessment**.",
+        "Work through it — each question is tied to one competency, so the result tells you where you are weak rather than giving one number.",
+        "Submit, then press **Unlock Moderate Mode**.",
+        "Optional, and the most instructive comparison in the lab: open **Objective & input data**, load the curated **Digester under acid stress** dataset, re-run, and compare its community with the healthy sludge you started from.",
+      ],
+      expect:
+        "Completing the assessment exposes **Unlock Moderate Mode**; pressing it unlocks Moderate, and it stays unlocked when you sign in again. If you run the soured dataset, *Methanothrix* has fallen from 22% to 3% while *Methanosarcina* has risen from 8% to 11%, and total archaea have dropped from 37% to 14%.",
+      why:
+        "That shift is the microbial signature of overload, and it is visible before the gas output tells you anything. *Methanothrix* is an acetate specialist with a high affinity for it, so it dominates a stable digester running at low acetate. *Methanosarcina* is the generalist — slower at low acetate, but far more tolerant when acetate accumulates. So the ratio between those two genera reads as an early warning: when the specialist gives way to the generalist, acetate is building up and the tank is heading for trouble. Reading that from a community profile, days ahead of the gas meter, is the whole reason anyone sequences a digester.",
+      minutes: 12,
     },
   ],
 
   troubleshooting: [
     {
-      problem: "Run Analysis gives an error.",
-      fix: "If you selected one of the eight demo datasets, it should never fail — those are computed locally. If you uploaded your own file, profiling it needs an AI provider key on the deployment; without one, use a demo dataset instead.",
+      problem: "Moderate Mode is locked, and I have finished the tutorial.",
+      fix: "Moderate needs three things: the guided Basic demo walked as far as the eligibility step, the Assessment submitted, and then your own press of **Unlock Moderate Mode** on the Access screen. Meeting the conditions offers the unlock; it does not perform it. The Access screen lists all three with a tick or a cross against each, so it will tell you which one is outstanding.",
     },
     {
-      problem: "The demo dataset gives the same answer every time.",
-      fix: "That is deliberate. Demo results are computed, not guessed, so they are reproducible — which is what makes them usable as a reference to compare your later runs against.",
+      problem: "Advanced Mode is locked even though I bought the lab.",
+      fix: "Advanced is a separate paid tier, sold on top of lab access rather than included with it, and it is checked with the server on every load — no amount of tutorial or assessment progress opens it. The Access screen states which of the two you hold. If you believe you have purchased Advanced and it still shows locked, press **Re-check paid access** there and, if it persists, contact support with the endpoint named on that screen.",
     },
     {
-      problem: "Every bioreactor run gives roughly the same yield.",
-      fix: "Change one field at a time and press Start Simulation after each change. Also check the value actually committed — click out of the field first. Above 20 days most settings are near completion anyway, so differences show up best at shorter retention times.",
+      problem: "The lab says 'Blocked — expected and detected do not match' and will not run.",
+      fix: "The input type you selected disagrees with what the file actually contains — for example a FASTQ file loaded while an assembled-contig FASTA was selected, or protein sequence loaded as a genome. The inspection step names both what it expected and what it found, and suggests the input type that fits. Change the type on **Objective & input data**, or load the file the type describes. The lab reads the content rather than the extension, so renaming a file will not resolve it.",
     },
     {
-      problem: "The 3D visualiser is blank.",
-      fix: "It needs WebGL. Enable hardware acceleration and use a desktop browser.",
+      problem: "No quality score, Q20 or Q30 is shown for my file.",
+      fix: "That is correct for FASTA. FASTA carries sequence only, with no per-base quality, so there is no Phred score to report and the lab shows no quality tiles at all rather than an empty one. If you need quality-aware QC, supply the FASTQ. The curated *Hot compost* dataset is FASTA if you want to see this behaviour deliberately.",
+    },
+    {
+      problem: "Functional potential says the analysis is not eligible.",
+      fix: "Most often the input is 16S or ITS amplicon data. A marker gene tells you who is present and carries no information about the rest of the genome, so genes, pathways and biosynthetic clusters cannot be derived from it. This block is enforced in the engine rather than advised in a banner, and it cannot be overridden from the interface. Shotgun sequencing is what supports functional questions.",
+    },
+    {
+      problem: "Assembly, MAG recovery or biosynthetic gene clusters say 'Module not built'.",
+      fix: "They are not implemented in this deployment. Each needs a server-side workflow and substantial compute that this browser-based build does not have, so the lab reports their absence instead of showing a plausible-looking result. In particular no MAG quality classification — high, medium or low — is produced anywhere, because none of the criteria behind those terms can be checked here. The Implementation register lists every module with its real status.",
+    },
+    {
+      problem: "My project history is empty after signing in on another computer.",
+      fix: "Projects are stored against your account, so they follow you — but only when you reach the lab by launching it from your dashboard, which is what signs you in. Opening the lab URL directly leaves the session unidentified and the history falls back to that browser alone. The Project history screen states which of the two you are looking at: 'Saved to your account' or 'This browser only'.",
+    },
+    {
+      problem: "The Visualiser says it opens onto project data after functional profiling.",
+      fix: "That is the intended order rather than a fault. Until functional profiling has run there is nothing project-specific to visualise, and every panel would be a teaching diagram identical for everyone. Run the analysis through the eligibility step first; if functional profiling was not eligible for your input, the QC & eligibility screen gives the reason.",
+    },
+    {
+      problem: "The analysis sits on 'Generating the explanation' at stage 9 of 9.",
+      fix: "That last stage asks a language model to write the summary prose, and it is the only part of the pipeline that leaves your browser. It gives up after thirty seconds and falls back to a deterministic template, so the run always completes. Every scientific number was already computed locally in the eight stages before it — the explanation is wording, never calculation.",
     },
   ],
 
   furtherReading: [
-    { label: "EBI Metagenomics (MGnify) — real metagenomic datasets", href: "https://www.ebi.ac.uk/metagenomics/" },
-    { label: "Krona — the hierarchical taxonomy viewer", href: "https://github.com/marbl/Krona/wiki" },
-    { label: "IWA Anaerobic Digestion Model No. 1 (ADM1)", href: "https://iwaponline.com/wst/article/45/10/65/6034" },
+    {
+      label: "MGnify (EBI Metagenomics) — real metagenomic datasets and analyses",
+      href: "https://www.ebi.ac.uk/metagenomics/",
+    },
+    {
+      label: "Gloor et al. 2017 — Microbiome datasets are compositional, and this is not optional",
+      href: "https://doi.org/10.3389/fmicb.2017.02224",
+    },
+    {
+      label: "Bowers et al. 2017 — MIMAG: minimum information about a metagenome-assembled genome",
+      href: "https://doi.org/10.1038/nbt.3893",
+    },
+    {
+      label: "Batstone et al. 2002 — IWA Anaerobic Digestion Model No. 1 (ADM1)",
+      href: "https://doi.org/10.2166/wst.2002.0292",
+    },
+    {
+      label: "Krona — the hierarchical taxonomy viewer",
+      href: "https://github.com/marbl/Krona/wiki",
+    },
   ],
 };
 

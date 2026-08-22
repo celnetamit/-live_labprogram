@@ -124,11 +124,19 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
 
   const price = formatPrice(lab.priceMinor, lab.currency);
 
-  const videoLength = guide?.video.durationSec
-    ? `${Math.floor(guide.video.durationSec / 60)}:${String(
-        guide.video.durationSec % 60,
-      ).padStart(2, "0")}`
-    : null;
+  /*
+   * A runtime is only shown when there is something to run. `durationSec` is
+   * also set on a guide whose video is still to be recorded — the chapter list
+   * is useful before the file exists — and advertising "Demo 4:00" in the hero
+   * for a video that is not there promises the learner something the page
+   * cannot deliver.
+   */
+  const videoLength =
+    guide?.video.url && guide.video.durationSec
+      ? `${Math.floor(guide.video.durationSec / 60)}:${String(
+          guide.video.durationSec % 60,
+        ).padStart(2, "0")}`
+      : null;
 
   const stats = [
     ...(guide ? [{ icon: ListChecks, value: `${guide.steps.length}`, label: "Steps" }] : []),
