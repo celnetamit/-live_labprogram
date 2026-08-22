@@ -54,68 +54,127 @@ const guide: LabGuide = {
    * final workflow. A learner following a video of a UI that no longer exists
    * concludes the lab is broken, which is the opposite of what a demo is for.
    */
+  /*
+   * Recorded against the running lab with `node scripts/record-demo.mjs
+   * micro-ai <launch-url>`, so the walkthrough shows the workflow this page
+   * describes rather than a previous version of it. The chapter marks are the
+   * ones the recorder read off the finished cut, and each was checked against
+   * the frame at that timestamp — an earlier take had 5.5 typed into the
+   * temperature field while the caption claimed a pH change, which only the
+   * frame check caught.
+   */
   video: {
-    url: null,
-    /*
-     * No runtime: the walkthrough has not been recorded yet, and a duration for
-     * a video that does not exist would be a guess presented as a fact. The
-     * chapter offsets below are a shot plan for whoever records it, which is
-     * what this section is for until a file lands.
-     */
+    url: "/demos/micro-ai.mp4",
+    poster: "/demos/micro-ai.jpg",
+    durationSec: 153,
     chapters: [
       {
         at: 0,
-        label: "The problem: most microbes will not grow in a dish",
-        shot: "Title card, then the Getting started screen with the three goal cards visible.",
-        say: "Fewer than one percent of microbes will grow in a laboratory. So we read the DNA of the whole community at once instead.",
+        label: "Most microbes will not grow in a dish — so we read their DNA instead",
+        shot: "Title card, then Getting started with the three goal cards.",
+        say: "Fewer than one microbe in a hundred will grow in a dish. So we read the DNA of the whole community instead.",
+      },
+      {
+        at: 6,
+        label: "Pick what you want out of the lab; the goal loads a real dataset",
+        shot: "Click 'Explore anaerobic digestion', then 'Start with this goal'.",
+        say: "The goal sets the objective and loads a real dataset. It skips nothing.",
+      },
+      {
+        at: 13,
+        label: "Step 1 of 4 — see exactly what is about to be analysed",
+        shot: "The Input summary panel: file, size, expected type, detected format, SHA-256.",
+        say: "Before any result, the lab shows what it is about to analyse — including the format read out of the bytes, not the extension.",
       },
       {
         at: 20,
-        label: "Choosing a goal, and what a goal actually sets",
-        shot: "Click 'Explore anaerobic digestion', then 'Start with this goal'.",
-        say: "The goal sets the objective, loads a dataset, and decides where you land. It does not skip anything.",
+        label: "Step 2 — the content is measured, not guessed from the filename",
+        shot: "The Inspection step: record count, length range, measured alphabet.",
+        say: "The content is measured. A protein file declared as a genome is caught here, before any nucleotide QC could run on it.",
       },
       {
-        at: 40,
-        label: "Step 1 of 4 — what was loaded",
-        shot: "The Input summary panel: file name, size, expected type, detected format, SHA-256.",
-        say: "Before any result, the lab shows you what it is about to analyse — including the format it read out of the bytes, not the file extension.",
+        at: 27,
+        label: "Step 3 — quality control chosen to match what the file actually is",
+        shot: "The QC route banner, then Run format-specific QC and analysis.",
+        say: "Which quality control runs depends on what the file actually contains.",
+      },
+      {
+        at: 42,
+        label: "QC passes: 4,000 reads, mean quality Q34",
+        shot: "The QC verdict badge and findings list.",
+        say: "Four thousand reads, mean quality Q34, ninety-four percent at Q30. It passes.",
+      },
+      {
+        at: 49,
+        label: "Step 4 — every analysis gets its own verdict, and its reason",
+        shot: "The eligibility table: Eligible, Eligible with limitations, Module not built.",
+        say: "Every analysis gets its own verdict. 'Your data cannot support this' and 'this build does not implement it' are different statements.",
+      },
+      {
+        at: 55,
+        label: "Who is in the sample: 37% archaea, so this community makes methane",
+        shot: "Community profile: the phylum pie and the abundant-species bar graph.",
+        say: "Thirty-seven percent archaea. In a digester the archaea are the methanogens, so this community really is making methane.",
       },
       {
         at: 65,
-        label: "Steps 2 and 3 — inspection, then format-specific QC",
-        shot: "Click through Inspection and QC. Show the QC route banner and the verdict badge.",
-        say: "The content is inspected, then quality control runs — and which QC runs depends on what the file actually contains.",
+        label: "Click a phylum to open the species inside it",
+        shot: "Click the Euryarchaeota chip; the species-level graph opens beneath.",
+        say: "Click a phylum and you see the species inside it — here, the three methanogens that make up that thirty-seven percent.",
       },
       {
-        at: 95,
-        label: "Step 4 — what the data will and will not support",
-        shot: "The eligibility table, showing Eligible, Eligible with limitations and Module not built side by side.",
-        say: "Eligibility is decided per analysis. Some things this data cannot support, and some this build does not implement — and those are different statements.",
+        at: 74,
+        label: "Function here is INFERRED from who is present — no gene was detected",
+        shot: "Functional potential, with the red banner in frame.",
+        say: "No gene was detected anywhere in this build. Function is inferred from which organisms were found, and the screen says so.",
       },
       {
-        at: 125,
-        label: "The community, and drilling into a phylum",
-        shot: "Community profile: pie chart, then click the Euryarchaeota slice to open the species graph.",
-        say: "Thirty-seven percent archaea. Click the slice and you see which three methanogens they are.",
+        at: 85,
+        label: "The four stages of digestion, and which organisms run each",
+        shot: "Traits and guilds, the four stages in process order.",
+        say: "Hydrolysis, acidogenesis, acetogenesis, methanogenesis — and which organisms run each.",
       },
       {
-        at: 160,
-        label: "Function is inferred here, not detected",
-        shot: "Functional potential, with the red banner at the top in frame, then Traits and guilds.",
-        say: "No gene was detected anywhere in this build. Everything functional is inferred from which organisms were found, and the screen says so.",
+        at: 92,
+        label: "Now run the digester those microbes live in",
+        shot: "Bioreactor, Educational Simulator, defaults at 37 degrees and pH 7.",
+        say: "Now run the digester those microbes live in.",
       },
       {
-        at: 195,
-        label: "The Bioreactor, and souring it on purpose",
-        shot: "Educational Simulator at pH 7 (0.535), then pH 5.5 (0.056). Show the mandatory label both times.",
-        say: "Drop the pH and the yield falls to about a tenth. That is how a real digester dies — and the label never calls this a prediction.",
+        at: 106,
+        label: "Baseline: 0.535 m³/kg VS at 55% methane",
+        shot: "The result tiles: total yield, methane content, stability risk.",
+        say: "About half a cubic metre per kilogram, at fifty-five percent methane.",
       },
       {
-        at: 225,
-        label: "Finishing Basic, and what comes next",
-        shot: "Assessment, then the Unlock Moderate Mode button on the Access screen.",
-        say: "Finish the Bioreactor step, take the assessment, and Moderate unlocks. Advanced is a separate paid tier.",
+        at: 110,
+        label: "Drop the pH to 5.5 — this is how a real digester dies",
+        shot: "Set pH to 5.5 and run again.",
+        say: "Drop the pH and the methanogens stall. This is how a real digester dies.",
+      },
+      {
+        at: 124,
+        label: "Yield collapses to about a tenth — and it is never called a prediction",
+        shot: "The collapsed result beside the mandatory label.",
+        say: "A tenth of the yield, and less methane in the gas. Note the label: this is a simulation, never a prediction.",
+      },
+      {
+        at: 129,
+        label: "Finish Basic Mode with the assessment",
+        shot: "Assessment, answering and submitting.",
+        say: "Finish the Bioreactor step and the lab routes you to the assessment.",
+      },
+      {
+        at: 142,
+        label: "Completing it offers the unlock — you choose to take it",
+        shot: "The Unlock Moderate Mode button appearing.",
+        say: "Completing it offers the unlock. Taking it is your choice.",
+      },
+      {
+        at: 148,
+        label: "Moderate unlocked. Advanced is a separate paid tier.",
+        shot: "Moderate unlocked in the sidebar, Advanced still locked.",
+        say: "Moderate is yours. Advanced is a separate paid tier, checked with the server.",
       },
     ],
   },
