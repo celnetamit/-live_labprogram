@@ -490,8 +490,9 @@ export default function Home() {
             <div>
               <h4 className="font-semibold mb-4 text-sm">Legal</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="#" className="hover:text-foreground transition-colors">Privacy</Link></li>
-                <li><Link href="#" className="hover:text-foreground transition-colors">Terms</Link></li>
+                {/* These were href="#". A dead legal link is one of the things a
+                    payment gateway reviewer records as a missing policy. */}
+                <li><Link href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy</Link></li>
               </ul>
             </div>
           </div>
