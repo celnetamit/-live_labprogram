@@ -1,4 +1,5 @@
-import { COMPANY } from "./company";
+import { COMPANY, LEGAL_LAST_UPDATED } from "./company";
+import type { LegalDocument, LegalSection } from "./types";
 
 /**
  * The operator's published privacy policy, reproduced from nanoschool.in.
@@ -14,16 +15,9 @@ import { COMPANY } from "./company";
  * The same document is served inside MicrobeAI BioLab and the other labs, so a
  * learner sees one policy wherever they happen to be standing.
  */
-export type LegalSection = {
-  heading: string;
-  /** Rendered as paragraphs, in order, before any bullets. */
-  paragraphs?: string[];
-  bullets?: string[];
-};
+const PRIVACY_INTRO = `live-labs.org is owned by ${COMPANY.legalName} with ${COMPANY.academicPartner} as an academic knowledge partner. We are committed to protecting your privacy and keeping your personal information secure. This Privacy Policy explains how we collect, use, and disclose information about you when you visit our website or use our services, including the laboratories reached from your account.`;
 
-export const PRIVACY_INTRO = `live-labs.org is owned by ${COMPANY.legalName} with ${COMPANY.academicPartner} as an academic knowledge partner. We are committed to protecting your privacy and keeping your personal information secure. This Privacy Policy explains how we collect, use, and disclose information about you when you visit our website or use our services, including the laboratories reached from your account.`;
-
-export const PRIVACY_SECTIONS: LegalSection[] = [
+const PRIVACY_SECTIONS: LegalSection[] = [
   {
     heading: "Information We Collect",
     paragraphs: [
@@ -85,3 +79,10 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     ],
   },
 ];
+
+export const PRIVACY_POLICY: LegalDocument = {
+  title: "Privacy Policy",
+  lastUpdated: LEGAL_LAST_UPDATED,
+  intro: [PRIVACY_INTRO],
+  sections: PRIVACY_SECTIONS,
+};
