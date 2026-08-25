@@ -39,6 +39,7 @@ const guide: LabGuide = {
       "Inspect a sequence file and say what it is from its contents, not its filename",
       "Read a quality-control report and explain which analyses it does and does not permit",
       "Interpret a community profile, including the unclassified fraction and what a relative abundance really measures",
+      "Score a profile against a mock community of certified composition, and say why share of DNA and share of cells are different answers",
       "Tell a detected result from an inferred one, and say why the difference matters",
       "Name the four stages of anaerobic digestion and the organisms that run each",
       "Predict how temperature, pH, feedstock and retention time change biogas yield, and explain the mechanism",
@@ -330,6 +331,18 @@ const guide: LabGuide = {
     {
       problem: "No quality score, Q20 or Q30 is shown for my file.",
       fix: "That is correct for FASTA. FASTA carries sequence only, with no per-base quality, so there is no Phred score to report and the lab shows no quality tiles at all rather than an empty one. If you need quality-aware QC, supply the FASTQ. The curated *Hot compost* dataset is FASTA if you want to see this behaviour deliberately.",
+    },
+    {
+      problem: "I have paired-end data. Where do I put R2?",
+      fix: "Select both files together in the same file dialog — the upload accepts two. Which one leads is decided from the reads rather than from the file names, so it does not matter which order they come back in. The lab then checks that they really are one library: it matches record names across all three mate conventions in common use (Casava `1:N:0:`, a trailing `/1` and `/2`, and unmarked headers), and reports whether the two files are also in the same order. A pair that matches by name but not by position is reported separately, because that is the case that silently mates the wrong reads. Only the first file is analysed — a mate carries the same community as its partner, so counting both would double every number without adding an observation.",
+    },
+    {
+      problem: "Community composition says 'Requires metadata' and asks me to demultiplex.",
+      fix: "The run still holds several samples pooled together. The lab detects this when you supply the run's index reads alongside the amplicons — an index file is recognised by its shape, short uniform reads of around 8 to 12 bases, not by being called 'barcodes' — and it counts how many distinct barcodes are present to estimate how many samples are in the pool. Nothing is wrong with the reads, which is exactly why this is blocked rather than warned about: quality control passes, a community profile would appear, and it would be the average of every sample in the run rather than a description of any one of them. Split the run by sample first (QIIME 2's `demux emp-paired`, `cutadapt demultiplex`, or sabre), then load a single sample's reads.",
+    },
+    {
+      problem: "Most of my reads come back unclassified.",
+      fix: "That is usually honest rather than broken. Organisms are called by exact 31-base matches against a shipped reference index of a few dozen genomes, so anything outside that panel cannot be named and is reported as unclassified rather than being spread across the organisms that happen to be on it. A human gut or a soil sample will be largely unclassified here for that reason. Two other contributions are worth knowing about: the index keeps only a sample of each genome's k-mers, so some reads from a panel organism carry none of the indexed ones; and matching is strain-sensitive, so an organism present as a divergent strain is under-reported rather than misnamed. The unclassified fraction is therefore an upper bound on what is unknown, not a measurement of it.",
     },
     {
       problem: "Functional potential says the analysis is not eligible.",
