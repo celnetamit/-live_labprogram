@@ -31,6 +31,16 @@ const MAX_PROMPT_CHARS = 24_000;
 
 /** Upstream deadline. The lab gives up at 30s, so finish before it does. */
 const UPSTREAM_TIMEOUT_MS = 25_000;
+/**
+ * Cap on generated tokens, applied to every provider.
+ *
+ * Without it a reasoning model has no reason to stop: reasoning tokens count as
+ * output, and a long evidence prompt can keep one generating well past the
+ * timeout above. That failed as `timed out: This operation was aborted`, which
+ * reads like a network fault and is not one — the request was fine, the answer
+ * simply never finished. A tutor explanation does not need more than this.
+ */
+const MAX_OUTPUT_TOKENS = 1024;
 
 /**
  * A modest per-account budget.
@@ -56,7 +66,10 @@ function overRateLimit(userId: string): boolean {
 type Provider = "openrouter" | "openai-compatible" | "google" | "anthropic";
 
 const DEFAULTS: Record<Provider, { baseUrl: string; model: string }> = {
-  openrouter: { baseUrl: "https://openrouter.ai/api/v1", model: "google/gemini-2.0-flash-001" },
+  // Checked against OpenRouter's live model list. The previous default,
+  // google/gemini-2.0-flash-001, has been withdrawn and now 404s, so any
+  // operator who set a key but no model got a failure they could not explain.
+  openrouter: { baseUrl: "https://openrouter.ai/api/v1", model: "openai/gpt-4o-mini" },
   "openai-compatible": { baseUrl: "https://api.openai.com/v1", model: "gpt-4o-mini" },
   google: { baseUrl: "https://generativelanguage.googleapis.com/v1beta", model: "gemini-flash-latest" },
   anthropic: { baseUrl: "https://api.anthropic.com", model: "claude-sonnet-4-5" },
@@ -108,14 +121,17 @@ function buildUpstream(
       return {
         url: `${cfg.baseUrl}/models/${cfg.model}:generateContent`,
         headers: { ...json, "x-goog-api-key": cfg.apiKey },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature } }),
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature, maxOutputTokens: MAX_OUTPUT_TOKENS },
+        }),
       };
     case "anthropic":
       return {
         url: `${cfg.baseUrl}/v1/messages`,
         headers: { ...json, "x-api-key": cfg.apiKey, "anthropic-version": "2023-06-01" },
         body: JSON.stringify({
-          model: cfg.model, max_tokens: 1024, temperature,
+          model: cfg.model, max_tokens: MAX_OUTPUT_TOKENS, temperature,
           messages: [{ role: "user", content: prompt }],
         }),
       };
@@ -124,7 +140,8 @@ function buildUpstream(
         url: `${cfg.baseUrl}/chat/completions`,
         headers: { ...json, Authorization: `Bearer ${cfg.apiKey}` },
         body: JSON.stringify({
-          model: cfg.model, temperature, messages: [{ role: "user", content: prompt }],
+          model: cfg.model, temperature, max_tokens: MAX_OUTPUT_TOKENS,
+          messages: [{ role: "user", content: prompt }],
         }),
       };
   }
@@ -225,7 +242,7 @@ export async function POST(req: Request) {
       {
         error: aborted ? "UPSTREAM_TIMEOUT" : "UPSTREAM_UNREACHABLE",
         message: aborted
-          ? `The language model did not respond within ${UPSTREAM_TIMEOUT_MS / 1000} seconds.`
+          ? `The language model did not respond within ${UPSTREAM_TIMEOUT_MS / 1000} seconds. If LLM_MODEL names a reasoning model, it may simply be slower than that on a long prompt — try a non-reasoning model.`
           : "The language model service could not be reached.",
       },
       { status: 504, headers: labCorsHeaders },
