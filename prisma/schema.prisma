@@ -37,6 +37,7 @@ model User {
   accessRequests AccessRequest[]
   orders        Order[]
   customLabRequests CustomLabRequest[]
+  labFeedback       LabFeedback[]
   labProjects   LabProject[]
 }
 
@@ -265,6 +266,7 @@ model Lab {
 
   accesses    LabAccess[]
   accessRequests AccessRequest[]
+  feedback    LabFeedback[]
   orderItems  OrderItem[]
   plannedFrom CustomLabRequest[] @relation("PlannedLab")
 }
@@ -360,6 +362,62 @@ model CustomLabRequest {
   user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
   plannedLab Lab? @relation("PlannedLab", fields: [plannedLabId], references: [id], onDelete: SetNull)
 
+  @@index([status, createdAt])
+  @@index([userId])
+}
+
+/**
+ * Feedback a learner sends from inside a lab.
+ *
+ * The identity fields need explaining, because there are two of them and that
+ * looks redundant. `userId` is who was signed in — established by the lab
+ * session token, not by anything typed. `name`, `email` and `designation` are
+ * what the person filling in the form said about themselves, and they are kept
+ * separately because they are not always the same claim: labs run on shared
+ * machines and in teaching sessions, so the person at the keyboard is not
+ * reliably the account holder, and the reply address they want may not be the
+ * one they signed up with. Overwriting either with the other would destroy the
+ * only signal that they differed.
+ *
+ * `designation` is the job title or role, which the platform does not otherwise
+ * hold — it is the field that makes feedback actionable, because "this is
+ * confusing" from a plant operator and from a postgraduate are different
+ * findings.
+ */
+model LabFeedback {
+  id          String   @id @default(cuid())
+  /** The account that was signed in when this was sent. */
+  userId      String
+  labId       String?
+  /**
+   * Denormalised for reading, and nullable because Lab.slug is. `labId` is the
+   * real key; this is here so a feedback list is legible without a join, and
+   * so a row survives its lab being deleted with something human-readable on it.
+   */
+  labSlug     String?
+  /** What the sender typed about themselves — never overwritten from the account. */
+  name        String
+  email       String
+  designation String
+  /** 1–5, optional: a rating without a comment is close to noise. */
+  rating      Int?
+  category    String   @default("GENERAL") // GENERAL, BUG, SCIENCE, USABILITY, FEATURE
+  message     String
+  /** Where in the lab they were when they sent it. */
+  screen      String?
+  /** Build identifier, so a report can be tied to the code that produced it. */
+  appVersion  String?
+  status      String   @default("NEW") // NEW, TRIAGED, ACTIONED, DECLINED
+  adminNotes  String?
+  reviewedAt  DateTime?
+  reviewedBy  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lab  Lab? @relation(fields: [labId], references: [id], onDelete: SetNull)
+
+  @@index([labSlug, createdAt])
   @@index([status, createdAt])
   @@index([userId])
 }
