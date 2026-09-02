@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { labCorsHeaders, readLabToken, resolveLabApiSession } from "@/lib/labSession";
+import { isFeedbackCategory } from "@/lib/feedbackStatus";
 
 /**
  * Feedback sent from inside a lab.
@@ -35,7 +36,6 @@ const MAX_SHORT_FIELD = 200;
  */
 const MAX_PER_HOUR = 10;
 
-const CATEGORIES = new Set(["GENERAL", "BUG", "SCIENCE", "USABILITY", "FEATURE"]);
 
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: labCorsHeaders });
@@ -103,7 +103,7 @@ export async function POST(req: Request) {
   }
 
   const categoryRaw = readString(body, "category", 32).toUpperCase();
-  const category = CATEGORIES.has(categoryRaw) ? categoryRaw : "GENERAL";
+  const category = isFeedbackCategory(categoryRaw) ? categoryRaw : "GENERAL";
 
   /*
    * A rating is optional and only accepted as a whole number in range. A

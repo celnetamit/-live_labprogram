@@ -379,10 +379,13 @@ model CustomLabRequest {
  * one they signed up with. Overwriting either with the other would destroy the
  * only signal that they differed.
  *
- * `designation` is the job title or role, which the platform does not otherwise
- * hold — it is the field that makes feedback actionable, because "this is
- * confusing" from a plant operator and from a postgraduate are different
- * findings.
+ * `designation` is the job title or role the sender is writing in. The account
+ * carries one too, set at registration, and this is not it: registration
+ * details go stale, and someone may be writing in a different capacity from the
+ * one they signed up in. Both are available to whoever reads the feedback, and
+ * the difference between them is occasionally the interesting part. It is the
+ * field that makes a report actionable — "this is confusing" from a plant
+ * operator and from a postgraduate are different findings.
  */
 model LabFeedback {
   id          String   @id @default(cuid())
