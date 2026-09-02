@@ -18,6 +18,7 @@ import {
   setUserStatus,
   grantLabAccess,
   revokeLabAccess,
+  setLabAccessTier,
 } from "./actions";
 
 export type LabOption = { id: string; name: string; subject: string | null; priceMinor: number };
@@ -30,7 +31,7 @@ export type AdminUser = {
   organization: string | null;
   designation: string | null;
   purchases: number;
-  access: { labId: string; labName: string; source: string }[];
+  access: { labId: string; labName: string; source: string; tier: string }[];
 };
 
 export default function UsersClient({ users, labs }: { users: AdminUser[]; labs: LabOption[] }) {
@@ -311,21 +312,46 @@ function ManageModal({
             </div>
             {matches.length > 0 && (
               <div className="border border-border rounded-lg divide-y divide-border overflow-hidden">
+                {/*
+                  Two buttons rather than one. Granting and then upgrading is
+                  two round trips and two chances to forget the second, and
+                  "give this reviewer everything" is a common enough request to
+                  deserve a single click.
+                */}
                 {matches.map((l) => (
-                  <button
+                  <div
                     key={l.id}
-                    disabled={pending}
-                    onClick={() =>
-                      run(async () => {
-                        await grantLabAccess(user.id, l.id);
-                        setLabSearch("");
-                      })
-                    }
-                    className="w-full flex items-center justify-between px-3 py-2 text-left text-sm hover:bg-accent transition-colors disabled:opacity-50"
+                    className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
                   >
-                    <span className="truncate">{l.name}</span>
-                    <span className="text-xs text-primary font-medium">Grant</span>
-                  </button>
+                    <span className="min-w-0 truncate">{l.name}</span>
+                    <span className="flex shrink-0 gap-1.5">
+                      <button
+                        disabled={pending}
+                        onClick={() =>
+                          run(async () => {
+                            await grantLabAccess(user.id, l.id, "STANDARD");
+                            setLabSearch("");
+                          })
+                        }
+                        className="rounded-md border border-border px-2 py-1 text-xs font-medium hover:bg-accent transition-colors disabled:opacity-50"
+                      >
+                        Standard
+                      </button>
+                      <button
+                        disabled={pending}
+                        onClick={() =>
+                          run(async () => {
+                            await grantLabAccess(user.id, l.id, "ADVANCED");
+                            setLabSearch("");
+                          })
+                        }
+                        className="rounded-md bg-primary/15 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/25 transition-colors disabled:opacity-50"
+                        title="Grants the lab and its premium mode in one step"
+                      >
+                        Advanced
+                      </button>
+                    </span>
+                  </div>
                 ))}
               </div>
             )}
@@ -349,20 +375,52 @@ function ManageModal({
                     key={a.labId}
                     className="flex items-center justify-between px-3 py-2 rounded-lg bg-secondary/50 text-sm"
                   >
-                    <span className="truncate">
+                    <span className="min-w-0 truncate">
                       {a.labName}
                       <span className="ml-2 text-[11px] text-muted-foreground uppercase">
                         {a.source}
                       </span>
                     </span>
-                    <button
-                      disabled={pending}
-                      onClick={() => run(() => revokeLabAccess(user.id, a.labId))}
-                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors disabled:opacity-50"
-                      title="Revoke"
-                    >
-                      <Trash className="w-4 h-4" />
-                    </button>
+                    <span className="flex shrink-0 items-center gap-1.5">
+                      {/*
+                        The tier toggle. A grant on its own only means "may open
+                        this lab"; a lab's premium mode — MicrobeAI's Advanced
+                        Mode — is gated on the tier being ADVANCED, and until
+                        now nothing in the product could set it.
+                      */}
+                      <button
+                        disabled={pending}
+                        onClick={() =>
+                          run(() =>
+                            setLabAccessTier(
+                              user.id,
+                              a.labId,
+                              a.tier === "ADVANCED" ? "STANDARD" : "ADVANCED"
+                            )
+                          )
+                        }
+                        title={
+                          a.tier === "ADVANCED"
+                            ? "Advanced tier granted — click to drop to Standard"
+                            : "Standard tier — click to grant Advanced (unlocks the lab's premium mode)"
+                        }
+                        className={`rounded-md px-2 py-1 text-[11px] font-bold uppercase tracking-wide transition-colors disabled:opacity-50 ${
+                          a.tier === "ADVANCED"
+                            ? "bg-primary/15 text-primary hover:bg-primary/25"
+                            : "bg-muted text-muted-foreground hover:bg-accent"
+                        }`}
+                      >
+                        {a.tier === "ADVANCED" ? "Advanced" : "Standard"}
+                      </button>
+                      <button
+                        disabled={pending}
+                        onClick={() => run(() => revokeLabAccess(user.id, a.labId))}
+                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors disabled:opacity-50"
+                        title="Revoke"
+                      >
+                        <Trash className="w-4 h-4" />
+                      </button>
+                    </span>
                   </div>
                 ))}
               </div>

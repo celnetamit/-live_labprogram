@@ -34,7 +34,14 @@ export default async function UsersManagement() {
     organization: u.organization,
     designation: u.designation,
     purchases: u.orders.length,
-    access: u.labAccess.map((a) => ({ labId: a.labId, labName: a.lab.name, source: a.source })),
+    access: u.labAccess.map((a) => ({
+      labId: a.labId,
+      labName: a.lab.name,
+      source: a.source,
+      // Which tier the grant covers — STANDARD by default; ADVANCED is what
+      // unlocks a lab's premium mode.
+      tier: (a.tier || "STANDARD").toUpperCase(),
+    })),
   }));
 
   const labOptions: LabOption[] = labs.map((l) => ({
