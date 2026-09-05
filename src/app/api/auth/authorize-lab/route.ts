@@ -285,6 +285,14 @@ export async function POST(req: Request) {
           email: user.email,
           name: user.name,
           role: user.role,
+          /*
+           * Whether this account is an expert reviewer. The lab uses it to
+           * decide whether to offer the review form; the review endpoint
+           * re-reads it from the database on every call rather than trusting
+           * this, because a value handed to a client is a presentation hint
+           * and not an authorisation.
+           */
+          isReviewer: user.isReviewer === true,
         },
         lab: {
           id: lab.id,

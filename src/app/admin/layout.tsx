@@ -9,6 +9,7 @@ import {
   Receipt,
   Lightbulb,
   MessageSquare,
+  ClipboardCheck,
 } from "lucide-react";
 import AppShell, { type NavGroup } from "@/components/app-shell";
 import NotificationBell from "./notifications/NotificationBell";
@@ -30,6 +31,7 @@ const navGroups: NavGroup[] = [
       { href: "/admin/access", label: "Access Requests", icon: ShieldAlert },
       { href: "/admin/lab-requests", label: "Custom Lab Requests", icon: Lightbulb },
       { href: "/admin/feedback", label: "Feedback", icon: MessageSquare },
+      { href: "/admin/reviews", label: "Expert Reviews", icon: ClipboardCheck },
     ],
   },
   {

@@ -38,6 +38,16 @@ model User {
   orders        Order[]
   customLabRequests CustomLabRequest[]
   labFeedback       LabFeedback[]
+  labReviews        LabReview[]
+  /// Marks an account as an expert reviewer.
+  ///
+  /// Reviewers get the NanoSchool Expert Review Form inside any lab they can
+  /// open. It is a platform-level flag rather than a per-lab assignment
+  /// because a reviewer's standing is a property of the person — their domain
+  /// expertise — and which labs they may review is already decided by the
+  /// access they hold. Adding a second per-lab table would let the two
+  /// disagree.
+  isReviewer        Boolean  @default(false)
   labProjects   LabProject[]
 }
 
@@ -267,6 +277,7 @@ model Lab {
   accesses    LabAccess[]
   accessRequests AccessRequest[]
   feedback    LabFeedback[]
+  reviews     LabReview[]
   orderItems  OrderItem[]
   plannedFrom CustomLabRequest[] @relation("PlannedLab")
 }
@@ -423,6 +434,66 @@ model LabFeedback {
   @@index([labSlug, createdAt])
   @@index([status, createdAt])
   @@index([userId])
+}
+
+/**
+ * A completed NanoSchool Expert Review Form.
+ *
+ * The form is fixed by the review process, not by this schema, so the parts of
+ * it that are lists — the ten rating rows, the issues table, the domain
+ * checklists — are stored as JSON rather than as columns. That is a deliberate
+ * trade: querying "how many reviewers rated Reproducibility as Major Concern"
+ * needs application code instead of SQL, and in exchange a change to the form
+ * does not need a migration and cannot silently drop a reviewer's answer into
+ * a column that no longer exists. The shapes are typed in
+ * src/lib/reviewForm.ts and shared with the lab that renders them.
+ *
+ * A reviewer may review the same lab more than once — a re-review after
+ * corrections is one of the form's own outcomes — so rows are not unique per
+ * user and lab. `versionBuild` is what distinguishes them, which is why the
+ * lab fills it in from its own build identifier rather than asking.
+ */
+model LabReview {
+  id     String @id @default(cuid())
+  userId String
+  labId  String?
+  labSlug String?
+
+  /// Free text from the form's header, as the reviewer entered it.
+  reviewerName    String
+  areaOfExpertise String
+  /// The build under review, taken from the lab rather than typed.
+  versionBuild    String?
+
+  /// Section A — ten review areas, each EXCELLENT | GOOD | NEEDS_IMPROVEMENT | MAJOR_CONCERN | NA.
+  ratings Json
+
+  /// Section B — issues, each { module, severity, observation, recommendation }.
+  issues Json
+
+  /// Section C — domain checklists, keyed by domain, each an array of checked item ids.
+  domainChecks Json
+
+  /// Section D.
+  finalRecommendation String?
+  mostImportantCorrection String?
+  optionalSuggestions     String?
+  reviewerComments        String?
+
+  /// DRAFT while being written; SUBMITTED once the reviewer signs it off.
+  status      String    @default("DRAFT")
+  submittedAt DateTime?
+  /// The date the reviewer put on the form, which may not be the submit date.
+  reviewDate  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lab  Lab? @relation(fields: [labId], references: [id], onDelete: SetNull)
+
+  @@index([labSlug, status])
+  @@index([userId, status])
 }
 
 model AuthorizationLog {

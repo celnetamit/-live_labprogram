@@ -20,6 +20,22 @@ export async function setUserRole(userId: string, role: string) {
   return { success: true };
 }
 
+/**
+ * Mark an account as an expert reviewer, or unmark it.
+ *
+ * A reviewer sees the NanoSchool Expert Review Form inside every lab they can
+ * open. The flag is on the person rather than on a lab because it describes
+ * their standing — which labs they may review is already decided by the access
+ * they hold, and a second per-lab table would let the two disagree.
+ */
+export async function setUserReviewer(userId: string, isReviewer: boolean) {
+  await requireAdmin();
+  await prisma.user.update({ where: { id: userId }, data: { isReviewer } });
+  revalidatePath("/admin/users");
+  revalidatePath("/admin/reviews");
+  return { success: true };
+}
+
 export async function setUserStatus(userId: string, status: string) {
   await requireAdmin();
   if (!["ACTIVE", "SUSPENDED"].includes(status)) throw new Error("Invalid status");

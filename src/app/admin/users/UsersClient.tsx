@@ -19,6 +19,7 @@ import {
   grantLabAccess,
   revokeLabAccess,
   setLabAccessTier,
+  setUserReviewer,
 } from "./actions";
 
 export type LabOption = { id: string; name: string; subject: string | null; priceMinor: number };
@@ -27,6 +28,7 @@ export type AdminUser = {
   name: string | null;
   email: string | null;
   role: string;
+  isReviewer: boolean;
   status: string;
   organization: string | null;
   designation: string | null;
@@ -294,6 +296,26 @@ function ManageModal({
                 <option value="SUSPENDED">Suspended</option>
               </select>
             </div>
+          </div>
+
+          {/* Expert reviewer */}
+          <div className="space-y-1.5">
+            <label className="flex items-start gap-3 rounded-lg border border-border p-3 cursor-pointer hover:bg-accent/50 transition-colors">
+              <input
+                type="checkbox"
+                defaultChecked={user.isReviewer}
+                disabled={pending}
+                onChange={(e) => run(() => setUserReviewer(user.id, e.target.checked))}
+                className="mt-0.5 h-4 w-4 accent-primary"
+              />
+              <span>
+                <span className="block text-sm font-medium">Expert reviewer</span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">
+                  Shows the NanoSchool Expert Review Form inside every lab this account can open, and lets them
+                  submit it. Reviews appear under Reviews in the admin.
+                </span>
+              </span>
+            </label>
           </div>
 
           {/* Grant lab */}

@@ -59,7 +59,15 @@ function timeAgo(iso: string): string {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days < 30) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString();
+  /*
+   * Locale-independent, deliberately. toLocaleDateString() renders differently
+   * on the server and in the browser, which React reports as a hydration
+   * mismatch — the reviews page hit exactly that. This branch only fires for
+   * items older than 30 days, so the bug was latent rather than absent.
+   */
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
 }
 
 export default function FeedbackClient({ feedback }: { feedback: AdminFeedback[] }) {

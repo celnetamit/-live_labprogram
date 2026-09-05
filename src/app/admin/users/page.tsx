@@ -34,6 +34,7 @@ export default async function UsersManagement() {
     organization: u.organization,
     designation: u.designation,
     purchases: u.orders.length,
+    isReviewer: u.isReviewer,
     access: u.labAccess.map((a) => ({
       labId: a.labId,
       labName: a.lab.name,
