@@ -64,12 +64,40 @@ const RECOMMENDATION_TONE: Record<string, string> = {
   NOT_RECOMMENDED: "bg-rose-500/10 text-rose-400 border-rose-500/20",
 };
 
+export type SignedAgreement = {
+  id: string;
+  reviewerName: string;
+  designation: string;
+  institution: string;
+  email: string;
+  domain: string;
+  labName: string | null;
+  reviewBuild: string | null;
+  reviewRoles: string[];
+  agreementVersion: string;
+  agreementFingerprint: string;
+  acknowledgedAt: string;
+  accountEmail: string | null;
+};
+
+const ROLE_LABELS: Record<string, string> = {
+  SCIENTIFIC: "Scientific",
+  TECHNICAL: "Technical",
+  AI_COMPUTATIONAL: "AI/Computational",
+  DATA_METHODOLOGY: "Data/Methodology",
+  EDUCATIONAL_UX: "Educational/UX",
+  SECURITY_PRIVACY: "Security/Privacy",
+  COMPLETE: "Complete Expert Review",
+};
+
 export default function ReviewsClient({
   reviews,
   draftCount,
+  agreements,
 }: {
   reviews: AdminReview[];
   draftCount: number;
+  agreements: SignedAgreement[];
 }) {
   const [open, setOpen] = useState<string | null>(reviews[0]?.id ?? null);
 
@@ -89,6 +117,51 @@ export default function ReviewsClient({
           )}
         </p>
       </header>
+
+      {/* Signed undertakings */}
+      <section className="rounded-xl border border-border bg-card p-4">
+        <h2 className="text-sm font-bold">Signed reviewer agreements ({agreements.length})</h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          The Expert Reviewer Agreement &amp; Confidentiality Undertaking, as signed. A reviewer cannot open the
+          review form until this is recorded, and a change to the agreement wording asks everyone to sign again.
+        </p>
+        {agreements.length === 0 ? (
+          <p className="mt-3 text-xs text-muted-foreground">
+            None yet. Mark an account as an expert reviewer under Users &amp; Access, and the agreement appears
+            inside the lab for them to read and sign.
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {agreements.map((a) => (
+              <li key={a.id} className="rounded-lg border border-border p-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-semibold">{a.reviewerName}</span>
+                  <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+                    {a.designation}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">{a.institution}</span>
+                </div>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {a.labName} · {a.domain} · build {a.reviewBuild ?? "unrecorded"} · signed {stamp(a.acknowledgedAt)}
+                </p>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {a.reviewRoles.map((role) => (
+                    <span key={role} className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium">
+                      {ROLE_LABELS[role] ?? role}
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
+                  {a.email}
+                  {a.accountEmail && a.accountEmail !== a.email && <> · account {a.accountEmail}</>}
+                  {" · "}
+                  {a.agreementVersion} · {a.agreementFingerprint}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       {reviews.length === 0 ? (
         <div className="rounded-xl border border-border bg-card px-6 py-16 text-center">

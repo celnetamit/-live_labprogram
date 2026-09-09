@@ -28,10 +28,38 @@ export default async function AdminReviewsPage() {
 
   const draftCount = await prisma.labReview.count({ where: { status: "DRAFT" } });
 
+  /*
+   * The signed undertakings, listed beside the reviews they made possible.
+   * Kept on the same screen deliberately: "who has signed the agreement" and
+   * "whose review have we received" are the two halves of the same question,
+   * and a reviewer who has signed but not yet reported is the state worth
+   * being able to see.
+   */
+  const agreements = await prisma.reviewerAgreement.findMany({
+    where: { revokedAt: null },
+    orderBy: [{ acknowledgedAt: "desc" }],
+    include: { user: { select: { email: true } }, lab: { select: { name: true } } },
+  });
+
   return (
     <div className="max-w-5xl mx-auto">
       <ReviewsClient
         draftCount={draftCount}
+        agreements={agreements.map((a) => ({
+          id: a.id,
+          reviewerName: a.reviewerName,
+          designation: a.designation,
+          institution: a.institution,
+          email: a.email,
+          domain: a.domain,
+          labName: a.lab?.name ?? a.labSlug,
+          reviewBuild: a.reviewBuild,
+          reviewRoles: (a.reviewRoles ?? []) as string[],
+          agreementVersion: a.agreementVersion,
+          agreementFingerprint: a.agreementFingerprint,
+          acknowledgedAt: a.acknowledgedAt.toISOString(),
+          accountEmail: a.user?.email ?? null,
+        }))}
         reviews={reviews.map((r) => ({
           ...r,
           ratings: r.ratings as Record<string, string>,

@@ -39,6 +39,7 @@ model User {
   customLabRequests CustomLabRequest[]
   labFeedback       LabFeedback[]
   labReviews        LabReview[]
+  reviewerAgreements ReviewerAgreement[]
   /// Marks an account as an expert reviewer.
   ///
   /// Reviewers get the NanoSchool Expert Review Form inside any lab they can
@@ -278,6 +279,7 @@ model Lab {
   accessRequests AccessRequest[]
   feedback    LabFeedback[]
   reviews     LabReview[]
+  reviewerAgreements ReviewerAgreement[]
   orderItems  OrderItem[]
   plannedFrom CustomLabRequest[] @relation("PlannedLab")
 }
@@ -494,6 +496,64 @@ model LabReview {
 
   @@index([labSlug, status])
   @@index([userId, status])
+}
+
+/**
+ * A signed Expert Reviewer Agreement & Confidentiality Undertaking.
+ *
+ * Kept separate from LabReview because it is a different kind of record. A
+ * review is an opinion that can be superseded; this is a commitment made at a
+ * point in time, and it has to stay exactly as it was signed even after the
+ * agreement wording changes or the reviewer's access ends.
+ *
+ * `agreementVersion` and `agreementFingerprint` are both stored, and the second
+ * is the one that catches mistakes. The version is bumped by hand and can be
+ * forgotten; the fingerprint is computed from the displayed text, so an edit to
+ * the wording that nobody thought to version is still visible afterwards as a
+ * mismatch against what this reviewer actually saw.
+ *
+ * One row per reviewer, lab and agreement version. A reviewer who has signed
+ * the current version is not asked again; a new version asks everyone afresh,
+ * which is the only honest way to handle a changed undertaking.
+ */
+model ReviewerAgreement {
+  id      String  @id @default(cuid())
+  userId  String
+  labId   String?
+  labSlug String?
+
+  /// The header fields the document asks for.
+  labTitle           String
+  domain             String
+  reviewBuild        String?
+  reviewerName       String
+  designation        String
+  institution        String
+  email              String
+  dateAccessProvided String?
+  expectedCompletion String?
+
+  /// The ticked review roles, e.g. ["SCIENTIFIC", "EDUCATIONAL_UX"].
+  reviewRoles Json
+
+  /// The typed name standing as the signature, and the date put on the form.
+  signature  String
+  signedDate String?
+
+  /// Which agreement was signed, and a fingerprint of the exact text shown.
+  agreementVersion     String
+  agreementFingerprint String
+
+  acknowledgedAt DateTime @default(now())
+  /// Set if the agreement is later withdrawn or access is closed.
+  revokedAt      DateTime?
+  revokedBy      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lab  Lab? @relation(fields: [labId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, labId, agreementVersion])
+  @@index([labSlug, acknowledgedAt])
 }
 
 model AuthorizationLog {
