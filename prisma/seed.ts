@@ -7,7 +7,12 @@ async function main() {
 
   const labs = [
     { name: "Cognicore AI", domainUrl: "https://cognicore.live-labs.org/", sourceUrl: "https://cognicore.live-labs.org/", slug: "cognicore-ai", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Intermediate" },
-    { name: "Denovo GenAI Lab", domainUrl: "https://denovo.live-labs.org/", sourceUrl: "https://denovo.live-labs.org/", slug: "denovo-genai-lab", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Beginner" }
+    { name: "Denovo GenAI Lab", domainUrl: "https://denovo.live-labs.org/", sourceUrl: "https://denovo.live-labs.org/", slug: "denovo-genai-lab", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Beginner" },
+    // OmicsLab authorises every session against this row: it has a server of
+    // its own, and that server refuses to open a lab session unless
+    // authorize-lab resolves a lab here and says the account may open it. A
+    // missing or disabled row is not a cosmetic gap — the lab is shut.
+    { name: "OmicsLab Pro", domainUrl: "https://omicslab.live-labs.org/", sourceUrl: "https://omicslab.live-labs.org/", slug: "omicslab", subject: "Biology", category: "Biology", status: "ACTIVE", accessType: "PRIVATE", points: 800, difficulty: "Advanced", priceMinor: 149900 }
   ];
 
   for (const lab of labs) {

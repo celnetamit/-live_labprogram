@@ -18,6 +18,7 @@ import {
   LayoutDashboard,
   Zap,
   ShieldCheck,
+  ExternalLink,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Link from "next/link";
@@ -28,24 +29,100 @@ const fadeUp = {
 };
 
 const stats = [
-  { value: "12", label: "Premium Labs" },
+  { value: "13", label: "Premium Labs" },
   { value: "40k", label: "Active Learners" },
   { value: "99.98%", label: "Uptime SLA" },
-  { value: "11", label: "Domains" },
+  { value: "13", label: "Domains" },
 ];
 
-const domains = [
-  "cognicore.live-labs.org",
-  "denovo.live-labs.org",
-  "ai6g.live-labs.org",
-  "fraudshield.live-labs.org",
-  "logic.live-labs.org",
-  "micro.live-labs.org",
-  "battery.live-labs.org",
-  "virtual.live-labs.org",
-  "smartfactory.live-labs.org",
-  "aiprogram.live-labs.org",
-  "drug.live-labs.org",
+/**
+ * The lab subdomains shown in the network strip. Each carries the lab's name
+ * and its authored tagline so hovering the host reveals what actually lives
+ * there — a bare hostname tells a visitor nothing. Blurbs are copied verbatim
+ * from `src/content/labs/<slug>.ts` (`summary.tagline`); if a tagline is
+ * rewritten there, update it here too rather than paraphrasing.
+ */
+type LabDomain = { host: string; name: string; blurb: string };
+
+const domains: LabDomain[] = [
+  {
+    host: "cognicore.live-labs.org",
+    name: "Cognicore AI",
+    blurb:
+      "Summarise a contract, compare two drafts, and search a whole pile of documents by meaning rather than keyword.",
+  },
+  {
+    host: "denovo.live-labs.org",
+    name: "Denovo GenAI Lab",
+    blurb:
+      "Design a molecule that has never existed — and find out exactly where the AI stops being trustworthy.",
+  },
+  {
+    host: "ai6g.live-labs.org",
+    name: "AI for 6G",
+    blurb:
+      "The three ideas behind 6G — smart surfaces, sending meaning instead of bits — each with a simulator you can push until it fails.",
+  },
+  {
+    host: "fraudshield.live-labs.org",
+    name: "FraudShield AI Lab",
+    blurb:
+      "Score live transactions for fraud, tune the threshold, then attack your own detector to see how it breaks.",
+  },
+  {
+    host: "logic.live-labs.org",
+    name: "LogicLab AI",
+    blurb:
+      "Describe a chip in plain English, get working Verilog back, and learn to read what it produced.",
+  },
+  {
+    host: "micro.live-labs.org",
+    name: "MicrobeAI BioLab",
+    blurb:
+      "Read the DNA of a whole microbial community, then run the digester those microbes live in and watch what makes it fail.",
+  },
+  {
+    host: "battery.live-labs.org",
+    name: "Battery Circularity AI",
+    blurb:
+      "Decide what happens to a retired EV battery: a second life powering something else, or the shredder.",
+  },
+  {
+    host: "virtual.live-labs.org",
+    name: "XRD Virtual Laboratory",
+    blurb:
+      "Run a real X-ray diffraction experiment: mount a powder, scan it, and measure how big its crystals are.",
+  },
+  {
+    host: "smartfactory.live-labs.org",
+    name: "SmartFactory AI",
+    blurb:
+      "Find the bottleneck on a production line, predict a breakdown before it happens, and work out what the fix is worth.",
+  },
+  {
+    host: "aiprogram.live-labs.org",
+    name: "AI Program Navigator",
+    blurb:
+      "Not sure where to start? Describe your background and get a route through the catalogue built for you.",
+  },
+  {
+    host: "drug.live-labs.org",
+    name: "RepurposeAI: Drug Discovery Lab",
+    blurb:
+      "Map drugs, genes and diseases as one graph, then predict the connections nobody has recorded yet.",
+  },
+  {
+    host: "metamaterial.live-labs.org",
+    name: "Pioneering Acoustic Metamaterials",
+    blurb:
+      "Design a lattice that blocks sound by its shape rather than its thickness — and check a printer could actually make it.",
+  },
+  {
+    host: "omicslab.live-labs.org",
+    name: "OmicsLab Pro",
+    blurb:
+      "Analyse real single-cell and spatial transcriptomics data the way a lab does: a versioned pipeline, your own interpretation, and a report that shows its working.",
+  },
 ];
 
 const features = [
@@ -203,6 +280,59 @@ function ProductPreview() {
   );
 }
 
+/**
+ * One entry in the network strip: a real link to the lab, with a card that
+ * appears on hover naming the lab and what it does.
+ *
+ * The card is CSS-only (`group-hover` / `group-focus-within`) rather than
+ * React state — it has no behaviour beyond appearing, and keeping it out of
+ * state means no re-render per pointer move and nothing to hydrate. It is
+ * `pointer-events-none` so it can never sit between the cursor and the link,
+ * and `aria-hidden` because it only repeats what the link's own label says;
+ * keyboard users get the same card via `focus-within`.
+ *
+ * Below `sm` it is not rendered at all: there is no hover on touch, and a
+ * centred card on the first or last chip of the row would push the page
+ * sideways.
+ */
+function DomainLink({ host, name, blurb }: LabDomain) {
+  return (
+    <div className="relative group">
+      <a
+        href={`https://${host}/`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${name} — ${host} (opens in a new tab)`}
+        className="text-sm font-mono text-muted-foreground/80 hover:text-foreground focus-visible:text-foreground underline-offset-4 decoration-dotted decoration-muted-foreground/40 hover:underline focus-visible:underline transition-colors rounded outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+      >
+        {host}
+      </a>
+
+      <div
+        role="presentation"
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-full left-1/2 z-40 mb-3 hidden w-64 md:w-72 -translate-x-1/2 translate-y-1 rounded-xl glass p-3.5 text-left opacity-0 shadow-2xl shadow-black/25 transition-all duration-150 ease-out sm:block group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"
+      >
+        <div className="flex items-start gap-2.5">
+          <span className="w-8 h-8 shrink-0 rounded-lg btn-brand flex items-center justify-center text-primary-foreground">
+            <FlaskConical className="w-4 h-4" />
+          </span>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold leading-snug text-foreground">{name}</div>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{blurb}</p>
+          </div>
+        </div>
+        <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center gap-1.5 text-[11px] font-mono text-primary">
+          <ExternalLink className="w-3 h-3 shrink-0" />
+          <span className="truncate">https://{host}/</span>
+        </div>
+        {/* Arrow pointing back down at the hostname. */}
+        <span className="absolute left-1/2 top-full -mt-[5px] -translate-x-1/2 rotate-45 w-2.5 h-2.5 rounded-[2px] bg-card border-r border-b border-border/70" />
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <>
@@ -249,16 +379,19 @@ export default function Home() {
         </section>
 
         {/* ===== Logo / domain cloud ===== */}
-        <section className="border-y border-border bg-muted/20">
+        {/* `overflow-x-clip` (not `hidden`) because a hover card centred on the
+            first or last chip of a wrapped row can reach past the viewport edge
+            on a narrow window. Clipping only the inline axis kills the stray
+            horizontal scrollbar while still letting the card overflow upwards
+            out of the strip, which `overflow-hidden` would cut off. */}
+        <section className="border-y border-border bg-muted/20 overflow-x-clip">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-5">
               Powering labs across the network
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
               {domains.map((d) => (
-                <span key={d} className="text-sm font-mono text-muted-foreground/80 hover:text-foreground transition-colors">
-                  {d}
-                </span>
+                <DomainLink key={d.host} {...d} />
               ))}
             </div>
           </div>

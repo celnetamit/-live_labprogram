@@ -310,5 +310,31 @@
     "createdAt": "2026-07-25T15:00:00.000Z",
     "updatedAt": "2026-07-25T15:00:00.000Z",
     "ownerId": null
+  },
+  {
+    "id": "cmrpue8ux555xonea76xg7p7m",
+    "slug": "omicslab",
+    "name": "OmicsLab Pro",
+    "description": "Analyse real single-cell and spatial transcriptomics data end to end: a versioned pipeline, your own interpretation, and a report that carries its parameters and caveats.",
+    "synopsis": "The Live Lab for the eight-week single-cell and spatial transcriptomics programme. Run quality control, clustering, annotation and differential expression on published datasets, then defend the result in a capstone.",
+    "subject": "Biology",
+    "difficulty": "Advanced",
+    "points": 800,
+    "instructions": "\n# Explore the App\n\n1. Open the linked app for OmicsLab Pro.\n2. Review the workflow, inputs, and outputs inside the experience.\n3. Compare it with similar projects using the subject filters in the catalog.\n4. Capture what makes this project useful for your learning or evaluation goals.\n",
+    "starterCode": "\nconst project = {\n  title: 'OmicsLab Pro',\n  subject: 'Biology',\n};\n\nconsole.log(`Launch ${project.title} to explore a live ${project.subject} workflow.`);\n",
+    "sourceUrl": "https://omicslab.live-labs.org/",
+    "tags": "[\"biology\", \"genomics\", \"single-cell\", \"spatial\", \"bioinformatics\"]",
+    "keySkills": "[\"Single-cell RNA-seq analysis\", \"Spatial transcriptomics\", \"Experimental design\", \"Reproducible reporting\"]",
+    "priceMinor": 149900,
+    "currency": "INR",
+    "enabled": true,
+    "domainUrl": "https://omicslab.live-labs.org/",
+    "category": "Biology",
+    "thumbnail": null,
+    "accessType": "PRIVATE",
+    "status": "ACTIVE",
+    "createdAt": "2026-09-12T06:00:00.000Z",
+    "updatedAt": "2026-09-12T06:00:00.000Z",
+    "ownerId": null
   }
 ]

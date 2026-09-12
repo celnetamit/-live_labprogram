@@ -10,6 +10,7 @@ import fraudshield from "./fraudshield";
 import logiclab from "./logiclab";
 import metamaterials from "./metamaterials";
 import microAi from "./micro-ai";
+import omicslab from "./omicslab";
 import smartfactoryAi from "./smartfactory-ai";
 import virtualAi from "./virtual-ai";
 
@@ -30,6 +31,7 @@ const GUIDES: Record<string, LabGuide> = Object.fromEntries(
     logiclab,
     metamaterials,
     microAi,
+    omicslab,
     smartfactoryAi,
     virtualAi,
   ].map((guide) => [guide.slug, guide]),
