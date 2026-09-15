@@ -31,58 +31,39 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * Recorded from the lab itself with scripts/record-demo.mjs, against a
+   * database holding two genuine Core runs — an original and the alternate its
+   * own what-if produced. The dataset on screen is the labelled synthetic
+   * fixture, because the teaching datasets open only once an operator has
+   * ingested them; the walkthrough says so rather than implying otherwise.
+   */
   video: {
-    url: null,
+    url: "/demos/omicslab.mp4",
     poster: "/demos/omicslab.jpg",
+    durationSec: 173,
     chapters: [
-      {
-        at: 0,
-        label: "Lab Home — the eight-week arc",
-        shot: "Open the lab from the dashboard. Land on Lab Home; scroll the programme progress and the analysis tracks panel.",
-        say: "OmicsLab runs the eight-week single-cell and spatial programme. Lab Home shows where you are in it, and which analysis tracks your access opens.",
-      },
-      {
-        at: 8,
-        label: "Knowledge Bank and Pre-Lab Assessment",
-        shot: "Program → Knowledge Bank, scroll the glossary. Then Pre-Lab Assessment, answer two questions, submit.",
-        say: "The Knowledge Bank is the reference; the Pre-Lab Assessment is how you find out what you are missing before you touch data.",
-      },
-      {
-        at: 16,
-        label: "Dataset Selector — provenance before analysis",
-        shot: "Analysis → Dataset Selector. Hover a card to show source, accession, licence and the limitations list. Click Inspect and analyse.",
-        say: "Every dataset names its source, accession and licence, and lists what it cannot answer. That last part is the one people skip.",
-      },
-      {
-        at: 26,
-        label: "Starting a run",
-        shot: "On the inspector, read the valid analyses list, then press Start the guided analysis. Show the run appearing as queued.",
-        say: "The run queues on the server. It does not execute in your browser, so you can close the tab and come back to it.",
-      },
-      {
-        at: 34,
-        label: "Analysis Workspace — steps, figures, parameters",
-        shot: "Open the run. Step through Pipeline steps: QC, clustering, markers. Expand a step's parameters.",
-        say: "Each step shows its figure and the exact parameters behind it. Nothing here is a stock image.",
-      },
-      {
-        at: 44,
-        label: "Copilot and what-if",
-        shot: "Open the Copilot panel, ask about the QC step, then use Run this alternate analysis to change a threshold.",
-        say: "The Copilot only speaks about numbers this run produced. A what-if re-runs the step so you can see the choice change the answer.",
-      },
-      {
-        at: 54,
-        label: "Interpretation, Compare Runs, Capstone",
-        shot: "Save my interpretation. Then Compare Runs side by side, then the Capstone with its runs list.",
-        say: "You write the interpretation. The capstone will not submit without the runs it rests on.",
-      },
-      {
-        at: 64,
-        label: "Report and Portfolio",
-        shot: "Record → Report and Portfolio. Export a report and show the parameters and caveats sections.",
-        say: "The report carries the parameters and the caveats with the figures, which is what makes it defensible.",
-      },
+      { at: 0, label: "OmicsLab Pro — the Live Lab for the eight-week single-cell and spatial programme" },
+      { at: 6, label: "Lab Home: your week, and which analysis tracks your access opens" },
+      { at: 15, label: "Step 1 — read the method before you run it" },
+      { at: 21, label: "Clusters are a model output, not a discovery — the reference says so plainly" },
+      { at: 28, label: "Step 2 — the Pre-Lab Assessment finds the gaps while they are cheap to fix" },
+      { at: 37, label: "Step 3 — plan the comparison before a run answers a different question" },
+      { at: 50, label: "Step 4 — every dataset names its source, accession, licence and limits" },
+      { at: 57, label: "The teaching datasets say so until their files are ingested and validated" },
+      { at: 64, label: "The inspector lists what this dataset supports — and what it does not" },
+      { at: 74, label: "Step 5 — the run queues on the server, so you can close the tab" },
+      { at: 82, label: "An earlier run of the same pipeline has finished" },
+      { at: 92, label: "Step 6 — ten steps, each with its figure and the parameters that produced it" },
+      { at: 100, label: "Quality control: what was excluded, and on which thresholds" },
+      { at: 109, label: "Clustering at the resolution this run recorded" },
+      { at: 116, label: "Marker genes — the evidence behind any label you give a cluster" },
+      { at: 123, label: "Step 7 — the Copilot speaks only about numbers this run produced" },
+      { at: 130, label: "And you write the interpretation; it is saved against the run" },
+      { at: 142, label: "The same data at two clustering resolutions — and which conclusions moved" },
+      { at: 151, label: "Step 8 — the capstone will not submit without the runs it rests on" },
+      { at: 160, label: "Export a report that carries the parameters and the caveats with the figures" },
+      { at: 168, label: "OmicsLab Pro — a NanoSchool Live Lab" },
     ],
   },
 

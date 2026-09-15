@@ -313,6 +313,150 @@ const WALKTHROUGHS = {
     await page.evaluate(() => window.scrollBy({ top: 320, behavior: "smooth" }));
     await wait(4000);
   },
+
+  /*
+   * OmicsLab Pro — the eight tutorial steps of the lab page, in their order.
+   *
+   * Unlike the client-only labs, this one has a server: runs execute on a
+   * worker pool and belong to the learner's account. Two consequences for a
+   * recording. First, the lab must be launched with a token (see below), the
+   * same as a learner arriving from the dashboard. Second, a Core run takes
+   * about three quarters of a minute, which is not something to watch — so the
+   * walkthrough starts one for real, says that it queues on the server, and
+   * then opens an earlier run of the same pipeline that has finished. Both runs
+   * are genuine; nothing here is staged data.
+   *
+   * Run it against a lab whose database has at least two completed Core runs,
+   * pointed at a hub that will authorise the token:
+   *   node scripts/record-demo.mjs omicslab "http://localhost:5174/?auth_token=<token>"
+   */
+  omicslab: async (page, beat) => {
+    const pause = (ms) => holdOnScreen(page, ms);
+
+    /** Open a top-bar group, then the screen inside it. */
+    const nav = async (group, item) => {
+      await page.evaluate((label) => {
+        const button = [...document.querySelectorAll("nav button")].find((b) =>
+          (b.innerText || "").trim().toLowerCase().startsWith(label.toLowerCase()),
+        );
+        button?.click();
+      }, group);
+      await wait(450);
+      await clickText(page, "a", item);
+      await wait(1400);
+    };
+
+    /** Choose an option in a labelled <select> the way React will notice. */
+    const pick = async (labelText, optionText) => {
+      await page.evaluate((text, wanted) => {
+        const label = [...document.querySelectorAll("label")].find((l) =>
+          (l.innerText || "").trim().toLowerCase().startsWith(text.toLowerCase()),
+        );
+        const select = label?.querySelector("select") ||
+          document.getElementById(label?.getAttribute("for") || "");
+        if (!select) return;
+        const option = [...select.options].find((o) => o.text.includes(wanted));
+        if (!option) return;
+        Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value").set.call(
+          select,
+          option.value,
+        );
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      }, labelText, optionText);
+      await wait(900);
+    };
+
+    // The caption bar is fixed to the foot of the window and this app scrolls
+    // the document, so give the page room to scroll clear of it.
+    await page.evaluate(() => {
+      document.body.style.paddingBottom = "110px";
+    });
+
+    await beat("OmicsLab Pro — the Live Lab for the eight-week single-cell and spatial programme", 4500);
+    await scrollLab(page, 520);
+    await beat("Lab Home: your week, and which analysis tracks your access opens", 4500);
+    await scrollLab(page, 0);
+
+    await nav("Program", "Knowledge Bank");
+    await beat("Step 1 — read the method before you run it", 3500);
+    await scrollLab(page, 700);
+    await beat("Clusters are a model output, not a discovery — the reference says so plainly", 4500);
+
+    await nav("Program", "Pre-Lab Assessment");
+    await beat("Step 2 — the Pre-Lab Assessment finds the gaps while they are cheap to fix", 5000);
+
+    await nav("Program", "Experimental Design Studio");
+    await beat("Step 3 — plan the comparison before a run answers a different question", 4500);
+    await scrollLab(page, 420);
+    await pause(3000);
+    await scrollLab(page, 0);
+
+    await nav("Analysis", "Dataset Selector");
+    await beat("Step 4 — every dataset names its source, accession, licence and limits", 4500);
+    await scrollLab(page, 900);
+    await beat("The teaching datasets say so until their files are ingested and validated", 4000);
+    await scrollLab(page, 0);
+    await clickText(page, "a", "Inspect and analyse");
+    await wait(1600);
+    await beat("The inspector lists what this dataset supports — and what it does not", 5000);
+
+    await clickText(page, "button", "Start the guided analysis");
+    await wait(2500);
+    await beat("Step 5 — the run queues on the server, so you can close the tab", 4500);
+
+    await nav("Analysis", "Analysis Workspace");
+    await beat("An earlier run of the same pipeline has finished", 3000);
+    await page.evaluate(() => {
+      // The run just started is still queued. Open a finished *original* one —
+      // the row carries both facts, so ask for them rather than taking the
+      // first link and hoping.
+      const link = [...document.querySelectorAll('a[href*="/runs/"]')].find((a) => {
+        const row = a.closest("tr,li,article,div")?.innerText || "";
+        return /completed/i.test(row) && /original/i.test(row);
+      });
+      link?.click();
+    });
+    await wait(3000);
+
+    // Land on a step that drew something. The last step of this pipeline is
+    // pathway enrichment, which records numbers rather than a figure, and
+    // opening there shows an empty panel under a caption promising figures.
+    await clickText(page, "button", "UMAP layout");
+    await wait(2200);
+    await beat("Step 6 — ten steps, each with its figure and the parameters that produced it", 4500);
+    await clickText(page, "button", "Cell quality control");
+    await wait(2200);
+    await beat("Quality control: what was excluded, and on which thresholds", 4500);
+    await clickText(page, "button", "Leiden clustering");
+    await wait(2200);
+    await beat("Clustering at the resolution this run recorded", 4000);
+    await clickText(page, "button", "Marker genes and annotation");
+    await wait(2200);
+    await beat("Marker genes — the evidence behind any label you give a cluster", 4500);
+
+    await scrollLab(page, 900);
+    await beat("Step 7 — the Copilot speaks only about numbers this run produced", 5000);
+    await scrollLab(page, 1500);
+    await beat("And you write the interpretation; it is saved against the run", 4500);
+
+    await nav("Analysis", "Compare Runs");
+    // Two *different* runs, or the screen truthfully reports that nothing
+    // changed. The option text carries which is which.
+    await pick("Original run", "original");
+    await pick("Alternate run", "alternate");
+    await wait(2000);
+    await beat("The same data at two clustering resolutions — and which conclusions moved", 5500);
+
+    await nav("Record", "Capstone Workspace");
+    await beat("Step 8 — the capstone will not submit without the runs it rests on", 5000);
+
+    await nav("Record", "Report and Portfolio");
+    await beat("Export a report that carries the parameters and the caveats with the figures", 5000);
+
+    await nav("Program", "Knowledge Bank");
+    await page.evaluate(() => window.scrollTo({ top: 0 }));
+    await beat("OmicsLab Pro — a NanoSchool Live Lab", 4500);
+  },
 };
 
 const walkthrough = WALKTHROUGHS[SLUG];
