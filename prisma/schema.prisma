@@ -282,6 +282,53 @@ model Lab {
   reviewerAgreements ReviewerAgreement[]
   orderItems  OrderItem[]
   plannedFrom CustomLabRequest[] @relation("PlannedLab")
+  blogPosts   BlogPost[]
+}
+
+/// An article on the public blog at /blog.
+///
+/// Posts live in the database, unlike the lab guides in `src/content`, because
+/// publishing an article should not wait on a code review and a deploy — on this
+/// hub a push to main *is* a deploy.
+///
+/// `focusKeyword` is the one search phrase the post is written to rank for. The
+/// admin editor warns when two posts share one, because pages competing for the
+/// same query split its ranking between them. `keywords` follows the JSON
+/// string-array convention of `Lab.tags`.
+///
+/// `body` is a deliberately small Markdown subset (`src/lib/blog.ts`), rendered
+/// to React elements rather than to an HTML string, so there is nothing to
+/// sanitise.
+model BlogPost {
+  id           String    @id @default(cuid())
+  /// The URL: /blog/<slug>. Changing it on a published post breaks every link to it.
+  slug         String    @unique
+  title        String
+  /// Optional shorter title for search results; falls back to `title`.
+  metaTitle    String?
+  /// The meta description, and the summary on post cards and in the RSS feed.
+  description  String    @default("")
+  body         String    @default("")
+  focusKeyword String    @default("")
+  keywords     String    @default("[]")
+  /// A site path (/showcase/x.jpg) or an absolute URL. Without one, a share card
+  /// is generated at /blog/og/<slug>.
+  coverImage   String?
+  coverAlt     String?
+  authorName   String    @default("")
+  status       String    @default("DRAFT") // DRAFT | PUBLISHED
+  /// Set the first time the post is published and kept after that, so taking a
+  /// post down to fix something does not re-date the article.
+  publishedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  createdBy    String?
+
+  labId        String?
+  lab          Lab?      @relation(fields: [labId], references: [id], onDelete: SetNull)
+
+  @@index([status, publishedAt])
+  @@index([labId, status])
 }
 
 model LabAccess {

@@ -9,6 +9,7 @@ import LabSearch from "@/components/lab-search";
 
 const navLinks = [
   { href: "/labs", label: "Labs" },
+  { href: "/blog", label: "Blog" },
   { href: "/#features", label: "Features" },
   { href: "/#pricing", label: "Pricing" },
 ];

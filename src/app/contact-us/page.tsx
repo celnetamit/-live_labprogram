@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Mail, Phone, MapPin, Clock, Building2 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { COMPANY } from "@/content/legal/company";
-import { LEGAL_PAGES } from "@/components/legal-page";
+import { LEGAL_PAGES } from "@/content/legal/pages";
 
 export const metadata: Metadata = {
   title: "Contact Us",

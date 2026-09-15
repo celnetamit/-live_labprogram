@@ -83,6 +83,7 @@ GOOGLE_CLIENT_SECRET=
 RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
 LAB_SOURCE_URL=
+SITE_URL=
 ```
 
 | Variable | Required | Description |
@@ -95,6 +96,7 @@ LAB_SOURCE_URL=
 | `RAZORPAY_KEY_ID` | ❌ | Live payments. Leave blank to use built-in mock checkout. |
 | `RAZORPAY_KEY_SECRET` | ❌ | Live payments. |
 | `LAB_SOURCE_URL` | ❌ | External API to re-sync lab data. Falls back to committed snapshot if unset. |
+| `SITE_URL` | ❌ | Public address used in canonical links, the sitemap, robots.txt, RSS and blog share cards. Defaults to `https://live-labs.org`; set it only to test against another host. Deliberately separate from `NEXTAUTH_URL`. |
 
 Generate a secret:
 ```bash

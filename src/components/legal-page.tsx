@@ -3,14 +3,7 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { COMPANY } from "@/content/legal/company";
 import type { LegalDocument } from "@/content/legal/types";
-
-export const LEGAL_PAGES = [
-  { href: "/privacy-policy", label: "Privacy Policy" },
-  { href: "/terms-of-service", label: "Terms & Conditions" },
-  { href: "/return-refund-cancellation", label: "Refunds & Cancellation" },
-  { href: "/disclaimer", label: "Disclaimer" },
-  { href: "/contact-us", label: "Contact Us" },
-] as const;
+import { LEGAL_PAGES } from "@/content/legal/pages";
 
 /**
  * One shell for every legal document.
