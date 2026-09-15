@@ -49,10 +49,10 @@ export default async function CertificatesDashboard() {
           </div>
           <h3 className="text-xl font-bold mb-2">No Certificates Yet</h3>
           <p className="text-muted-foreground max-w-md text-center mb-6">
-            You haven't earned any certificates yet. Complete programs and labs to start building your credentials.
+            You haven't earned any certificates yet. Complete labs to start building your credentials.
           </p>
-          <Link href="/dashboard/programs" className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
-            Browse Programs
+          <Link href="/dashboard/labs" className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
+            Go to My Labs
           </Link>
         </div>
       ) : (

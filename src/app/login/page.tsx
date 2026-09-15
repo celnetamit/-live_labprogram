@@ -130,7 +130,7 @@ export default function Login() {
             </div>
             <h2 className="text-2xl font-bold text-center tracking-tight">Sign in to Panoptical</h2>
             <p className="text-sm text-muted-foreground mt-2 text-center">
-              Enter your credentials to access your labs and programs
+              Enter your credentials to access your labs
             </p>
           </div>
           

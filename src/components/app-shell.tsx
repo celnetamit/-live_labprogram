@@ -131,7 +131,7 @@ export default function AppShell({
   /**
    * The second crumb used to be the literal string "Overview" on every page, so
    * the header read "Dashboard › Overview" while you were looking at My
-   * Programs. Deriving it from the nav means it names the page you are actually
+   * Labs. Deriving it from the nav means it names the page you are actually
    * on, and stays correct as nav items are added.
    *
    * Deepest match wins: /dashboard/settings/security resolves to "Account
