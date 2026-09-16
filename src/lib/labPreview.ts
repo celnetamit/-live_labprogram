@@ -18,7 +18,7 @@ export type LabPreview = {
   stepCount: number;
   /** Total tutorial time in minutes, summed from the steps. */
   minutes: number;
-  /** "6:12" when the lab has a timed demo video, else null. */
+  /** "6:12" when the lab has a timed demo video that exists, else null. */
   videoLabel: string | null;
   prerequisiteCount: number;
 };
@@ -30,7 +30,14 @@ export function getLabPreview(slug: string | null | undefined): LabPreview | nul
   const guide = getLabGuide(slug);
   if (!guide) return null;
 
-  const seconds = guide.video.durationSec;
+  /*
+   * Only when there is a file to play. `durationSec` is also set on a guide
+   * whose video is still to be recorded — the chapter list is useful before
+   * the file exists — and a card promising "5:00" for a video that will not
+   * play is a promise the page cannot keep. The lab detail page guards the
+   * same way; this helper did not, so a planned demo showed as a real one.
+   */
+  const seconds = guide.video.url ? guide.video.durationSec : undefined;
 
   return {
     tagline: guide.summary.tagline ?? guide.summary.what,
