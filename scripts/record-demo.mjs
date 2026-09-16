@@ -430,7 +430,7 @@ const WALKTHROUGHS = {
     await clickText(page, "a,button", "Start virtual XRD scan");
     await wait(26000);
 
-    await beat("Process and fit");
+    await beat("Process the raw pattern");
     await toTop();
     await clickStep("Process");
     await wait(4000);
@@ -442,7 +442,7 @@ const WALKTHROUGHS = {
     await page.evaluate(() => window.scrollBy({ top: 520, behavior: "smooth" }));
     await wait(4500);
 
-    await beat("Analyse");
+    await beat("Assign reflections and analyse");
     await toTop();
     await clickStep("Assign reflections");
     await wait(5000);
@@ -454,7 +454,7 @@ const WALKTHROUGHS = {
     await page.evaluate(() => window.scrollBy({ top: 300, behavior: "smooth" }));
     await wait(4000);
 
-    await beat("Validate and redesign");
+    await beat("Commit to a conclusion");
     await toTop();
     await clickStep("Interpret & submit");
     await wait(4000);

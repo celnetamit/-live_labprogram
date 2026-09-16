@@ -38,26 +38,32 @@ const guide: LabGuide = {
    * calcite project, driven end to end through the real interface. Silent
    * screen capture with a caption bar; no narration.
    *
-   * Chapter marks are the recorder's, rescaled to the finished cut, then
-   * checked frame by frame — two labels were wrong against the footage and are
-   * corrected here rather than in the shot list. The walkthrough stops at the
-   * conclusion instead of submitting one, so nothing claims to show the
-   * validation screen.
+   * Captured against the production bundle in hub mode, launched through the
+   * real ?auth_token flow, so the chrome matches what a learner sees on
+   * virtual.live-labs.org: their name in the header and the Live Labs button.
+   * An earlier cut was recorded with authorization disabled and said "Local
+   * learner", which reads as a development build.
+   *
+   * Chapter marks are the recorder's, rescaled to the finished cut and then
+   * checked frame by frame. The captions are burned into the footage, so they
+   * have to describe what is on screen rather than what the tutorial covers
+   * next: the walkthrough stops at the conclusion instead of submitting one,
+   * so nothing here claims to reach the validation screen.
    */
   video: {
     url: "/demos/virtual-ai.mp4",
     poster: "/demos/virtual-ai.jpg",
-    durationSec: 181,
+    durationSec: 180,
     chapters: [
       { at: 0, label: "What the lab is" },
       { at: 10, label: "Choose a level and meet the sample" },
       { at: 32, label: "Prepare the specimen" },
-      { at: 58, label: "Configure the instrument" },
-      { at: 71, label: "Start the virtual scan" },
-      { at: 109, label: "Process the raw pattern" },
-      { at: 135, label: "Assign reflections and analyse" },
-      { at: 162, label: "Commit to a conclusion" },
-      { at: 176, label: "Where to get help" },
+      { at: 57, label: "Configure the instrument" },
+      { at: 70, label: "Start the virtual scan" },
+      { at: 108, label: "Process the raw pattern" },
+      { at: 134, label: "Assign reflections and analyse" },
+      { at: 161, label: "Commit to a conclusion" },
+      { at: 175, label: "Where to get help" },
     ],
   },
 
