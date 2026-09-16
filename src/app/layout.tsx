@@ -9,13 +9,15 @@ const inter = Inter({ subsets: ["latin"] });
 /** Title follows the admin's platform name rather than a hard-coded string. */
 export async function generateMetadata(): Promise<Metadata> {
   const { getSettings } = await import("@/lib/platformSettings");
-  const { SITE_URL } = await import("@/lib/site");
+  const { SITE_URL, GOOGLE_SITE_VERIFICATION } = await import("@/lib/site");
   const { platformName } = await getSettings();
   return {
     // Lets pages give canonical, Open Graph and share-image URLs as site paths.
     metadataBase: new URL(SITE_URL),
     title: platformName,
     description: "Centralized Program, Lab & Access Management Platform",
+    // Search Console ownership. In the root layout so it is on the home page.
+    verification: { google: GOOGLE_SITE_VERIFICATION },
   };
 }
 

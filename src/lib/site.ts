@@ -14,6 +14,22 @@ export const SITE_URL = (process.env.SITE_URL || "https://live-labs.org").replac
 
 export const SITE_NAME = "Panoptical Labs";
 
+/**
+ * Google Search Console ownership token for https://live-labs.org/.
+ *
+ * Rendered by the root layout as <meta name="google-site-verification">, so it
+ * is on the home page Search Console checks and on every other page too. The
+ * value is public — it appears in the served HTML by design — so it lives in
+ * the repo rather than in a deploy variable, and follows SITE_URL's habit of
+ * defaulting to production so a deployment that sets nothing still verifies.
+ *
+ * Google re-checks periodically: removing this silently un-verifies the
+ * property and the Search Console data stops. Override it only when claiming
+ * the property from a different account.
+ */
+export const GOOGLE_SITE_VERIFICATION =
+  process.env.GOOGLE_SITE_VERIFICATION || "miGYa_OqZg2eAJc8yfPEq8maKN-CVrJmLiQiNuSblqs";
+
 /** `/blog/x` → `https://live-labs.org/blog/x`. An absolute http(s) URL is returned unchanged. */
 export function absoluteUrl(pathOrUrl: string): string {
   if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
