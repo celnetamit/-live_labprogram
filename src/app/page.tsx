@@ -162,12 +162,6 @@ const steps = [
   { icon: Rocket, title: "Launch instantly", desc: "Open the live lab environment with one click, plus step-by-step instructions and starter code." },
 ];
 
-const pricing = [
-  { tier: "Beginner", price: "₹499", blurb: "Entry-level workshops", perks: ["Full lab resources", "Live launch link", "Starter code", "Lifetime access"], highlight: false },
-  { tier: "Intermediate", price: "₹999", blurb: "Applied, hands-on labs", perks: ["Everything in Beginner", "Advanced workflows", "Priority support", "Certificate-ready"], highlight: true },
-  { tier: "Advanced", price: "₹1,499", blurb: "Simulation & research", perks: ["Everything in Intermediate", "Research-grade tooling", "Collaborative labs", "Team access"], highlight: false },
-];
-
 const testimonials = [
   { quote: "We consolidated a dozen scattered lab deployments into one portal. Onboarding time dropped from days to minutes.", name: "Program Director", role: "Applied AI Institute" },
   { quote: "Per-lab access plus admin control is exactly the model we needed. Revenue is transparent and access is effortless.", name: "Operations Lead", role: "Nano Research Network" },
@@ -465,60 +459,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== Pricing ===== */}
-        <section id="pricing" className="py-16 md:py-24">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-14">
-              <span className="text-sm font-semibold text-primary uppercase tracking-wider">Pricing</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">Simple, per-lab pricing</h2>
-              <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-                Pay once per lab for lifetime access. No subscriptions, no surprises — admins can grant access anytime.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6 items-start">
-              {pricing.map((p) => (
-                <motion.div
-                  key={p.tier}
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true }}
-                  className={`relative rounded-2xl border p-6 ${p.highlight
-                      ? "border-primary/40 bg-gradient-to-b from-primary/10 to-card shadow-xl shadow-primary/10 md:-translate-y-3"
-                      : "border-border bg-card"
-                    }`}
-                >
-                  {p.highlight && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 pill text-primary bg-primary/10 border border-primary/20 px-3">
-                      Most popular
-                    </span>
-                  )}
-                  <h3 className="font-semibold text-lg">{p.tier}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{p.blurb}</p>
-                  <div className="flex items-end gap-1 mb-6">
-                    <span className="text-4xl font-extrabold text-gradient">{p.price}</span>
-                    <span className="text-sm text-muted-foreground mb-1">/ lab</span>
-                  </div>
-                  <ul className="space-y-2.5 mb-6">
-                    {p.perks.map((perk) => (
-                      <li key={perk} className="flex items-center gap-2 text-sm">
-                        <Check className="w-4 h-4 text-emerald-400 shrink-0" /> {perk}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href="/labs"
-                    className={`w-full inline-flex items-center justify-center py-2.5 rounded-xl font-semibold transition-colors ${p.highlight ? "btn-brand" : "border border-border hover:bg-accent"
-                      }`}
-                  >
-                    Browse {p.tier} labs
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ===== Testimonials ===== */}
         <section className="py-16 md:py-24 bg-muted/20 border-y border-border">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -610,7 +550,6 @@ export default function Home() {
                 <li><Link href="/labs" className="hover:text-foreground transition-colors">Labs</Link></li>
                 <li><Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link></li>
                 <li><Link href="/#features" className="hover:text-foreground transition-colors">Features</Link></li>
-                <li><Link href="/#pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
               </ul>
             </div>
             <div>
