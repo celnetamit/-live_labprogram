@@ -268,50 +268,205 @@ const WALKTHROUGHS = {
     await beat("Moderate unlocked. Advanced is a separate paid tier.", 7000);
   },
 
+  /*
+   * XRD Virtual Live Lab — the 13-step Basic project, in about four minutes.
+   *
+   * Rewritten for v2.0.0. The previous walkthrough drove the old app: a
+   * "Sample Library", a "Virtual Lab" sidebar entry and a "Run scan" button,
+   * none of which exist. The beats mirror the guide's tutorial steps so the
+   * video and the written page teach the same thing in the same order.
+   *
+   * The pre-lab diagnostic is answered through the API rather than on camera.
+   * It is eight questions of radio buttons; filling them in visibly costs a
+   * minute of watching a cursor and teaches nothing that the brief has not
+   * already said. Everything after it is driven through the real interface.
+   */
   "virtual-ai": async (page, beat) => {
-    await beat("The lab: what X-ray diffraction measures", 3500);
+    /*
+     * Click a step in the workflow rail.
+     *
+     * The link's text carries its position — "4 Configure instrument" — while a
+     * completed step shows a tick and no number at all. Comparing for equality
+     * against the bare label therefore matched nothing, the walkthrough never
+     * left the project brief, and each run failed at whichever control it
+     * expected to find on the step it had not actually opened. Strip a leading
+     * number before comparing, and throw rather than click nothing, so a miss
+     * is reported instead of silently recorded.
+     */
+    const clickStep = async (label) => {
+      const hit = await page.evaluate((text) => {
+        const rail = document.querySelector('nav[aria-label="Workflow steps"]');
+        const norm = (el) => (el.innerText || "").trim().replace(/^\d+\s+/, "").toLowerCase();
+        const link = [...(rail ? rail.querySelectorAll("a") : [])].find((el) => norm(el) === text.toLowerCase());
+        link?.click();
+        return !!link;
+      }, label);
+      if (!hit) throw new Error(`step not available in the rail: "${label}"`);
+      await wait(1600);
+    };
+    const toTop = async () => {
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+      await wait(300);
+    };
 
-    await beat("Loading Silicon Powder from the Sample Library");
-    await clickText(page, "a,button", "Sample Library");
+    /*
+     * Clear any diagnostic standing between the walkthrough and the next screen.
+     *
+     * The lab gates steps behind short prediction forms — the pre-lab diagnostic
+     * before the workflow opens, and a "Predict before you configure" checkpoint
+     * before the instrument. They are radio buttons, so the first option of each
+     * question is chosen and the block submitted. The button is matched on
+     * "Submit" rather than its full caption: the brief's reads "Submit and start
+     * the workflow" and the checkpoint's "Submit answers", and matching the
+     * longer one meant the pre-lab was never answered, every later step stayed
+     * locked, and the walkthrough was quietly redirected back to the brief.
+     * Driving the real form rather
+     * than seeding through the API keeps the recording honest about what a
+     * learner actually has to do, and costs only a few seconds on screen.
+     *
+     * Returns false when there was no form to answer, so callers can use it
+     * unconditionally after a navigation.
+     */
+    const answerAnyQuestions = async () => {
+      for (let round = 0; round < 4; round += 1) {
+        const answered = await page.evaluate(() => {
+          const submit = [...document.querySelectorAll("button")].find(
+            (b) => (b.textContent || "").trim().startsWith("Submit") && b.getClientRects().length > 0,
+          );
+          if (!submit) return false;
+          for (const set of document.querySelectorAll("fieldset")) {
+            const first = set.querySelector('input[type="radio"]:not(:disabled)');
+            if (first && !set.querySelector('input[type="radio"]:checked')) first.click();
+          }
+          return true;
+        });
+        if (!answered) return round > 0;
+        await wait(900);
+        await page.evaluate(() => {
+          const submit = [...document.querySelectorAll("button")].find(
+            (b) => (b.textContent || "").trim().startsWith("Submit") && !b.disabled,
+          );
+          submit?.click();
+        });
+        await wait(2500);
+      }
+      return true;
+    };
+
+    await beat("What the lab is", 4500);
+    await page.evaluate(() => window.scrollBy({ top: 520, behavior: "smooth" }));
+    await wait(3500);
+
+    await beat("Choose a level and meet the sample");
+    await toTop();
+    await clickText(page, "a,button", "Choose a level");
+    await wait(2200);
+    await clickText(page, "a,button", "Read the project brief");
+    await wait(3000);
+    await page.evaluate(() => window.scrollBy({ top: 620, behavior: "smooth" }));
+    await wait(4000);
+
+    await toTop();
+    await clickText(page, "a,button", "Start this project");
+    await wait(3500);
+    await answerAnyQuestions();
+
+    await beat("Prepare the specimen");
+    await clickStep("Prepare specimen");
     await wait(2000);
-    await clickText(page, "button", "Load in Simulator");
+    await answerAnyQuestions();
+    await wait(1500);
+    await page.evaluate(() => window.scrollBy({ top: 420, behavior: "smooth" }));
+    await wait(2500);
+    /*
+     * Basic's preparation is a guided route, not a form: Grind, Fill holder,
+     * Pack, Level, Mount, each enabled only once the previous one is done, and
+     * a save at the end. Clicking whatever single action is currently enabled
+     * walks it without hard-coding five captions, and the step is worth showing
+     * — it is the one place the lab makes the physical handling explicit.
+     * Saving is also what unlocks Configure; navigating past it leaves the rest
+     * of the workflow locked.
+     */
+    for (let i = 0; i < 8; i += 1) {
+      const clicked = await page.evaluate(() => {
+        const main = document.querySelector("main");
+        const skip = /^(KB-|Sample$|Next:|Switch to)/;
+        const btn = [...(main ? main.querySelectorAll("button") : [])].find(
+          (b) => b.getClientRects().length > 0 && !b.disabled && !skip.test((b.innerText || "").trim()),
+        );
+        if (!btn) return null;
+        const label = (btn.innerText || "").trim();
+        btn.scrollIntoView({ block: "center" });
+        btn.click();
+        return label;
+      });
+      if (!clicked) break;
+      await wait(1500);
+      if (clicked.startsWith("Save changes")) break;
+    }
     await wait(2500);
 
-    await beat("Step 1 — the unit cell in 3D");
-    await clickText(page, "a,button", "Virtual Lab");
-    await wait(2000);
-    await clickText(page, "button", "Sample prep");
-    await wait(5000); // the 3D viewer is lazy-loaded
-
-    await beat("Step 2 — tube, scan range, crystallite size");
-    await clickText(page, "button", "Instrument setup");
+    await beat("Configure the instrument");
+    await toTop();
+    await clickStep("Configure instrument");
+    await wait(2500);
+    await answerAnyQuestions();
     await wait(1500);
-    await slide(page, "lab-start", 0.27); // ~20 deg
-    await slide(page, "lab-end", 0.38); // ~90 deg
-    await slide(page, "lab-size", 0.1); // ~35 nm
-    await wait(1500);
-
-    await beat("Step 3 — running the 2θ scan");
-    await clickText(page, "button", "Data collection");
-    await wait(1200);
-    await clickText(page, "button", "Run scan");
-    await wait(4000);
-
-    await beat("Step 4 — background subtraction and Kα2 stripping");
-    await clickText(page, "button", "Data processing");
-    await wait(1500);
-    for (const box of await page.$$('input[type="checkbox"]')) {
-      await box.click();
-      await wait(2500);
-    }
-
-    await beat("Step 5 — peaks, Scherrer and Williamson–Hall");
-    await clickText(page, "button", "Analysis");
-    await wait(1500);
-    await clickText(page, "button", "Find peaks");
-    await wait(4500);
     await page.evaluate(() => window.scrollBy({ top: 320, behavior: "smooth" }));
+    await wait(4500);
+
+    await beat("Start the virtual scan");
+    await clickText(page, "a,button", "Create run and go to the scan");
+    await wait(3000);
+    /*
+     * Fastest playback first. The later steps unlock only once a run has
+     * actually finished — ten points is not enough, the status has to reach
+     * completed — and three thousand points at the default speed is a minute of
+     * watching a line grow. 200x keeps the beat honest and watchable; it changes
+     * how fast points are shown, never the counts.
+     */
+    await clickText(page, "a,button", "200×");
+    await wait(800);
+    await clickText(page, "a,button", "Start virtual XRD scan");
+    await wait(26000);
+
+    await beat("Process and fit");
+    await toTop();
+    await clickStep("Process");
     await wait(4000);
+    await page.evaluate(() => window.scrollBy({ top: 260, behavior: "smooth" }));
+    await wait(3500);
+    await toTop();
+    await clickStep("Detect & fit peaks");
+    await wait(5000);
+    await page.evaluate(() => window.scrollBy({ top: 520, behavior: "smooth" }));
+    await wait(4500);
+
+    await beat("Analyse");
+    await toTop();
+    await clickStep("Assign reflections");
+    await wait(5000);
+    await page.evaluate(() => window.scrollBy({ top: 460, behavior: "smooth" }));
+    await wait(4000);
+    await toTop();
+    await clickStep("Analyse");
+    await wait(5000);
+    await page.evaluate(() => window.scrollBy({ top: 300, behavior: "smooth" }));
+    await wait(4000);
+
+    await beat("Validate and redesign");
+    await toTop();
+    await clickStep("Interpret & submit");
+    await wait(4000);
+    await page.evaluate(() => window.scrollBy({ top: 300, behavior: "smooth" }));
+    await wait(5000);
+
+    await beat("Where to get help");
+    await toTop();
+    await clickText(page, "a,button", "Knowledge Bank");
+    await wait(4000);
+    await page.evaluate(() => window.scrollBy({ top: 380, behavior: "smooth" }));
+    await wait(4500);
   },
 
   /*

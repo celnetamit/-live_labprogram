@@ -34,75 +34,30 @@ const guide: LabGuide = {
   },
 
   /*
-   * No file yet, deliberately. The recording in public/demos/virtual-ai.mp4 is
-   * of the previous app — a learner following it would look for a sidebar and a
-   * Run scan button that are not there — so pointing at it would be worse than
-   * pointing at nothing. `url: null` renders the chapter list with an "in
-   * production" placeholder, and the hero suppresses the runtime rather than
-   * advertising a demo that will not play.
+   * Recorded from the running lab with scripts/record-demo.mjs — the Basic
+   * calcite project, driven end to end through the real interface. Silent
+   * screen capture with a caption bar; no narration.
    *
-   * The chapters are the lab's own demo storyboard (content/demoStoryboard.ts),
-   * scene for scene and second for second, so they double as the shot list: the
-   * lab can be driven through this exact sequence at #/demo and recorded.
+   * Chapter marks are the recorder's, rescaled to the finished cut, then
+   * checked frame by frame — two labels were wrong against the footage and are
+   * corrected here rather than in the shot list. The walkthrough stops at the
+   * conclusion instead of submitting one, so nothing claims to show the
+   * validation screen.
    */
   video: {
-    url: null,
-    durationSec: 300,
+    url: "/demos/virtual-ai.mp4",
+    poster: "/demos/virtual-ai.jpg",
+    durationSec: 181,
     chapters: [
-      {
-        at: 0,
-        label: "What the lab is",
-        shot: "Home page, then the disclosure that every specimen and measurement is a computational model.",
-        say: "A complete diffraction experiment, simulated from published crystal structures — not a canned animation.",
-      },
-      {
-        at: 25,
-        label: "Choose a level and meet the sample",
-        shot: "The three level cards, into the Basic brief: the research question and CALCITE-BEG-001.",
-        say: "Three levels. Basic hands you a known calcite powder and a research question about it.",
-      },
-      {
-        at: 55,
-        label: "Prepare the specimen",
-        shot: "The loose-powder route — grind, fill, pack, level, mount — with the named effect each choice has.",
-        say: "Every preparation choice changes the pattern in a specific, physical way.",
-      },
-      {
-        at: 85,
-        label: "Configure the instrument",
-        shot: "Source preset, 2θ range, step size and dwell, with the derived point count and scan time updating.",
-        say: "You are spending instrument time. The lab shows what each choice costs before you commit.",
-      },
-      {
-        at: 120,
-        label: "Start the virtual scan",
-        shot: "The goniometer sweeping, counts arriving point by point, playback speed changed mid-scan.",
-        say: "The pattern is acquired one point at a time. Only the points the detector has reached exist.",
-      },
-      {
-        at: 165,
-        label: "Process and fit",
-        shot: "Background subtraction then Kα2 removal in the history list, then peak detection and one fitted profile with its diagnostics.",
-        say: "Processing is an ordered, reversible history — the raw counts are never overwritten.",
-      },
-      {
-        at: 205,
-        label: "Analyse",
-        shot: "Reflections assigned to calcite, then d-spacings, lattice parameters and a Scherrer size with its confidence class.",
-        say: "Peak positions give the lattice; peak widths give the crystallite size — when the conditions are met.",
-      },
-      {
-        at: 250,
-        label: "Validate and redesign",
-        shot: "A conclusion submitted, the hidden truth revealed beside it, and the acceptance intervals.",
-        say: "The truth is held server-side until you commit. Then you see how close you were, and why.",
-      },
-      {
-        at: 285,
-        label: "Where to get help",
-        shot: "The Knowledge Bank index and the FAQ.",
-        say: "Nineteen tutorial modules and twenty-five answers, linked from wherever the question arises.",
-      },
+      { at: 0, label: "What the lab is" },
+      { at: 10, label: "Choose a level and meet the sample" },
+      { at: 32, label: "Prepare the specimen" },
+      { at: 58, label: "Configure the instrument" },
+      { at: 71, label: "Start the virtual scan" },
+      { at: 109, label: "Process the raw pattern" },
+      { at: 135, label: "Assign reflections and analyse" },
+      { at: 162, label: "Commit to a conclusion" },
+      { at: 176, label: "Where to get help" },
     ],
   },
 
