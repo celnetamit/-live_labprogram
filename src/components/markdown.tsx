@@ -126,6 +126,39 @@ export function Markdown({ blocks }: { blocks: Block[] }) {
                 <code>{block.text}</code>
               </pre>
             );
+          case "table": {
+            const cell = (align: string) =>
+              `border-b border-r border-border px-3 py-2 align-top last:border-r-0 ${
+                align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left"
+              }`;
+            return (
+              // Wide tables scroll inside this box rather than widening the article.
+              <div key={index} className="overflow-x-auto rounded-xl border border-border">
+                <table className="w-full border-collapse text-[0.9375rem] leading-7 [&>tbody>tr:last-child>td]:border-b-0">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      {block.header.map((heading, column) => (
+                        <th key={column} scope="col" className={`${cell(block.align[column] ?? "left")} font-semibold`}>
+                          <Inline text={heading} />
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {block.rows.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {row.map((value, column) => (
+                          <td key={column} className={cell(block.align[column] ?? "left")}>
+                            <Inline text={value} />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          }
           case "image": {
             const src = imageSrc(block.src);
             if (!src) return null;

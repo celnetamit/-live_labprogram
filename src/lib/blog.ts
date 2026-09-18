@@ -73,8 +73,12 @@ export type Block =
   | { type: "list"; ordered: boolean; items: string[] }
   | { type: "quote"; text: string }
   | { type: "code"; text: string }
+  | { type: "table"; header: string[]; align: Align[]; rows: string[][] }
   | { type: "image"; alt: string; src: string }
   | { type: "rule" };
+
+/** How a table column is aligned, read from the `:---:` markers in its divider row. */
+export type Align = "left" | "center" | "right";
 
 type HeadingBlock = Extract<Block, { type: "heading" }>;
 type ParagraphBlock = Extract<Block, { type: "paragraph" }>;
@@ -86,16 +90,36 @@ const IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)\)$/;
 const QUOTE = /^>/;
 const BULLET = /^[-*+]\s+/;
 const NUMBERED = /^\d+[.)]\s+/;
+const TABLE = /^\|/;
 
 function startsBlock(line: string): boolean {
-  return [FENCE, HEADING, RULE, IMAGE, QUOTE, BULLET, NUMBERED].some((re) => re.test(line));
+  return [FENCE, HEADING, RULE, IMAGE, QUOTE, BULLET, NUMBERED, TABLE].some((re) => re.test(line));
+}
+
+/** `| a | b |` → ["a", "b"]. The outer pipes are optional, as they are in GitHub's tables. */
+function tableCells(line: string): string[] {
+  return line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim());
+}
+
+/**
+ * `| --- | :-: |` — the row under a table's header.
+ *
+ * A pipe line is only a table when the line after it is one of these, so a
+ * sentence that happens to contain a pipe stays a paragraph.
+ */
+function isTableDivider(line: string): boolean {
+  const trimmed = line.trim();
+  if (!TABLE.test(trimmed)) return false;
+  const cells = tableCells(trimmed);
+  return cells.length > 0 && cells.every((cell) => /^:?-+:?$/.test(cell));
 }
 
 /**
  * Parse a post body into blocks.
  *
  * Supported: `##` and `###` headings, paragraphs, `-` and `1.` lists, `>`
- * quotes, fenced code, a standalone `![alt](src)` image line and `---`. Inline
+ * quotes, fenced code, `|`-delimited tables, a standalone `![alt](src)` image
+ * line and `---`. Inline
  * marks — bold, italic, code and `[links](/path)` — stay in the text for the
  * renderer. A `#` heading becomes a section heading, because the post title is
  * the page's only `<h1>`; `####` and deeper collapse to level 3.
@@ -149,6 +173,24 @@ export function parseMarkdown(source: string): Block[] {
       continue;
     }
 
+    if (TABLE.test(line) && i + 1 < lines.length && isTableDivider(lines[i + 1])) {
+      const header = tableCells(line);
+      const align = tableCells(lines[i + 1]).map<Align>((cell) =>
+        cell.startsWith(":") && cell.endsWith(":") ? "center" : cell.endsWith(":") ? "right" : "left",
+      );
+      i += 2;
+      const rows: string[][] = [];
+      while (i < lines.length && TABLE.test(lines[i].trim())) {
+        const cells = tableCells(lines[i]);
+        // Squared off against the header, so a row with a missing or extra cell
+        // cannot shift every column after it.
+        rows.push(Array.from({ length: header.length }, (_, column) => cells[column] ?? ""));
+        i++;
+      }
+      blocks.push({ type: "table", header, align, rows });
+      continue;
+    }
+
     if (QUOTE.test(line)) {
       const parts: string[] = [];
       while (i < lines.length && QUOTE.test(lines[i].trim())) {
@@ -198,7 +240,7 @@ export function plainText(inline: string): string {
 }
 
 /** The readable prose of a block. Code, images and rules are not prose. */
-function blockText(block: Block): string {
+export function blockText(block: Block): string {
   switch (block.type) {
     case "heading":
     case "paragraph":
@@ -206,12 +248,14 @@ function blockText(block: Block): string {
       return plainText(block.text);
     case "list":
       return block.items.map(plainText).join(" ");
+    case "table":
+      return [block.header, ...block.rows].flat().map(plainText).join(" ");
     default:
       return "";
   }
 }
 
-function countWords(text: string): number {
+export function countWords(text: string): number {
   return (text.match(/[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu) ?? []).length;
 }
 
@@ -232,14 +276,14 @@ function escapeRegExp(text: string): string {
 }
 
 /** Whole-phrase, case-insensitive matches, treating a space and a hyphen as the same. */
-function countPhrase(text: string, phrase: string): number {
+export function countPhrase(text: string, phrase: string): number {
   const words = phrase.trim().toLowerCase().split(/[\s-]+/).filter(Boolean).map(escapeRegExp);
   if (!words.length) return 0;
   const pattern = new RegExp(`(?<![\\p{L}\\p{N}])${words.join("[\\s-]+")}(?![\\p{L}\\p{N}])`, "giu");
   return (text.match(pattern) ?? []).length;
 }
 
-const SITE_HOST = new URL(SITE_URL).host.replace(/^www\./, "");
+export const SITE_HOST = new URL(SITE_URL).host.replace(/^www\./, "");
 
 /** A Markdown link to a site path, or to an absolute URL on this site's own host. */
 const INTERNAL_LINK = new RegExp(`\\]\\((?:/(?!/)|https?://(?:www\\.)?${escapeRegExp(SITE_HOST)}[/)#?])`, "i");

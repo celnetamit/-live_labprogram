@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CircleAlert, CircleCheck, ExternalLink, Eye, Loader2, Pencil, Plus, Save, Trash } from "lucide-react";
+import { CircleCheck, ExternalLink, Loader2, Plus, Save, Trash } from "lucide-react";
 import { Markdown } from "@/components/markdown";
 import { labKeywords } from "@/content/blog/lab-keywords";
 import {
@@ -16,7 +16,20 @@ import {
   truncate,
   wordCount,
 } from "@/lib/blog";
+import { analyseContent, optimizationGrade } from "@/lib/blogAnalysis";
+import {
+  type EditorState,
+  blockStyleAt,
+  insertBlockText,
+  insertLink,
+  listStyleAt,
+  replaceSelection,
+  toggleMark,
+} from "@/lib/markdownEdit";
 import { SITE_URL } from "@/lib/site";
+import AiAssistant from "./AiAssistant";
+import AnalysisPanel from "./AnalysisPanel";
+import EditorToolbar, { type View } from "./EditorToolbar";
 import { deletePost, savePost } from "./actions";
 
 export type EditorLab = { id: string; slug: string | null; name: string; enabled: boolean };
@@ -48,6 +61,9 @@ const FIELD =
   "w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
 const LABEL = "text-sm font-medium";
 const HELP = "mt-1.5 text-xs leading-relaxed text-muted-foreground";
+
+/** How long a pause in typing starts a new undo step. */
+const UNDO_COALESCE_MS = 700;
 
 function Counter({ length, min, max }: { length: number; min: number; max: number }) {
   const tone = length >= min && length <= max ? "text-emerald-500" : length > max ? "text-rose-500" : "text-muted-foreground";
@@ -102,10 +118,21 @@ function Chip({
   );
 }
 
+function escapeHtml(text: string): string {
+  return text.replace(/[&<>"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char] ?? char);
+}
+
 /**
- * The post editor. Every field is controlled so the SEO checklist and the search
- * preview can follow the author as they type; the form still submits through
- * FormData, so the server action sees exactly the named inputs.
+ * The post editor.
+ *
+ * Every field is controlled so the analysis panel can follow the author as they
+ * type; the form still submits through FormData, so the server action sees
+ * exactly the named inputs. Nothing in the panel is unmounted when its tab is
+ * hidden, because an unmounted input submits nothing.
+ *
+ * The body stays Markdown. The toolbar edits that Markdown rather than a
+ * rich-text document, so the preview beside the editor is the public page's own
+ * renderer reading the public page's own parser — the two cannot disagree.
  */
 export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }: Props) {
   const router = useRouter();
@@ -124,32 +151,263 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
   const [coverAlt, setCoverAlt] = useState(post?.coverAlt ?? "");
   const [authorName, setAuthorName] = useState(post?.authorName || defaults.authorName);
   const [status, setStatus] = useState(post?.status ?? "DRAFT");
-  const [tab, setTab] = useState<"write" | "preview">("write");
+  const [view, setView] = useState<View>("write");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
 
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
+
+  /* -------------------------------------------------------------------- */
+  /* Undo history                                                         */
+  /* -------------------------------------------------------------------- */
+
+  /*
+   * The browser's own undo stack is lost the moment a value is set from React
+   * state, which every toolbar command does — so the editor keeps its own.
+   * Snapshots are taken before a change, and consecutive keystrokes inside
+   * UNDO_COALESCE_MS collapse into one step rather than one per character.
+   */
+  const history = useRef<{ past: EditorState[]; future: EditorState[] }>({ past: [], future: [] });
+  const lastSnapshotAt = useRef(0);
+  /** Mirrors the stacks' lengths into state, so the two toolbar buttons re-render. */
+  const [undoable, setUndoable] = useState({ undo: false, redo: false });
+  /** Set by anything that moves the caret programmatically; applied after the re-render. */
+  const pendingSelection = useRef<[number, number] | null>(null);
+
+  const syncUndoable = useCallback(() => {
+    setUndoable({ undo: history.current.past.length > 0, redo: history.current.future.length > 0 });
+  }, []);
+
+  const snapshot = useCallback(
+    (state: EditorState) => {
+      const past = history.current.past;
+      if (past[past.length - 1]?.value === state.value) return;
+      past.push(state);
+      if (past.length > 200) past.shift();
+      history.current.future = [];
+      syncUndoable();
+    },
+    [syncUndoable],
+  );
+
+  /** The textarea is the truth while it is mounted: it holds the live caret. */
+  const currentState = useCallback((): EditorState => {
+    const element = bodyRef.current;
+    if (element && view !== "preview") {
+      return { value: element.value, start: element.selectionStart, end: element.selectionEnd };
+    }
+    return { value: body, start: selection.start, end: selection.end };
+  }, [body, selection.end, selection.start, view]);
+
+  const applyState = useCallback((next: EditorState) => {
+    setBody(next.value);
+    setSelection({ start: next.start, end: next.end });
+    pendingSelection.current = [next.start, next.end];
+  }, []);
+
+  useEffect(() => {
+    const target = pendingSelection.current;
+    if (!target) return;
+    pendingSelection.current = null;
+    const element = bodyRef.current;
+    if (!element || element.hidden) return;
+    element.focus();
+    element.setSelectionRange(target[0], target[1]);
+  }, [body]);
+
+  /** Run a toolbar transform against the live value and caret. */
+  const apply = useCallback(
+    (transform: (state: EditorState) => EditorState) => {
+      // A command typed while the source is hidden has nowhere to land.
+      if (view === "preview") setView("write");
+      const current = currentState();
+      snapshot(current);
+      lastSnapshotAt.current = 0;
+      applyState(transform(current));
+    },
+    [applyState, currentState, snapshot, view],
+  );
+
+  const undo = useCallback(() => {
+    const previous = history.current.past.pop();
+    if (!previous) return;
+    history.current.future.push(currentState());
+    lastSnapshotAt.current = 0;
+    syncUndoable();
+    applyState(previous);
+  }, [applyState, currentState, syncUndoable]);
+
+  const redo = useCallback(() => {
+    const next = history.current.future.pop();
+    if (!next) return;
+    history.current.past.push(currentState());
+    lastSnapshotAt.current = 0;
+    syncUndoable();
+    applyState(next);
+  }, [applyState, currentState, syncUndoable]);
+
+  function handleBodyChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+    const now = Date.now();
+    if (now - lastSnapshotAt.current > UNDO_COALESCE_MS) {
+      snapshot({ value: body, start: selection.start, end: selection.end });
+      lastSnapshotAt.current = now;
+    }
+    setBody(event.target.value);
+    setSelection({ start: event.target.selectionStart, end: event.target.selectionEnd });
+  }
+
+  function handleBodyKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (!(event.metaKey || event.ctrlKey)) return;
+    const key = event.key.toLowerCase();
+    if (key === "b") {
+      event.preventDefault();
+      apply((state) => toggleMark(state, "bold"));
+    } else if (key === "i") {
+      event.preventDefault();
+      apply((state) => toggleMark(state, "italic"));
+    } else if (key === "k") {
+      event.preventDefault();
+      const href = window.prompt("Link to (a site path such as /labs, or a full URL)");
+      if (href?.trim()) apply((state) => insertLink(state, href.trim()));
+    } else if (key === "z") {
+      event.preventDefault();
+      if (event.shiftKey) redo();
+      else undo();
+    } else if (key === "y") {
+      event.preventDefault();
+      redo();
+    }
+  }
+
+  /* -------------------------------------------------------------------- */
+  /* Derived values                                                       */
+  /* -------------------------------------------------------------------- */
+
   const slug = slugify(slugEdited ? slugInput : title);
-  const keywords = parseKeywordInput(keywordText);
-  const lab = labs.find((l) => l.id === labId) ?? null;
+  const keywords = useMemo(() => parseKeywordInput(keywordText), [keywordText]);
+  const lab = labs.find((option) => option.id === labId) ?? null;
   const suggestions = labKeywords(lab?.slug);
-  const suggested = suggestions ? [suggestions.pillar, ...suggestions.related] : [];
-  const blocks = parseMarkdown(body);
+  const suggested = useMemo(
+    () => (suggestions ? [suggestions.pillar, ...suggestions.related] : []),
+    [suggestions],
+  );
+  const blocks = useMemo(() => parseMarkdown(body), [body]);
   const same = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
   const usedBy = (keyword: string) => otherFocusKeywords.find((other) => same(other.keyword, keyword));
   const focusClash = focusKeyword.trim() ? usedBy(focusKeyword) : undefined;
 
-  const checks = seoChecks(
-    { title, metaTitle, slug, description, body, focusKeyword, keywords, hasLab: Boolean(lab), coverImage, coverAlt },
-    otherFocusKeywords.map((other) => other.keyword),
+  const seoInput = useMemo(
+    () => ({
+      title,
+      metaTitle,
+      slug,
+      description,
+      body,
+      focusKeyword,
+      keywords,
+      hasLab: Boolean(lab),
+      coverImage,
+      coverAlt,
+    }),
+    [title, metaTitle, slug, description, body, focusKeyword, keywords, lab, coverImage, coverAlt],
   );
-  const passed = checks.filter((check) => check.ok).length;
-  const share = checks.length ? passed / checks.length : 0;
-  const scoreTone = share >= 0.8 ? "emerald" : share >= 0.5 ? "amber" : "rose";
 
-  const addKeyword = (keyword: string) => {
-    if (!keywords.some((existing) => same(existing, keyword))) setKeywordText([...keywords, keyword].join(", "));
-  };
+  const checks = useMemo(
+    () => seoChecks(seoInput, otherFocusKeywords.map((other) => other.keyword)),
+    [seoInput, otherFocusKeywords],
+  );
+  const analysis = useMemo(() => analyseContent(seoInput), [seoInput]);
+  const grade = useMemo(() => optimizationGrade(checks, analysis.checks), [checks, analysis.checks]);
+
+  const addKeyword = useCallback(
+    (keyword: string) => {
+      setKeywordText((text) => {
+        const existing = parseKeywordInput(text);
+        if (existing.some((item) => same(item, keyword))) return text;
+        return [...existing, keyword].join(", ");
+      });
+    },
+    [],
+  );
+
+  /* -------------------------------------------------------------------- */
+  /* Toolbar commands that need the DOM                                   */
+  /* -------------------------------------------------------------------- */
+
+  const copyMarkdown = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(body);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setMessage({ tone: "error", text: "The browser refused clipboard access." });
+    }
+  }, [body]);
+
+  /**
+   * Print the rendered article rather than the admin screen.
+   *
+   * The preview stays mounted in every view (hidden, not unmounted) so its HTML
+   * is here to hand to a print window. Only the structure travels — headings,
+   * lists, tables, links — not the site's styles, which is what a proof read on
+   * paper wants anyway.
+   */
+  const printPreview = useCallback(() => {
+    const node = previewRef.current;
+    if (!node) return;
+    const win = window.open("", "_blank", "width=820,height=1000");
+    if (!win) {
+      setMessage({ tone: "error", text: "The browser blocked the print window." });
+      return;
+    }
+    win.document.write(
+      `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title || "Untitled post")}</title>` +
+        `<style>body{font:16px/1.7 Georgia,serif;max-width:40em;margin:3em auto;padding:0 1em;color:#111}` +
+        `h1{font-size:1.9em;line-height:1.2}h2{margin-top:1.8em}img{max-width:100%}` +
+        `table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:.4em .6em;text-align:left}` +
+        `pre{background:#f4f4f4;padding:1em;overflow-x:auto}blockquote{border-left:3px solid #999;margin:0;padding-left:1em;color:#444}</style>` +
+        `</head><body><h1>${escapeHtml(title || "Untitled post")}</h1>${node.innerHTML}</body></html>`,
+    );
+    win.document.close();
+    win.focus();
+    win.print();
+  }, [title]);
+
+  /** Put the caret on a heading in the source, from the outline in the Tools tab. */
+  const jumpToHeading = useCallback(
+    (text: string) => {
+      const lines = body.split("\n");
+      let offset = 0;
+      for (const line of lines) {
+        const heading = /^\s*#{1,6}\s+(.*)$/.exec(line);
+        if (heading && heading[1].trim().startsWith(text.slice(0, 40))) {
+          if (view === "preview") setView("split");
+          setSelection({ start: offset, end: offset + line.length });
+          pendingSelection.current = [offset, offset + line.length];
+          // No body change to trigger the effect, so move the caret here.
+          requestAnimationFrame(() => {
+            const element = bodyRef.current;
+            const target = pendingSelection.current;
+            if (!element || element.hidden || !target) return;
+            pendingSelection.current = null;
+            element.focus();
+            element.setSelectionRange(target[0], target[1]);
+          });
+          return;
+        }
+        offset += line.length + 1;
+      }
+    },
+    [body, view],
+  );
+
+  /* -------------------------------------------------------------------- */
+  /* Saving                                                               */
+  /* -------------------------------------------------------------------- */
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -186,13 +444,235 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
     }
   }
 
-  const tabClass = (active: boolean) =>
-    `inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-      active ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"
-    }`;
+  /* -------------------------------------------------------------------- */
+  /* The Input tab                                                        */
+  /* -------------------------------------------------------------------- */
+
+  const inputSlot = (
+    <div className="space-y-5">
+      <div>
+        <label htmlFor="labId" className={LABEL}>
+          Lab
+        </label>
+        <select id="labId" name="labId" value={labId} onChange={(e) => setLabId(e.target.value)} className={`${FIELD} mt-1.5`}>
+          <option value="">Not about a specific lab</option>
+          {labs.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.name}
+              {option.enabled ? "" : " (hidden)"}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="focusKeyword" className={LABEL}>
+          Focus keyword
+        </label>
+        <input
+          id="focusKeyword"
+          name="focusKeyword"
+          value={focusKeyword}
+          onChange={(e) => setFocusKeyword(e.target.value)}
+          placeholder="e.g. Scherrer equation crystallite size"
+          className={`${FIELD} mt-1.5`}
+        />
+        {focusClash ? (
+          <p className="mt-1.5 text-xs text-amber-600 dark:text-amber-400">
+            Already the focus keyword of “{focusClash.title}”. Two posts targeting one phrase compete with each other.
+          </p>
+        ) : (
+          <p className={HELP}>The one phrase a searcher would type that this post should be the best answer to.</p>
+        )}
+        {suggested.length ? (
+          <div className="mt-3">
+            <p className="mb-2 text-xs leading-relaxed text-muted-foreground">
+              Suggested for {lab?.name}. These come from the lab guide, not from search data — check real volume in
+              Search Console before building a series on one.
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {suggested.map((keyword) => {
+                const clash = usedBy(keyword);
+                return (
+                  <Chip
+                    key={keyword}
+                    label={keyword}
+                    selected={same(keyword, focusKeyword)}
+                    taken={Boolean(clash)}
+                    title={
+                      clash
+                        ? `Already the focus of “${clash.title}”`
+                        : keyword === suggestions?.pillar
+                          ? "Broad topic — suits a pillar post"
+                          : "Use as the focus keyword"
+                    }
+                    onClick={() => setFocusKeyword(keyword)}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between gap-3">
+          <label htmlFor="keywords" className={LABEL}>
+            Related keywords
+          </label>
+          <Counter length={keywords.length} min={3} max={10} />
+        </div>
+        <input
+          id="keywords"
+          name="keywords"
+          value={keywordText}
+          onChange={(e) => setKeywordText(e.target.value)}
+          placeholder="Comma-separated"
+          className={`${FIELD} mt-1.5`}
+        />
+        {suggested.length ? (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {suggested
+              .filter((keyword) => !same(keyword, focusKeyword))
+              .map((keyword) => (
+                <Chip
+                  key={keyword}
+                  label={keyword}
+                  selected={keywords.some((existing) => same(existing, keyword))}
+                  onClick={() => addKeyword(keyword)}
+                />
+              ))}
+          </div>
+        ) : null}
+        {analysis.phrases.length ? (
+          <div className="mt-3">
+            <p className="mb-2 text-xs leading-relaxed text-muted-foreground">
+              From this draft&rsquo;s own text — phrases it repeats. Editorial suggestions, not search volume.
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {analysis.phrases.slice(0, 8).map((phrase) => (
+                <Chip
+                  key={phrase.phrase}
+                  label={`${phrase.phrase} · ${phrase.count}`}
+                  selected={keywords.some((existing) => same(existing, phrase.phrase))}
+                  onClick={() => addKeyword(phrase.phrase)}
+                />
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="border-t border-border pt-5">
+        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Search result</h3>
+        <div className="rounded-xl border border-border bg-background p-4">
+          <p className="truncate text-xs text-muted-foreground">
+            {new URL(SITE_URL).host} › blog › {slug || "…"}
+          </p>
+          <p className="mt-1 text-lg leading-snug text-primary">
+            {truncate(searchTitle({ title: title || "Post headline", metaTitle }), 60)}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            {truncate(description || "Write a meta description to control this snippet.", 160)}
+          </p>
+        </div>
+        <p className={HELP}>
+          Approximate. Search engines rewrite titles and snippets when they judge another part of the page answers the
+          query better.
+        </p>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between gap-3">
+          <label htmlFor="metaTitle" className={LABEL}>
+            SEO title <span className="font-normal text-muted-foreground">(optional)</span>
+          </label>
+          <Counter length={searchTitle({ title, metaTitle }).length} min={30} max={60} />
+        </div>
+        <input
+          id="metaTitle"
+          name="metaTitle"
+          value={metaTitle}
+          onChange={(e) => setMetaTitle(e.target.value)}
+          placeholder={title || "Defaults to the headline"}
+          className={`${FIELD} mt-1.5`}
+        />
+        <p className={HELP}>
+          A shorter title for search results when the headline is long. The count includes “{TITLE_SUFFIX.trim()}”.
+        </p>
+      </div>
+
+      <div>
+        <label htmlFor="coverImage" className={LABEL}>
+          Cover image
+        </label>
+        <input
+          id="coverImage"
+          name="coverImage"
+          value={coverImage}
+          onChange={(e) => setCoverImage(e.target.value)}
+          placeholder="/showcase/virtual-ai.jpg"
+          className={`${FIELD} mt-1.5`}
+        />
+        <p className={HELP}>Optional. Without one, a branded share card is generated.</p>
+      </div>
+
+      <div>
+        <label htmlFor="coverAlt" className={LABEL}>
+          Cover alt text
+        </label>
+        <input
+          id="coverAlt"
+          name="coverAlt"
+          value={coverAlt}
+          onChange={(e) => setCoverAlt(e.target.value)}
+          className={`${FIELD} mt-1.5`}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="authorName" className={LABEL}>
+          Author
+        </label>
+        <input
+          id="authorName"
+          name="authorName"
+          value={authorName}
+          onChange={(e) => setAuthorName(e.target.value)}
+          className={`${FIELD} mt-1.5`}
+        />
+      </div>
+    </div>
+  );
+
+  const aiSlot = (
+    <AiAssistant
+      context={{
+        title,
+        focusKeyword,
+        keywords,
+        description,
+        body,
+        selection: body.slice(selection.start, selection.end),
+        labName: lab?.name ?? "",
+      }}
+      onUseHeadline={setTitle}
+      onUseSeoTitle={setMetaTitle}
+      onUseDescription={setDescription}
+      onAddKeyword={addKeyword}
+      onInsertHeading={(text) => apply((state) => insertBlockText(state, `## ${text}`))}
+      onReplaceSelection={(text) => apply((state) => replaceSelection(state, text))}
+    />
+  );
+
+  /* -------------------------------------------------------------------- */
+  /* Render                                                               */
+  /* -------------------------------------------------------------------- */
+
+  const splitting = view === "split";
 
   return (
-    <form onSubmit={handleSubmit} className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+    <form onSubmit={handleSubmit} className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
       <div className="min-w-0 space-y-6">
         <Panel title="Article">
           <div>
@@ -254,207 +734,68 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
             />
             <p className={HELP}>Shown under the title in search results, on post cards and in the RSS feed.</p>
           </div>
+        </Panel>
 
-          <div>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className={LABEL}>Body</span>
-              <div className="flex items-center gap-3">
-                <span className="text-xs tabular-nums text-muted-foreground">
-                  {wordCount(blocks)} words · {readingMinutes(blocks)} min read
-                </span>
-                <div role="tablist" aria-label="Body view" className="inline-flex rounded-lg border border-border p-0.5">
-                  <button type="button" role="tab" aria-selected={tab === "write"} onClick={() => setTab("write")} className={tabClass(tab === "write")}>
-                    <Pencil className="h-3.5 w-3.5" /> Write
-                  </button>
-                  <button type="button" role="tab" aria-selected={tab === "preview"} onClick={() => setTab("preview")} className={tabClass(tab === "preview")}>
-                    <Eye className="h-3.5 w-3.5" /> Preview
-                  </button>
-                </div>
-              </div>
-            </div>
+        <section>
+          <EditorToolbar
+            apply={apply}
+            style={blockStyleAt(body, selection.start)}
+            list={listStyleAt(body, selection.start)}
+            canUndo={undoable.undo}
+            canRedo={undoable.redo}
+            onUndo={undo}
+            onRedo={redo}
+            onPrint={printPreview}
+            onCopy={copyMarkdown}
+            copied={copied}
+            labs={labs}
+            view={view}
+            onView={setView}
+            words={wordCount(blocks)}
+            minutes={readingMinutes(blocks)}
+          />
+
+          <div
+            className={`rounded-b-xl border border-border bg-card ${
+              splitting ? "grid divide-y divide-border lg:grid-cols-2 lg:divide-x lg:divide-y-0" : ""
+            }`}
+          >
             {/* Hidden rather than unmounted while previewing, so the body is still in the submitted form. */}
             <textarea
+              ref={bodyRef}
               name="body"
               aria-label="Body"
-              hidden={tab !== "write"}
-              rows={26}
+              hidden={view === "preview"}
+              rows={splitting ? 28 : 30}
               value={body}
-              onChange={(e) => setBody(e.target.value)}
-              className={`${FIELD} mt-2 font-mono leading-relaxed`}
+              onChange={handleBodyChange}
+              onKeyDown={handleBodyKeyDown}
+              onSelect={(e) =>
+                setSelection({ start: e.currentTarget.selectionStart, end: e.currentTarget.selectionEnd })
+              }
+              spellCheck
+              className="w-full resize-y bg-transparent p-4 font-mono text-sm leading-relaxed focus:outline-none"
             />
-            {tab === "preview" ? (
-              <div className="mt-2 rounded-md border border-border bg-background p-5 sm:p-8">
-                {blocks.length ? <Markdown blocks={blocks} /> : <p className="text-sm text-muted-foreground">Nothing to preview yet.</p>}
-              </div>
-            ) : null}
-            <p className={`${HELP} font-mono`}>
-              ## Section · ### Subsection · **bold** · *italic* · [link](/labs) · - list · 1. list · &gt; quote · ![alt
-              text](/image.jpg)
-            </p>
-          </div>
-        </Panel>
-
-        <Panel title="Lab & keywords" description="Tie the post to one lab and one search phrase.">
-          <div>
-            <label htmlFor="labId" className={LABEL}>
-              Lab
-            </label>
-            <select id="labId" name="labId" value={labId} onChange={(e) => setLabId(e.target.value)} className={`${FIELD} mt-1.5`}>
-              <option value="">Not about a specific lab</option>
-              {labs.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.name}
-                  {option.enabled ? "" : " (hidden)"}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="focusKeyword" className={LABEL}>
-              Focus keyword
-            </label>
-            <input
-              id="focusKeyword"
-              name="focusKeyword"
-              value={focusKeyword}
-              onChange={(e) => setFocusKeyword(e.target.value)}
-              placeholder="e.g. Scherrer equation crystallite size"
-              className={`${FIELD} mt-1.5`}
-            />
-            {focusClash ? (
-              <p className="mt-1.5 text-xs text-amber-600 dark:text-amber-400">
-                Already the focus keyword of “{focusClash.title}”. Two posts targeting one phrase compete with each other.
-              </p>
-            ) : (
-              <p className={HELP}>The one phrase a searcher would type that this post should be the best answer to.</p>
-            )}
-            {suggested.length ? (
-              <div className="mt-3">
-                <p className="mb-2 text-xs text-muted-foreground">
-                  Suggested for {lab?.name}. These come from the lab guide, not from search data — check real volume in
-                  Search Console before building a series on one.
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {suggested.map((keyword) => {
-                    const clash = usedBy(keyword);
-                    return (
-                      <Chip
-                        key={keyword}
-                        label={keyword}
-                        selected={same(keyword, focusKeyword)}
-                        taken={Boolean(clash)}
-                        title={
-                          clash
-                            ? `Already the focus of “${clash.title}”`
-                            : keyword === suggestions?.pillar
-                              ? "Broad topic — suits a pillar post"
-                              : "Use as the focus keyword"
-                        }
-                        onClick={() => setFocusKeyword(keyword)}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            ) : null}
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between gap-3">
-              <label htmlFor="keywords" className={LABEL}>
-                Related keywords
-              </label>
-              <Counter length={keywords.length} min={3} max={10} />
-            </div>
-            <input
-              id="keywords"
-              name="keywords"
-              value={keywordText}
-              onChange={(e) => setKeywordText(e.target.value)}
-              placeholder="Comma-separated"
-              className={`${FIELD} mt-1.5`}
-            />
-            {suggested.length ? (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {suggested
-                  .filter((keyword) => !same(keyword, focusKeyword))
-                  .map((keyword) => (
-                    <Chip
-                      key={keyword}
-                      label={keyword}
-                      selected={keywords.some((existing) => same(existing, keyword))}
-                      onClick={() => addKeyword(keyword)}
-                    />
-                  ))}
-              </div>
-            ) : null}
-          </div>
-        </Panel>
-
-        <Panel title="Search & sharing">
-          <div>
-            <div className="flex items-center justify-between gap-3">
-              <label htmlFor="metaTitle" className={LABEL}>
-                SEO title <span className="font-normal text-muted-foreground">(optional)</span>
-              </label>
-              <Counter length={searchTitle({ title, metaTitle }).length} min={30} max={60} />
-            </div>
-            <input
-              id="metaTitle"
-              name="metaTitle"
-              value={metaTitle}
-              onChange={(e) => setMetaTitle(e.target.value)}
-              placeholder={title || "Defaults to the headline"}
-              className={`${FIELD} mt-1.5`}
-            />
-            <p className={HELP}>
-              A shorter title for search results when the headline is long. The count includes “{TITLE_SUFFIX.trim()}”.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label htmlFor="coverImage" className={LABEL}>
-                Cover image
-              </label>
-              <input
-                id="coverImage"
-                name="coverImage"
-                value={coverImage}
-                onChange={(e) => setCoverImage(e.target.value)}
-                placeholder="/showcase/virtual-ai.jpg"
-                className={`${FIELD} mt-1.5`}
-              />
-              <p className={HELP}>Optional. Without one, a branded share card is generated.</p>
-            </div>
-            <div>
-              <label htmlFor="coverAlt" className={LABEL}>
-                Cover alt text
-              </label>
-              <input
-                id="coverAlt"
-                name="coverAlt"
-                value={coverAlt}
-                onChange={(e) => setCoverAlt(e.target.value)}
-                className={`${FIELD} mt-1.5`}
-              />
+            {/* Kept mounted in every view so "Print preview" always has it to read. */}
+            <div
+              ref={previewRef}
+              hidden={view === "write"}
+              className="overflow-x-auto p-5 sm:p-8"
+              aria-label="Rendered preview"
+            >
+              {blocks.length ? (
+                <Markdown blocks={blocks} />
+              ) : (
+                <p className="text-sm text-muted-foreground">Nothing to preview yet.</p>
+              )}
             </div>
           </div>
 
-          <div>
-            <label htmlFor="authorName" className={LABEL}>
-              Author
-            </label>
-            <input
-              id="authorName"
-              name="authorName"
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              className={`${FIELD} mt-1.5`}
-            />
-          </div>
-        </Panel>
+          <p className="mt-2 font-mono text-xs leading-relaxed text-muted-foreground">
+            ## Section · ### Subsection · **bold** · *italic* · [link](/labs) · - list · 1. list · &gt; quote · | table |
+            · ![alt text](/image.jpg)
+          </p>
+        </section>
       </div>
 
       <aside className="space-y-6 lg:sticky lg:top-20">
@@ -501,64 +842,14 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
           ) : null}
         </section>
 
-        <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="text-sm font-semibold">Search result preview</h2>
-          <div className="mt-3 rounded-xl border border-border bg-background p-4">
-            <p className="truncate text-xs text-muted-foreground">
-              {new URL(SITE_URL).host} › blog › {slug || "…"}
-            </p>
-            <p className="mt-1 text-lg leading-snug text-primary">
-              {truncate(searchTitle({ title: title || "Post headline", metaTitle }), 60)}
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              {truncate(description || "Write a meta description to control this snippet.", 160)}
-            </p>
-          </div>
-          <p className={HELP}>
-            Approximate. Search engines rewrite titles and snippets when they judge another part of the page answers the
-            query better.
-          </p>
-        </section>
-
-        <section className="rounded-2xl border border-border bg-card p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">SEO checklist</h2>
-            <span
-              className={`text-sm font-bold tabular-nums ${
-                scoreTone === "emerald" ? "text-emerald-500" : scoreTone === "amber" ? "text-amber-500" : "text-rose-500"
-              }`}
-            >
-              {passed}/{checks.length}
-            </span>
-          </div>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-            <div
-              className={`h-full rounded-full transition-all ${
-                scoreTone === "emerald" ? "bg-emerald-500" : scoreTone === "amber" ? "bg-amber-500" : "bg-rose-500"
-              }`}
-              style={{ width: `${Math.round(share * 100)}%` }}
-            />
-          </div>
-          <ul className="mt-4 space-y-3">
-            {checks.map((check) => (
-              <li key={check.id} className="flex gap-2.5 text-sm">
-                {check.ok ? (
-                  <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-label="Passed" />
-                ) : (
-                  <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-label="Needs work" />
-                )}
-                <div>
-                  <p className={check.ok ? "text-muted-foreground" : "font-medium"}>{check.label}</p>
-                  {!check.ok ? <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{check.hint}</p> : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
-            On-page basics only. Passing them makes a post easy for search engines to understand; ranking also depends
-            on how genuinely useful it is and on links from other sites.
-          </p>
-        </section>
+        <AnalysisPanel
+          grade={grade}
+          seo={checks}
+          analysis={analysis}
+          inputSlot={inputSlot}
+          aiSlot={aiSlot}
+          onJumpToHeading={jumpToHeading}
+        />
       </aside>
     </form>
   );
