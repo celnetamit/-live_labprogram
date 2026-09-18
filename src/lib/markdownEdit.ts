@@ -109,10 +109,28 @@ export function blockStyleAt(value: string, position: number): BlockStyle {
   return "paragraph";
 }
 
+/**
+ * Rewrite every line the selection touches.
+ *
+ * A collapsed caret stays collapsed, riding along with the text it sits in: it
+ * shifts by however much the line's prefix grew or shrank. Turning it into a
+ * selection of the whole line would be a surprise on its own, and it makes the
+ * browser scroll to the end of that selection.
+ */
 function mapLines(state: EditorState, transform: (line: string, index: number) => string): EditorState {
   const [from, to] = lineBounds(state.value, state.start, state.end);
-  const rewritten = state.value.slice(from, to).split("\n").map(transform).join("\n");
-  return splice(state, from, to, rewritten, [from, from + rewritten.length]);
+  const before = state.value.slice(from, to);
+  const rewritten = before.split("\n").map(transform).join("\n");
+  return splice(state, from, to, rewritten, caretAfter(state, from, before, rewritten));
+}
+
+/** Where the caret or selection lands once a line-level rewrite has been applied. */
+function caretAfter(state: EditorState, from: number, before: string, after: string): [number, number] {
+  if (state.start !== state.end) return [from, from + after.length];
+  // One line, so the whole length change belongs to its prefix.
+  const moved = state.start + (after.length - before.length);
+  const caret = Math.min(Math.max(moved, from), from + after.length);
+  return [caret, caret];
 }
 
 /** Apply a heading, quote or plain-paragraph style to every selected line. */
@@ -152,7 +170,7 @@ export function toggleList(state: EditorState, ordered: boolean): EditorState {
     })
     .join("\n");
 
-  return splice(state, from, to, rewritten, [from, from + rewritten.length]);
+  return splice(state, from, to, rewritten, caretAfter(state, from, lines.join("\n"), rewritten));
 }
 
 /** The list style of the line the caret sits on, so the toolbar can show it pressed. */

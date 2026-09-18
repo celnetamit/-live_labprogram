@@ -45,8 +45,12 @@ import {
 export type View = "write" | "split" | "preview";
 
 type Props = {
-  /** Runs a transform against the textarea's current value and selection. */
-  apply: (transform: (state: EditorState) => EditorState) => void;
+  /**
+   * Runs a transform against the textarea's current value and selection.
+   * `reveal` lets the browser scroll to the caret afterwards — for commands that
+   * add a block below it. Without it the view is left exactly where it was.
+   */
+  apply: (transform: (state: EditorState) => EditorState, options?: { reveal?: boolean }) => void;
   style: BlockStyle;
   list: "bullet" | "numbered" | null;
   canUndo: boolean;
@@ -364,7 +368,7 @@ export default function EditorToolbar(props: Props) {
             <>
               <MenuItem
                 onClick={() => {
-                  apply((state) => insertCodeBlock(state));
+                  apply((state) => insertCodeBlock(state), { reveal: true });
                   close();
                 }}
               >
@@ -372,7 +376,7 @@ export default function EditorToolbar(props: Props) {
               </MenuItem>
               <MenuItem
                 onClick={() => {
-                  apply((state) => insertRule(state));
+                  apply((state) => insertRule(state), { reveal: true });
                   close();
                 }}
               >
@@ -411,7 +415,7 @@ export default function EditorToolbar(props: Props) {
                 <MenuItem
                   key={`${rows}x${columns}`}
                   onClick={() => {
-                    apply((state) => insertTable(state, rows, columns));
+                    apply((state) => insertTable(state, rows, columns), { reveal: true });
                     close();
                   }}
                 >
@@ -536,7 +540,7 @@ export default function EditorToolbar(props: Props) {
           ]}
           onSubmit={(values) => {
             const src = values.src.trim();
-            if (src) apply((state) => insertImage(state, src, values.alt.trim()));
+            if (src) apply((state) => insertImage(state, src, values.alt.trim()), { reveal: true });
           }}
         />
         <Popover
@@ -551,10 +555,10 @@ export default function EditorToolbar(props: Props) {
           onSubmit={(values) => {
             const rows = Math.min(20, Math.max(1, Number(values.rows) || 3));
             const columns = Math.min(8, Math.max(1, Number(values.columns) || 3));
-            apply((state) => insertTable(state, rows, columns));
+            apply((state) => insertTable(state, rows, columns), { reveal: true });
           }}
         />
-        <Tool title="Horizontal rule" onClick={() => apply(insertRule)}>
+        <Tool title="Horizontal rule" onClick={() => apply(insertRule, { reveal: true })}>
           <Minus className="h-4 w-4" />
         </Tool>
 

@@ -175,8 +175,12 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
   const lastSnapshotAt = useRef(0);
   /** Mirrors the stacks' lengths into state, so the two toolbar buttons re-render. */
   const [undoable, setUndoable] = useState({ undo: false, redo: false });
-  /** Set by anything that moves the caret programmatically; applied after the re-render. */
-  const pendingSelection = useRef<[number, number] | null>(null);
+  /**
+    * Set by anything that moves the caret programmatically; applied after the
+    * re-render. `scrollTop` is the textarea's scroll position to put back, or
+    * null to let the browser scroll to the caret instead.
+    */
+  const pendingCaret = useRef<{ range: [number, number]; scrollTop: number | null } | null>(null);
 
   const syncUndoable = useCallback(() => {
     setUndoable({ undo: history.current.past.length > 0, redo: history.current.future.length > 0 });
@@ -203,31 +207,51 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
     return { value: body, start: selection.start, end: selection.end };
   }, [body, selection.end, selection.start, view]);
 
-  const applyState = useCallback((next: EditorState) => {
+  const applyState = useCallback((next: EditorState, reveal = false) => {
+    // Read the scroll before React re-renders, while the old value is still laid out.
+    pendingCaret.current = {
+      range: [next.start, next.end],
+      scrollTop: reveal ? null : (bodyRef.current?.scrollTop ?? null),
+    };
     setBody(next.value);
     setSelection({ start: next.start, end: next.end });
-    pendingSelection.current = [next.start, next.end];
   }, []);
 
-  useEffect(() => {
-    const target = pendingSelection.current;
-    if (!target) return;
-    pendingSelection.current = null;
+  /**
+   * Put the caret back after a programmatic change, without moving the view.
+   *
+   * Both halves matter. `preventScroll` stops the browser scrolling the page to
+   * reveal the textarea — it is thirty rows tall, so focusing it scrolls the
+   * admin page down. Restoring `scrollTop` stops `setSelectionRange` scrolling
+   * the textarea's own content to the caret. Applying a heading should change
+   * the line under the caret and nothing else about what you are looking at.
+   *
+   * Commands that add a block below the caret — a table, a code fence, a rule —
+   * pass `reveal`, which leaves `scrollTop` null so the browser does scroll to
+   * show what was just inserted.
+   */
+  const restoreCaret = useCallback(() => {
+    const pending = pendingCaret.current;
+    if (!pending) return;
+    pendingCaret.current = null;
     const element = bodyRef.current;
     if (!element || element.hidden) return;
-    element.focus();
-    element.setSelectionRange(target[0], target[1]);
-  }, [body]);
+    element.focus({ preventScroll: true });
+    element.setSelectionRange(pending.range[0], pending.range[1]);
+    if (pending.scrollTop !== null) element.scrollTop = pending.scrollTop;
+  }, []);
+
+  useEffect(restoreCaret, [body, restoreCaret]);
 
   /** Run a toolbar transform against the live value and caret. */
   const apply = useCallback(
-    (transform: (state: EditorState) => EditorState) => {
+    (transform: (state: EditorState) => EditorState, options?: { reveal?: boolean }) => {
       // A command typed while the source is hidden has nowhere to land.
       if (view === "preview") setView("write");
       const current = currentState();
       snapshot(current);
       lastSnapshotAt.current = 0;
-      applyState(transform(current));
+      applyState(transform(current), options?.reveal);
     },
     [applyState, currentState, snapshot, view],
   );
@@ -387,22 +411,16 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
         if (heading && heading[1].trim().startsWith(text.slice(0, 40))) {
           if (view === "preview") setView("split");
           setSelection({ start: offset, end: offset + line.length });
-          pendingSelection.current = [offset, offset + line.length];
-          // No body change to trigger the effect, so move the caret here.
-          requestAnimationFrame(() => {
-            const element = bodyRef.current;
-            const target = pendingSelection.current;
-            if (!element || element.hidden || !target) return;
-            pendingSelection.current = null;
-            element.focus();
-            element.setSelectionRange(target[0], target[1]);
-          });
+          // scrollTop null: jumping to a heading is meant to move the view.
+          pendingCaret.current = { range: [offset, offset + line.length], scrollTop: null };
+          // The body has not changed, so the effect above will not fire.
+          requestAnimationFrame(restoreCaret);
           return;
         }
         offset += line.length + 1;
       }
     },
-    [body, view],
+    [body, restoreCaret, view],
   );
 
   /* -------------------------------------------------------------------- */
@@ -660,7 +678,7 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
       onUseSeoTitle={setMetaTitle}
       onUseDescription={setDescription}
       onAddKeyword={addKeyword}
-      onInsertHeading={(text) => apply((state) => insertBlockText(state, `## ${text}`))}
+      onInsertHeading={(text) => apply((state) => insertBlockText(state, `## ${text}`), { reveal: true })}
       onReplaceSelection={(text) => apply((state) => replaceSelection(state, text))}
     />
   );
