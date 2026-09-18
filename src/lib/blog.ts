@@ -68,7 +68,7 @@ export function parseKeywordInput(text: string): string[] {
 /* ------------------------------------------------------------------------ */
 
 export type Block =
-  | { type: "heading"; level: 2 | 3; text: string; id: string }
+  | { type: "heading"; level: HeadingLevel; text: string; id: string }
   | { type: "paragraph"; text: string }
   | { type: "list"; ordered: boolean; items: string[] }
   | { type: "quote"; text: string }
@@ -79,6 +79,9 @@ export type Block =
 
 /** How a table column is aligned, read from the `:---:` markers in its divider row. */
 export type Align = "left" | "center" | "right";
+
+/** `#`, `##`, `###`. Anything deeper collapses to 3 — a post has no use for six levels. */
+export type HeadingLevel = 1 | 2 | 3;
 
 type HeadingBlock = Extract<Block, { type: "heading" }>;
 type ParagraphBlock = Extract<Block, { type: "paragraph" }>;
@@ -118,11 +121,16 @@ function isTableDivider(line: string): boolean {
  * Parse a post body into blocks.
  *
  * Supported: `##` and `###` headings, paragraphs, `-` and `1.` lists, `>`
+ * Supported headings are `#`, `##` and `###`; `####` and deeper collapse to 3.
+ * Note that the post's headline is already the page's `<h1>`, so a `#` heading
+ * in the body is a *second* one — the SEO checklist says so rather than
+ * silently rewriting it, because sometimes that is what an author wants.
+ *
+ * Also supported: paragraphs, `-` and `1.` lists, `>`
  * quotes, fenced code, `|`-delimited tables, a standalone `![alt](src)` image
  * line and `---`. Inline
  * marks — bold, italic, code and `[links](/path)` — stay in the text for the
- * renderer. A `#` heading becomes a section heading, because the post title is
- * the page's only `<h1>`; `####` and deeper collapse to level 3.
+ * renderer.
  */
 export function parseMarkdown(source: string): Block[] {
   const lines = source.replace(/\r\n?/g, "\n").split("\n");
@@ -154,7 +162,8 @@ export function parseMarkdown(source: string): Block[] {
 
     const heading = HEADING.exec(line);
     if (heading) {
-      const level = heading[1].length <= 2 ? 2 : 3;
+      const hashes = heading[1].length;
+      const level: HeadingLevel = hashes === 1 ? 1 : hashes === 2 ? 2 : 3;
       blocks.push({ type: "heading", level, text: heading[2], id: idFor(heading[2]) });
       i++;
       continue;
@@ -371,6 +380,22 @@ export function seoChecks(input: SeoInput, focusKeywordsInUse: string[]): SeoChe
       hint: "Add 3–10 related phrases. They describe the post in structured data, and remind you what else it should cover.",
     },
   ];
+
+  /*
+   * The headline is rendered as the page's <h1>, so a `#` heading in the body
+   * is a second one. That is allowed — the toolbar offers it — but it is worth
+   * knowing, because a page with two <h1>s has no single answer to "what is
+   * this about" for a screen reader walking the outline.
+   */
+  const bodyH1s = subheadings.filter((heading) => heading.level === 1);
+  if (bodyH1s.length) {
+    checks.push({
+      id: "single-h1",
+      ok: false,
+      label: `${plural(bodyH1s.length, "H1 heading")} in the body, besides the headline`,
+      hint: "The headline above is already the page's H1. Use ## for sections unless you specifically want a second top-level heading here.",
+    });
+  }
 
   if (input.coverImage.trim()) {
     checks.push({

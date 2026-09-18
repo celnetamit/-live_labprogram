@@ -87,10 +87,11 @@ export function toggleMark(state: EditorState, mark: InlineMark): EditorState {
 /* Block styles                                                             */
 /* ------------------------------------------------------------------------ */
 
-export type BlockStyle = "paragraph" | "heading2" | "heading3" | "quote";
+export type BlockStyle = "paragraph" | "heading1" | "heading2" | "heading3" | "quote";
 
 const STYLE_PREFIX: Record<BlockStyle, string> = {
   paragraph: "",
+  heading1: "# ",
   heading2: "## ",
   heading3: "### ",
   quote: "> ",
@@ -104,7 +105,7 @@ export function blockStyleAt(value: string, position: number): BlockStyle {
   const [from] = lineBounds(value, position, position);
   const line = value.slice(from, value.indexOf("\n", from) === -1 ? value.length : value.indexOf("\n", from));
   const heading = /^\s*(#{1,6})\s+/.exec(line);
-  if (heading) return heading[1].length <= 2 ? "heading2" : "heading3";
+  if (heading) return heading[1].length === 1 ? "heading1" : heading[1].length === 2 ? "heading2" : "heading3";
   if (/^\s*>/.test(line)) return "quote";
   return "paragraph";
 }

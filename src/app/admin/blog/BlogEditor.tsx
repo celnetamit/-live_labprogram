@@ -810,8 +810,8 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
           </div>
 
           <p className="mt-2 font-mono text-xs leading-relaxed text-muted-foreground">
-            ## Section · ### Subsection · **bold** · *italic* · [link](/labs) · - list · 1. list · &gt; quote · | table |
-            · ![alt text](/image.jpg)
+            # Heading · ## Section · ### Subsection · **bold** · *italic* · [link](/labs) · - list · 1. list · &gt;
+            quote · | table | · ![alt text](/image.jpg)
           </p>
         </section>
       </div>

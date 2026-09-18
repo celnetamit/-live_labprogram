@@ -1,5 +1,6 @@
 import {
   type Block,
+  type HeadingLevel,
   type SeoCheck,
   type SeoInput,
   SITE_HOST,
@@ -342,7 +343,7 @@ export type ContentAnalysis = {
   repeatedOpeners: { word: string; run: number }[];
   /** The longest stretch of words with no `##` or `###` heading in it. */
   longestSectionWords: number;
-  headings: { level: 2 | 3; text: string; id: string }[];
+  headings: { level: HeadingLevel; text: string; id: string }[];
   keywordUse: KeywordUse[];
   links: LinkUse[];
   images: { src: string; alt: string }[];

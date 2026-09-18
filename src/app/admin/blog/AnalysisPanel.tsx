@@ -304,7 +304,11 @@ function ToolsTab({ analysis, onJumpToHeading }: { analysis: ContentAnalysis; on
                   type="button"
                   onClick={() => onJumpToHeading(heading.text)}
                   className={`w-full truncate rounded px-2 py-1 text-left text-sm transition-colors hover:bg-secondary ${
-                    heading.level === 3 ? "pl-6 text-muted-foreground" : "font-medium"
+                    heading.level === 1
+                      ? "font-semibold"
+                      : heading.level === 2
+                        ? "pl-4 font-medium"
+                        : "pl-8 text-muted-foreground"
                   }`}
                 >
                   {heading.text}
@@ -313,7 +317,7 @@ function ToolsTab({ analysis, onJumpToHeading }: { analysis: ContentAnalysis; on
             ))}
           </ul>
         ) : (
-          <p className={HELP}>No ## headings yet. They are what a reader scans before deciding to read.</p>
+          <p className={HELP}>No headings yet. They are what a reader scans before deciding to read.</p>
         )}
       </Section>
 

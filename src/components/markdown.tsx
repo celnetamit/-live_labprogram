@@ -72,24 +72,22 @@ export function Markdown({ blocks }: { blocks: Block[] }) {
     <div className="space-y-5 text-[1.0625rem] leading-8 text-foreground/90">
       {blocks.map((block, index) => {
         switch (block.type) {
-          case "heading":
-            return block.level === 2 ? (
-              <h2
-                key={index}
-                id={block.id}
-                className="scroll-mt-24 pt-6 text-2xl font-bold tracking-tight text-foreground"
-              >
+          case "heading": {
+            // The post title above is the page's first <h1>; a `#` heading here
+            // is a deliberate second one, and the editor's checklist says so.
+            const Tag = `h${block.level}` as "h1" | "h2" | "h3";
+            const size =
+              block.level === 1
+                ? "pt-8 text-3xl font-extrabold"
+                : block.level === 2
+                  ? "pt-6 text-2xl font-bold"
+                  : "pt-3 text-xl font-semibold";
+            return (
+              <Tag key={index} id={block.id} className={`scroll-mt-24 tracking-tight text-foreground ${size}`}>
                 <Inline text={block.text} />
-              </h2>
-            ) : (
-              <h3
-                key={index}
-                id={block.id}
-                className="scroll-mt-24 pt-3 text-xl font-semibold tracking-tight text-foreground"
-              >
-                <Inline text={block.text} />
-              </h3>
+              </Tag>
             );
+          }
           case "paragraph":
             return (
               <p key={index}>

@@ -9,7 +9,7 @@ export default function PostCard({
   showLab = true,
 }: {
   post: PostCardData;
-  headingLevel?: "h2" | "h3";
+  headingLevel?: "h1" | "h2" | "h3";
   showLab?: boolean;
 }) {
   const Heading = headingLevel;

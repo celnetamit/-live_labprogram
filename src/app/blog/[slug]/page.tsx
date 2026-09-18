@@ -101,7 +101,8 @@ export default async function BlogPostPage({ params }: Props) {
 
   const published = post.status === "PUBLISHED";
   const blocks = parseMarkdown(post.body);
-  const contents = blocks.filter((b): b is Extract<Block, { type: "heading" }> => b.type === "heading" && b.level === 2);
+  // Top-level sections only: `#` and `##`. A `###` is detail inside one of them.
+  const contents = blocks.filter((b): b is Extract<Block, { type: "heading" }> => b.type === "heading" && b.level <= 2);
   const lab = post.lab?.enabled && post.lab.slug ? { ...post.lab, slug: post.lab.slug } : null;
   const guide = lab ? getLabGuide(lab.slug) : null;
   const url = absoluteUrl(`/blog/${post.slug}`);
