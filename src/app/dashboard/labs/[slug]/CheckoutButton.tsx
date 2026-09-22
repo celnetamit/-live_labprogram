@@ -23,11 +23,17 @@ function loadRazorpayScript(): Promise<boolean> {
 
 export default function CheckoutButton({
   labId,
-  priceLabel,
+  label = "Unlock full access",
   compact = false,
 }: {
   labId: string;
-  priceLabel: string;
+  /*
+    The button names the outcome, not the amount. Prices are deliberately kept
+    off the browsing surfaces; the charge is server-derived (`/api/checkout`
+    reads `lab.priceMinor`) and the learner sees it in the payment sheet, so
+    nothing here needs to know it.
+  */
+  label?: string;
   /** Keep the button its intrinsic width and centre it, for standalone panels. */
   compact?: boolean;
 }) {
@@ -121,7 +127,7 @@ export default function CheckoutButton({
         ) : (
           <ShoppingCart className="h-5 w-5" />
         )}
-        <span className="truncate">{loading ? "Processing…" : `Unlock · ${priceLabel}`}</span>
+        <span className="truncate">{loading ? "Processing…" : label}</span>
       </button>
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>

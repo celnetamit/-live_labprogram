@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, Lock, CheckCircle2, Award, ArrowRight, FlaskConical, CalendarClock, Wrench, ListChecks, Clapperboard, Clock } from "lucide-react";
-import { formatPrice } from "@/lib/access";
 import type { LabPreview } from "@/lib/labPreview";
 import CustomLabRequestPanel, { type MyLabRequest } from "./CustomLabRequestPanel";
 
@@ -16,8 +15,6 @@ export type CatalogLab = {
   difficulty: string;
   points: number;
   keySkills: string[];
-  priceMinor: number;
-  currency: string;
   owned: boolean;
   /** ACTIVE (open now), UPCOMING (announced) or MAINTENANCE (temporarily down). */
   status: string;
@@ -296,15 +293,14 @@ export default function LabCatalogClient({
                   <Award className="w-3.5 h-3.5" /> {lab.points} pts
                 </span>
               </div>
-              {lab.owned ? (
-                <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary">
-                  Open <ArrowRight className="w-4 h-4" />
-                </span>
-              ) : (
-                <span className="text-sm font-bold text-foreground">
-                  {formatPrice(lab.priceMinor, lab.currency)}
-                </span>
-              )}
+              {/*
+                  The card's call to action. It used to be the lab's price;
+                  browsing is kept free of amounts, so both states now say what
+                  the click does instead.
+              */}
+              <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary transition-transform group-hover:translate-x-0.5">
+                {lab.owned ? "Open" : "View lab"} <ArrowRight className="w-4 h-4" />
+              </span>
             </div>
           </Link>
         ))}

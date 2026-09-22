@@ -47,8 +47,6 @@ export default async function LabsCatalog() {
     difficulty: lab.difficulty ?? "Beginner",
     points: lab.points,
     keySkills: parseList(lab.keySkills),
-    priceMinor: lab.priceMinor,
-    currency: lab.currency,
     // Upcoming labs are never "owned" — nothing to open yet.
     owned: lab.status === "ACTIVE" && ownsLab(owned, lab.id),
     status: lab.status,

@@ -191,6 +191,17 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+/*
+  Level chips in the hero mockup. The rows used to end in a price; the catalog
+  deliberately shows no amounts, so the preview of it must not either — the
+  level is what a visitor is actually scanning that column for.
+*/
+const mockLevelTone: Record<string, string> = {
+  Beginner: "border-emerald-500/30 bg-emerald-400/10 text-emerald-700 dark:text-emerald-300",
+  Intermediate: "border-amber-500/30 bg-amber-400/10 text-amber-700 dark:text-amber-300",
+  Advanced: "border-rose-500/30 bg-rose-400/10 text-rose-700 dark:text-rose-300",
+};
+
 /* Live product-preview mockup shown in the hero */
 function ProductPreview() {
   return (
@@ -218,8 +229,8 @@ function ProductPreview() {
             <div className="grid grid-cols-3 gap-2">
               {[
                 { v: "12", l: "Labs", t: "from-brand-1/30" },
-                { v: "₹499", l: "Revenue", t: "from-emerald-500/30" },
                 { v: "40k", l: "Users", t: "from-brand-3/30" },
+                { v: "99.9%", l: "Uptime", t: "from-emerald-500/30" },
               ].map((c) => (
                 <div key={c.l} className={`hairline-top rounded-lg border border-border bg-gradient-to-br ${c.t} to-card p-2`}>
                   <div className="text-sm font-extrabold">{c.v}</div>
@@ -228,13 +239,13 @@ function ProductPreview() {
               ))}
             </div>
             {[
-              { n: "Cognicore AI", s: "Computer Science", p: "₹999" },
-              { n: "AI For 6G Experimental Learning", s: "Electronics", p: "₹999" },
-              { n: "FraudShield AI Lab", s: "Security", p: "₹1,499" },
-              { n: "LogicLab AI", s: "Electronics", p: "₹499" },
-              { n: "MicrobeAI Lab", s: "Biology", p: "₹999" },
-              { n: "XRD Virtual Lab", s: "Physics", p: "₹999" },
-              { n: "RepurposeAI", s: "Biology", p: "₹1,499" },
+              { n: "Cognicore AI", s: "Computer Science", d: "Intermediate" },
+              { n: "AI For 6G Experimental Learning", s: "Electronics", d: "Advanced" },
+              { n: "FraudShield AI Lab", s: "Security", d: "Advanced" },
+              { n: "LogicLab AI", s: "Electronics", d: "Beginner" },
+              { n: "MicrobeAI Lab", s: "Biology", d: "Intermediate" },
+              { n: "XRD Virtual Lab", s: "Physics", d: "Beginner" },
+              { n: "RepurposeAI", s: "Biology", d: "Advanced" },
             ].map((r) => (
               <div key={r.n} className="flex items-center gap-2 rounded-lg border border-border bg-card p-2">
                 <div className="w-7 h-7 rounded-md avatar-grad flex items-center justify-center shrink-0">
@@ -244,7 +255,14 @@ function ProductPreview() {
                   <div className="text-[11px] font-semibold truncate">{r.n}</div>
                   <div className="text-[9px] text-muted-foreground">{r.s}</div>
                 </div>
-                <span className="text-[10px] font-bold">{r.p}</span>
+                <span
+                  className={`hidden sm:inline-flex shrink-0 rounded-full border px-1.5 py-px text-[8px] font-semibold ${mockLevelTone[r.d]}`}
+                >
+                  {r.d}
+                </span>
+                <span className="shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden>
+                  <span className="block h-1.5 w-1.5 rounded-full bg-current shadow-[0_0_0_3px_color-mix(in_oklch,currentColor_20%,transparent)]" />
+                </span>
               </div>
             ))}
           </div>

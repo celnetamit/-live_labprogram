@@ -16,7 +16,7 @@ import {
   Lock,
   Play,
 } from "lucide-react";
-import { hasLabAccess, parseList, formatPrice } from "@/lib/access";
+import { hasLabAccess, parseList } from "@/lib/access";
 import { formatLaunchDate } from "@/lib/labStatus";
 import { getLabGuide } from "@/content/labs";
 import CheckoutButton from "./CheckoutButton";
@@ -34,6 +34,25 @@ const DIFFICULTY_TONE: Record<string, string> = {
   Intermediate: "text-[color:var(--color-warning)] border-[color:color-mix(in_oklch,var(--color-warning)_35%,transparent)]",
   Advanced: "text-[color:var(--color-destructive)] border-[color:color-mix(in_oklch,var(--color-destructive)_35%,transparent)]",
 };
+
+/*
+  What unlocking a lab actually gives you. The paywall panel used to lead with
+  the amount; it leads with the contents instead, which is the part a learner
+  is deciding on. The charge is settled in the payment sheet.
+
+  Each line names something the locked page does not already show — the step
+  titles are public, their instructions, expected result and explanation are
+  what `TutorialSteps` withholds. The panel's intro and the line under the
+  button say nothing that is repeated here.
+*/
+function unlockIncludes(stepCount: number) {
+  return [
+    `The exact instructions for all ${stepCount} steps`,
+    "What you should see after each one",
+    "Why each step behaves the way it does",
+    "Troubleshooting, and the live launch link",
+  ];
+}
 
 /** One figure in the hero's at-a-glance row. */
 function Stat({
@@ -121,8 +140,6 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
           : []),
       ]
     : [];
-
-  const price = formatPrice(lab.priceMinor, lab.currency);
 
   /*
    * A runtime is only shown when there is something to run. `durationSec` is
@@ -233,9 +250,9 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
           </div>
 
           {/*
-            Owners only. The hero used to carry the price and an Unlock button
-            for locked visitors; the purchase path still lives in the sticky
-            rail, the mobile bar and the paywall panel below.
+            Owners only. The hero used to carry an Unlock button for locked
+            visitors; the purchase path still lives in the sticky rail, the
+            mobile bar and the paywall panel below.
           */}
           {owned && (
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -315,14 +332,21 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                     <Lock className="h-7 w-7 text-primary" />
                   </div>
                   <h2 className="mb-2 text-xl font-bold">Unlock the full lab</h2>
-                  <p className="mx-auto mb-5 max-w-md text-muted-foreground">
-                    Get the step-by-step instructions, the expected result for every step,
-                    troubleshooting, and the live launch link.
+                  <p className="mx-auto mb-6 max-w-md text-muted-foreground">
+                    You have the overview and the demo. Full access opens the rest:
                   </p>
-                  <div className="text-gradient mb-5 text-3xl font-extrabold">{price}</div>
-                  <CheckoutButton labId={lab.id} priceLabel={price} compact />
+                  {/* What access opens up, in place of the amount. */}
+                  <ul className="mx-auto mb-6 grid max-w-md gap-2 text-left sm:grid-cols-2">
+                    {unlockIncludes(guide.steps.length).map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-success)]" />
+                        <span className="text-muted-foreground">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <CheckoutButton labId={lab.id} compact />
                   <p className="mt-4 text-xs text-muted-foreground">
-                    One-time purchase · lifetime access to this lab
+                    One-time · lifetime access to this lab
                   </p>
                 </section>
               )}
@@ -357,11 +381,13 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                       <p className="text-xs uppercase tracking-wider text-muted-foreground">
                         Full access
                       </p>
-                      <p className="text-gradient my-1 text-2xl font-extrabold">{price}</p>
+                      <p className="my-1 text-base font-bold leading-snug">
+                        Tutorial, troubleshooting and the live launch link
+                      </p>
                       <p className="mb-3 text-xs text-muted-foreground">
                         One-time · lifetime access
                       </p>
-                      <CheckoutButton labId={lab.id} priceLabel={price} />
+                      <CheckoutButton labId={lab.id} />
                     </>
                   )}
                 </div>
@@ -400,8 +426,10 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
               <p className="mx-auto mb-5 max-w-md text-muted-foreground">
                 Buy this course to access the instructions, starter code and the live launch link.
               </p>
-              <div className="text-gradient mb-5 text-3xl font-extrabold">{price}</div>
-              <CheckoutButton labId={lab.id} priceLabel={price} compact />
+              <CheckoutButton labId={lab.id} compact />
+              <p className="mt-4 text-xs text-muted-foreground">
+                One-time · lifetime access to this lab
+              </p>
             </section>
           )}
         </div>
@@ -426,16 +454,15 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
         primary action unreachable without scrolling back up.
       */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/90 p-3 backdrop-blur-md xl:hidden [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
-        <div className="mx-auto flex max-w-7xl items-center gap-3">
-          {!owned && (
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs text-muted-foreground">Full access</p>
-              <p className="font-bold leading-tight">{price}</p>
-            </div>
-          )}
-          <div className={owned ? "flex-1" : "shrink-0"}>
-            {owned ? launchButton("full") : <CheckoutButton labId={lab.id} priceLabel={price} />}
-          </div>
+        {/*
+            The bar used to pair the button with a price; with no amount to show,
+            a second label only competed with the button for a phone's width and
+            truncated, so the button carries the whole message. It is capped and
+            centred rather than stretched — this bar runs up to `xl`, and a
+            full-bleed button on a tablet is a very long way for one label.
+        */}
+        <div className="mx-auto w-full max-w-sm">
+          {owned ? launchButton("full") : <CheckoutButton labId={lab.id} />}
         </div>
       </div>
     </div>

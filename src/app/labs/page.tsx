@@ -52,8 +52,6 @@ export default async function PublicLabs({
     difficulty: lab.difficulty ?? "Beginner",
     points: lab.points,
     keySkills: parseList(lab.keySkills),
-    priceMinor: lab.priceMinor,
-    currency: lab.currency,
     // Only a live lab can actually be opened, so only those carry "Owned".
     owned: lab.status === "ACTIVE" && !!user?.id && ownsLab(owned, lab.id),
     status: lab.status,
