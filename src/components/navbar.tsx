@@ -11,6 +11,7 @@ const navLinks = [
   { href: "/labs", label: "Labs" },
   { href: "/blog", label: "Blog" },
   { href: "/#features", label: "Features" },
+  { href: "/#about", label: "About" },
 ];
 
 /** The signed-in visitor, when there is one. Passed down from the server page

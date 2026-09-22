@@ -16,6 +16,7 @@ import {
   Minus,
   FlaskConical,
   LayoutDashboard,
+  ListChecks,
   Zap,
   ShieldCheck,
   ExternalLink,
@@ -160,6 +161,47 @@ const steps = [
   { icon: FlaskConical, title: "Browse the catalog", desc: "Explore 12 labs across AI, robotics, biotech, semiconductors and more — filter by subject and level." },
   { icon: CreditCard, title: "Unlock access", desc: "Buy a lab in seconds, or get access granted by an admin. Overview is always free to explore." },
   { icon: Rocket, title: "Launch instantly", desc: "Open the live lab environment with one click, plus step-by-step instructions and starter code." },
+];
+
+/**
+ * The About section.
+ *
+ * Every figure and example here was counted out of `src/content/labs/*.ts`
+ * rather than estimated, and each is re-derivable in one command:
+ *
+ *   steps          grep -rhoE "^\s*goal:"    src/content/labs/*.ts | wc -l   -> 104
+ *   expected       grep -rhoE "^\s*expect:"  src/content/labs/*.ts | wc -l   -> 104
+ *   troubleshoot   grep -rhoE "^\s*problem:" src/content/labs/*.ts | wc -l   ->  71
+ *   sources        grep -rho  "href:"         src/content/labs/*.ts | wc -l   ->  46
+ *
+ * Re-run them when guides are added, or the numbers rot the way the "12 labs"
+ * elsewhere on this page has. Note there is deliberately no lab COUNT here:
+ * this file says 12 in some places and 13 in others, and the catalogue is
+ * whatever the database has enabled, which this client component cannot see.
+ */
+const aboutFigures = [
+  { v: "7", l: "subject areas" },
+  { v: "104", l: "guided steps" },
+  { v: "71", l: "troubleshooting fixes" },
+  { v: "46", l: "cited sources" },
+];
+
+const about = [
+  {
+    icon: ListChecks,
+    title: "Checkable at every step",
+    desc: "All 104 steps in the catalogue state the result you should see before they explain why it happens — so the moment your screen disagrees, you know. 71 troubleshooting entries cover the places people actually get stuck.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Built to be doubted",
+    desc: "FraudShield has you attack the detector you just tuned. The XRD lab keeps the specimen's real identity hidden until you commit to an answer, then scores you. Denovo will hand you a confident structure for a molecule that cannot exist.",
+  },
+  {
+    icon: FlaskConical,
+    title: "Real engines, not a chat box",
+    desc: "Set an acoustic target in the metamaterials lab and its own physics engine returns an absorption spectrum, a bandgap analysis and a verdict on whether the lattice could actually be printed. Where a language model does speak, it is relayed through the hub, so no lab ever ships an API key to your browser.",
+  },
 ];
 
 const testimonials = [
@@ -477,6 +519,64 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ===== About ===== */}
+        {/*
+          Plain background on purpose. "How it works" and Testimonials are both
+          `bg-muted/20 border-y`, so before this they butted together with a
+          doubled hairline; a plain band between them restores the page's
+          tinted → plain → tinted alternation.
+
+          `scroll-mt-24` because the navbar is fixed and 64px tall — without it
+          the heading lands underneath the header when someone follows /#about.
+        */}
+        <section id="about" className="scroll-mt-24 py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-14">
+              <span className="text-sm font-semibold text-primary uppercase tracking-wider">About</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2">Instruments you drive, not courses you watch</h2>
+              <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+                A diffractometer you mount a real powder in. A fraud detector you tune and then
+                attack. A physics solver that tells you whether the lattice could actually be
+                printed. Each comes with a guide that says what should happen at every step.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {about.map((a, i) => (
+                <motion.div
+                  key={a.title}
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="glass rounded-2xl p-6"
+                >
+                  <a.icon className="w-8 h-8 text-primary mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">{a.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{a.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Counted out of the guide modules, not estimated — see `aboutFigures`. */}
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="glass mt-6 grid grid-cols-2 gap-y-6 rounded-2xl px-6 py-7 sm:grid-cols-4"
+            >
+              {aboutFigures.map((f) => (
+                <div key={f.l} className="text-center">
+                  <div className="text-2xl md:text-3xl font-extrabold tabular-nums">{f.v}</div>
+                  <div className="mt-0.5 text-xs md:text-sm text-muted-foreground">{f.l}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
         {/* ===== Testimonials ===== */}
         <section className="py-16 md:py-24 bg-muted/20 border-y border-border">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -568,6 +668,7 @@ export default function Home() {
                 <li><Link href="/labs" className="hover:text-foreground transition-colors">Labs</Link></li>
                 <li><Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link></li>
                 <li><Link href="/#features" className="hover:text-foreground transition-colors">Features</Link></li>
+                <li><Link href="/#about" className="hover:text-foreground transition-colors">About</Link></li>
               </ul>
             </div>
             <div>
