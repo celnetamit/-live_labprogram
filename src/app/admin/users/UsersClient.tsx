@@ -10,6 +10,7 @@ import {
   Settings2,
   X,
   Loader2,
+  Trash2,
   Plus,
   Trash,
 } from "lucide-react";
@@ -20,7 +21,12 @@ import {
   revokeLabAccess,
   setLabAccessTier,
   setUserReviewer,
+  deleteUser,
+  getUserDeletionImpact,
 } from "./actions";
+
+/** What a delete would take with it, fetched before the admin confirms. */
+type DeletionImpact = Awaited<ReturnType<typeof getUserDeletionImpact>>;
 
 export type LabOption = { id: string; name: string; subject: string | null; priceMinor: number };
 export type AdminUser = {
@@ -246,6 +252,48 @@ function ManageModal({
 
   const run = (fn: () => Promise<unknown>) => startTransition(() => void fn().then(onChanged));
 
+  /*
+    Delete lives in the status dropdown alongside Active and Suspended, but it
+    is not a status — it is irreversible and cascades. Choosing it therefore
+    arms a confirmation rather than doing anything, and the select is put back
+    to where it was so the account is never left looking deleted when it is not.
+  */
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [impact, setImpact] = useState<DeletionImpact | null>(null);
+  const [deleteError, setDeleteError] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  async function armDelete() {
+    setDeleteError("");
+    setConfirmDelete(true);
+    try {
+      setImpact(await getUserDeletionImpact(user.id));
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "Could not read this account");
+    }
+  }
+
+  async function reallyDelete() {
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      // Refusals come back as a result, not an exception: a thrown server-action
+      // error is redacted in production and the admin would see boilerplate
+      // instead of the reason.
+      const res = await deleteUser(user.id);
+      if (!res.ok) {
+        setDeleteError(res.message);
+        setDeleting(false);
+        return;
+      }
+      onChanged();
+      onClose();
+    } catch {
+      setDeleteError("Could not delete this account. Please try again.");
+      setDeleting(false);
+    }
+  }
+
   const matches = useMemo(() => {
     const q = labSearch.toLowerCase();
     if (!q) return [];
@@ -287,16 +335,114 @@ function ManageModal({
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Status</label>
               <select
-                defaultValue={user.status === "ACTIVE" ? "ACTIVE" : "SUSPENDED"}
-                disabled={pending}
-                onChange={(e) => run(() => setUserStatus(user.id, e.target.value))}
+                value={user.status === "ACTIVE" ? "ACTIVE" : "SUSPENDED"}
+                disabled={pending || deleting}
+                onChange={(e) => {
+                  if (e.target.value === "DELETE") {
+                    // Never acts on selection alone — see `armDelete`.
+                    void armDelete();
+                    return;
+                  }
+                  setConfirmDelete(false);
+                  run(() => setUserStatus(user.id, e.target.value));
+                }}
                 className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm"
               >
                 <option value="ACTIVE">Active</option>
                 <option value="SUSPENDED">Suspended</option>
+                <option value="DELETE">Delete permanently…</option>
               </select>
             </div>
           </div>
+
+          {/* Permanent deletion. Armed from the status dropdown, never done by it. */}
+          {confirmDelete && (
+            <div className="rounded-lg border border-[color:var(--color-destructive)]/40 bg-[color:var(--color-destructive)]/5 p-4">
+              <p className="flex items-center gap-2 text-sm font-semibold text-[color:var(--color-destructive)]">
+                <Trash2 className="h-4 w-4" />
+                Delete {user.email} permanently?
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                This cannot be undone. Suspending keeps the account and all of its history, and can
+                be reversed — use that unless the record genuinely has to go.
+              </p>
+
+              {impact && (
+                <>
+                  {impact.ownedLabs > 0 ? (
+                    <p className="mt-3 rounded-md border border-border bg-background/60 px-3 py-2 text-xs">
+                      This account owns {impact.ownedLabs} lab{impact.ownedLabs === 1 ? "" : "s"}.
+                      Reassign {impact.ownedLabs === 1 ? "it" : "them"} under Lab Management before
+                      deleting.
+                    </p>
+                  ) : (
+                    <div className="mt-3 rounded-md border border-border bg-background/60 px-3 py-2">
+                      <p className="text-xs font-medium">Deleted along with the account:</p>
+                      <ul className="mt-1 grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-muted-foreground">
+                        {[
+                          ["lab grants", impact.labAccess],
+                          ["orders", impact.orders],
+                          ["expert reviews", impact.reviews],
+                          ["signed agreements", impact.agreements],
+                          ["saved projects", impact.projects],
+                          ["tutorial progress", impact.progress],
+                          ["access requests", impact.requests],
+                          ["feedback entries", impact.feedback],
+                        ]
+                          .filter(([, n]) => (n as number) > 0)
+                          .map(([label, n]) => (
+                            <li key={label as string}>
+                              {n as number} {label as string}
+                            </li>
+                          ))}
+                      </ul>
+                      {impact.labAccess +
+                        impact.orders +
+                        impact.reviews +
+                        impact.agreements +
+                        impact.projects +
+                        impact.progress +
+                        impact.requests +
+                        impact.feedback ===
+                        0 && (
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          Nothing else — this account has no history.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {deleteError && (
+                <p className="mt-3 text-xs font-medium text-[color:var(--color-destructive)]">
+                  {deleteError}
+                </p>
+              )}
+
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setConfirmDelete(false);
+                    setImpact(null);
+                    setDeleteError("");
+                  }}
+                  disabled={deleting}
+                  className="inline-flex h-9 items-center rounded-lg border border-border px-3 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => void reallyDelete()}
+                  disabled={deleting || !impact || impact.ownedLabs > 0}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-[color:var(--color-destructive)] px-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                >
+                  {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                  {deleting ? "Deleting…" : "Delete permanently"}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Expert reviewer */}
           <div className="space-y-1.5">
