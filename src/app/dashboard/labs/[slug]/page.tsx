@@ -20,7 +20,7 @@ import {
 import { hasLabAccess, parseList } from "@/lib/access";
 import { formatLaunchDate } from "@/lib/labStatus";
 import { getLabGuide, totalMinutes } from "@/content/labs";
-import CheckoutButton from "./CheckoutButton";
+import AccessRequestPanel, { type AccessRequestState } from "./AccessRequestPanel";
 import DemoVideo from "./DemoVideo";
 import SectionNav, { type Section } from "./SectionNav";
 import TutorialSteps from "./TutorialSteps";
@@ -92,6 +92,29 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
     select: { completedSteps: true },
   });
   const serverCompleted = progressRow?.completedSteps ?? [];
+
+  /*
+    The learner's most recent request for this lab. Latest rather than "any
+    pending": a rejection can be followed by a new request, so the newest row is
+    the only one that describes where they actually stand.
+  */
+  const latestRequest = await prisma.accessRequest.findFirst({
+    where: { userId: user.id, labId: lab.id },
+    orderBy: { requestedAt: "desc" },
+    select: { status: true, reviewedAt: true, notes: true },
+  });
+  const requestState: AccessRequestState =
+    latestRequest?.status === "PENDING"
+      ? "pending"
+      : latestRequest?.status === "REJECTED"
+        ? "rejected"
+        : "none";
+  const requestProps = {
+    labId: lab.id,
+    state: requestState,
+    reviewedAt: latestRequest?.reviewedAt?.toISOString() ?? null,
+    note: latestRequest?.notes ?? null,
+  };
 
   // Announced but not open yet: there is nothing to launch or buy, so the page
   // is just the pitch and the date.
@@ -358,9 +381,9 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                   <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-secondary">
                     <Lock className="h-7 w-7 text-primary" />
                   </div>
-                  <h2 className="mb-2 text-xl font-bold">Unlock the full lab</h2>
+                  <h2 className="mb-2 text-xl font-bold">Request access to this lab</h2>
                   <p className="mx-auto mb-6 max-w-md text-muted-foreground">
-                    You have the overview and the demo. Full access opens the rest:
+                    You have the overview and the demo. Approved access opens the rest:
                   </p>
                   {/* What access opens up, in place of the amount. */}
                   <ul className="mx-auto mb-6 grid max-w-md gap-2 text-left sm:grid-cols-2">
@@ -371,10 +394,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                       </li>
                     ))}
                   </ul>
-                  <CheckoutButton labId={lab.id} compact />
-                  <p className="mt-4 text-xs text-muted-foreground">
-                    One-time · lifetime access to this lab
-                  </p>
+                  <AccessRequestPanel {...requestProps} compact />
                 </section>
               )}
 
@@ -412,9 +432,9 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                         Tutorial, troubleshooting and the live launch link
                       </p>
                       <p className="mb-3 text-xs text-muted-foreground">
-                        One-time · lifetime access
+                        Granted by an administrator
                       </p>
-                      <CheckoutButton labId={lab.id} />
+                      <AccessRequestPanel {...requestProps} variant="rail" />
                     </>
                   )}
                 </div>
@@ -449,14 +469,12 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
               <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-secondary">
                 <Lock className="h-7 w-7 text-primary" />
               </div>
-              <h2 className="mb-2 text-xl font-bold">Unlock the full course</h2>
+              <h2 className="mb-2 text-xl font-bold">Request access to this lab</h2>
               <p className="mx-auto mb-5 max-w-md text-muted-foreground">
-                Buy this course to access the instructions, starter code and the live launch link.
+                Access opens the instructions, the starter code and the live launch link. An
+                administrator reviews each request.
               </p>
-              <CheckoutButton labId={lab.id} compact />
-              <p className="mt-4 text-xs text-muted-foreground">
-                One-time · lifetime access to this lab
-              </p>
+              <AccessRequestPanel {...requestProps} compact />
             </section>
           )}
         </div>
@@ -489,7 +507,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
             full-bleed button on a tablet is a very long way for one label.
         */}
         <div className="mx-auto w-full max-w-sm">
-          {owned ? launchButton("full") : <CheckoutButton labId={lab.id} />}
+          {owned ? launchButton("full") : <AccessRequestPanel {...requestProps} variant="bar" />}
         </div>
       </div>
     </div>
