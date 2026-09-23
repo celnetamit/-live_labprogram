@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { ClipboardCheck, AlertTriangle, ChevronDown, ChevronRight } from "lucide-react";
+import { useState, useTransition } from "react";
+import { ClipboardCheck, AlertTriangle, ChevronDown, ChevronRight, FileSignature, Loader2, Trash2 } from "lucide-react";
+import { archiveReview } from "./actions";
 import {
   DOMAIN_CHECKS, RATING_LABELS, RECOMMENDATIONS, REVIEW_AREAS, SEVERITY_DEFINITIONS,
 } from "@/lib/reviewForm";
@@ -93,13 +94,43 @@ const ROLE_LABELS: Record<string, string> = {
 export default function ReviewsClient({
   reviews,
   draftCount,
+  archivedCount,
   agreements,
 }: {
   reviews: AdminReview[];
   draftCount: number;
+  /** Submitted reviews an admin has already cleared from the queue. */
+  archivedCount: number;
   agreements: SignedAgreement[];
 }) {
   const [open, setOpen] = useState<string | null>(reviews[0]?.id ?? null);
+  /*
+    Two tabs rather than two stacked sections. The agreements list grows one
+    entry per reviewer per lab, and stacked above the reviews it pushed the
+    thing this page is named after below the fold.
+  */
+  const [tab, setTab] = useState<"reviews" | "agreements">("reviews");
+  const [pending, startTransition] = useTransition();
+  /** The review awaiting a second press, so Remove is never one click. */
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  function remove(id: string) {
+    setBusy(id);
+    startTransition(async () => {
+      try {
+        await archiveReview(id);
+      } finally {
+        setBusy(null);
+        setConfirming(null);
+      }
+    });
+  }
+
+  const TABS = [
+    { id: "reviews" as const, label: "Reviews", count: reviews.length, icon: ClipboardCheck },
+    { id: "agreements" as const, label: "Signed agreements", count: agreements.length, icon: FileSignature },
+  ];
 
   return (
     <div className="space-y-6">
@@ -118,7 +149,38 @@ export default function ReviewsClient({
         </p>
       </header>
 
+      {/* The two halves of reviewer work, as tabs. */}
+      <div className="flex gap-1 border-b border-border" role="tablist" aria-label="Expert reviews">
+        {TABS.map((t) => {
+          const active = tab === t.id;
+          return (
+            <button
+              key={t.id}
+              role="tab"
+              aria-selected={active}
+              onClick={() => setTab(t.id)}
+              className={`-mb-px inline-flex items-center gap-2 border-b-2 px-3 py-2 text-sm transition-colors ${
+                active
+                  ? "border-primary font-semibold text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <t.icon className="h-4 w-4" />
+              {t.label}
+              <span
+                className={`rounded-full px-1.5 py-0.5 text-[11px] tabular-nums ${
+                  active ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {t.count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Signed undertakings */}
+      {tab === "agreements" && (
       <section className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-sm font-bold">Signed reviewer agreements ({agreements.length})</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">
@@ -162,8 +224,9 @@ export default function ReviewsClient({
           </ul>
         )}
       </section>
+      )}
 
-      {reviews.length === 0 ? (
+      {tab === "reviews" && (reviews.length === 0 ? (
         <div className="rounded-xl border border-border bg-card px-6 py-16 text-center">
           <ClipboardCheck className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
           <p className="font-medium">No submitted reviews yet</p>
@@ -223,6 +286,49 @@ export default function ReviewsClient({
                     </span>
                   </span>
                 </button>
+
+                {/*
+                    Remove clears the review from the queue once it has been
+                    read. Two presses: the first arms it, the second archives.
+                    An expert's signed assessment is not something a stray click
+                    on a long list should be able to take off the screen.
+                */}
+                <div className="flex items-center justify-end gap-2 border-t border-border px-4 py-2">
+                  {confirming === r.id ? (
+                    <>
+                      <span className="mr-auto text-xs text-muted-foreground">
+                        Remove this review from the queue? It stays on record.
+                      </span>
+                      <button
+                        onClick={() => setConfirming(null)}
+                        disabled={busy === r.id}
+                        className="inline-flex h-8 items-center rounded-lg border border-border px-3 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-60"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => remove(r.id)}
+                        disabled={busy === r.id || pending}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[color:var(--color-destructive)] px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+                      >
+                        {busy === r.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3.5 w-3.5" />
+                        )}
+                        {busy === r.id ? "Removing…" : "Yes, remove"}
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => setConfirming(r.id)}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Remove
+                    </button>
+                  )}
+                </div>
 
                 {expanded && (
                   <div className="space-y-5 border-t border-border p-4">
@@ -360,6 +466,13 @@ export default function ReviewsClient({
             );
           })}
         </ul>
+      ))}
+
+      {tab === "reviews" && archivedCount > 0 && (
+        <p className="text-xs text-muted-foreground">
+          {archivedCount} review{archivedCount === 1 ? " has" : "s have"} been removed from this queue. They are
+          archived, not deleted — the assessments are still on record.
+        </p>
       )}
     </div>
   );

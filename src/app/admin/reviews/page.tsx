@@ -18,7 +18,8 @@ export default async function AdminReviewsPage() {
    * signed it off would be a good way to stop getting honest reviews.
    */
   const reviews = await prisma.labReview.findMany({
-    where: { status: "SUBMITTED" },
+    // Archived reviews are cleared from the queue but kept — see `archiveReview`.
+    where: { status: "SUBMITTED", archivedAt: null },
     orderBy: [{ submittedAt: "desc" }],
     include: {
       user: { select: { email: true, name: true, organization: true } },
@@ -27,13 +28,16 @@ export default async function AdminReviewsPage() {
   });
 
   const draftCount = await prisma.labReview.count({ where: { status: "DRAFT" } });
+  const archivedCount = await prisma.labReview.count({
+    where: { status: "SUBMITTED", archivedAt: { not: null } },
+  });
 
   /*
-   * The signed undertakings, listed beside the reviews they made possible.
-   * Kept on the same screen deliberately: "who has signed the agreement" and
-   * "whose review have we received" are the two halves of the same question,
-   * and a reviewer who has signed but not yet reported is the state worth
-   * being able to see.
+   * The signed undertakings. Still on this page — "who has signed" and "whose
+   * review have we received" are two halves of one question, and a reviewer who
+   * has signed but not yet reported is the state worth being able to see — but
+   * on their own tab now. Stacked above the reviews, this list pushed the thing
+   * the page is named after below the fold as soon as a few reviewers signed.
    */
   const agreements = await prisma.reviewerAgreement.findMany({
     where: { revokedAt: null },
@@ -45,6 +49,7 @@ export default async function AdminReviewsPage() {
     <div className="max-w-5xl mx-auto">
       <ReviewsClient
         draftCount={draftCount}
+        archivedCount={archivedCount}
         agreements={agreements.map((a) => ({
           id: a.id,
           reviewerName: a.reviewerName,

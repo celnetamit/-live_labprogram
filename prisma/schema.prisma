@@ -530,6 +530,16 @@ model LabReview {
   optionalSuggestions     String?
   reviewerComments        String?
 
+  /// Set when an administrator clears a review out of the admin queue.
+  ///
+  /// Archiving rather than deleting: these are signed expert assessments tied
+  /// to the exact build they were written against, and a reviewer's signed
+  /// opinion is not something a misclick should be able to destroy. The row
+  /// stays, the queue stops showing it.
+  archivedAt DateTime?
+  /// The admin account that archived it.
+  archivedBy String?
+
   /// DRAFT while being written; SUBMITTED once the reviewer signs it off.
   status      String    @default("DRAFT")
   submittedAt DateTime?
