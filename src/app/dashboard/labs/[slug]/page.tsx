@@ -93,6 +93,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
   });
   const serverCompleted = progressRow?.completedSteps ?? [];
 
+
   /*
     The learner's most recent request for this lab. Latest rather than "any
     pending": a rejection can be followed by a new request, so the newest row is
@@ -160,6 +161,35 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
   const tags = parseList(lab.tags);
   const launchUrl = lab.id ? `/api/labs/${lab.slug}/launch` : null;
   const guide = getLabGuide(lab.slug);
+  /*
+    The guide handed to `TutorialSteps` is redacted server-side when the lab is
+    locked.
+
+    `TutorialSteps` is a client component, so every prop it receives is
+    serialised into the RSC payload whether the component renders it or not —
+    its `locked` branch controls the DOM, not what was sent. The whole guide was
+    being passed, so a learner without access could read every step's actions,
+    expected result and explanation, plus the entire troubleshooting section,
+    straight out of View Source. The UI hid it; the page shipped it.
+
+    What survives the redaction is what the locked page shows on purpose: each
+    step's title and goal, so the outline is browsable before you ask for
+    access. Everything gated is removed from the object, not merely unrendered.
+  */
+  const tutorialGuide =
+    guide && !owned
+      ? {
+          ...guide,
+          steps: guide.steps.map((step) => ({
+            title: step.title,
+            goal: step.goal,
+            minutes: step.minutes,
+            actions: [],
+            expect: "",
+          })),
+          troubleshooting: [],
+        }
+      : guide;
 
   const sections: Section[] = guide
     ? [
@@ -374,7 +404,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
               <LabSummarySection guide={guide} />
               <DemoVideo video={guide.video} labName={lab.name} />
               <PrerequisitesSection guide={guide} />
-              <TutorialSteps guide={guide} locked={!owned} serverCompleted={serverCompleted} />
+              <TutorialSteps guide={tutorialGuide!} locked={!owned} serverCompleted={serverCompleted} />
               {owned && <TroubleshootingSection guide={guide} />}
               {!owned && (
                 <section className="glass brand-ring rounded-2xl p-6 text-center sm:p-8">

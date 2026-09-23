@@ -3,16 +3,26 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { fulfillOrder } from "@/lib/orders";
-import { razorpayConfigured } from "@/lib/razorpay";
 
 /**
- * Local / no-gateway fulfillment. Allowed only when Razorpay is NOT configured
- * or when not running in production, so real deployments must pay for real.
+ * Local / no-gateway fulfillment: grants the lab without taking a payment.
+ *
+ * Refused outright in production. The previous guard also required Razorpay to
+ * be configured, which only closed the door on a deployment that had gateway
+ * keys — so a production instance running WITHOUT keys served this route to any
+ * signed-in learner, and `fulfillOrder` grants `LabAccess`. That was a free
+ * pass to every lab, and once access became an administrator's decision rather
+ * than a purchase, it was also a way around the approval queue entirely.
+ *
+ * Nothing legitimate calls this in production: the lab page offers "Request
+ * access", not checkout. Real gateway payments still fulfil through
+ * `/api/orders/[id]/verify`, which requires a signature from Razorpay, and an
+ * admin can still fulfil an order by hand from Admin -> Orders.
  */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  if (razorpayConfigured() && process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production") {
     return NextResponse.json({ message: "Mock payment disabled" }, { status: 403 });
   }
 
