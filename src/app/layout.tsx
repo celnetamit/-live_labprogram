@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { themeInitScript } from "@/components/theme-toggle";
 import { Analytics } from "@/components/analytics";
+import MotionProvider from "@/components/motion-provider";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -39,7 +40,19 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className={`${inter.className} min-h-full flex flex-col antialiased`}>
-        {children}
+        {/*
+          Skip link (WCAG 2.4.1). Every page here opens with a navbar or a
+          sidebar, so a keyboard or screen-reader user otherwise tabs through
+          the whole of it on every navigation before reaching the content.
+          Hidden until focused, then pinned over the header.
+        */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          Skip to content
+        </a>
+        <MotionProvider>{children}</MotionProvider>
         <Analytics />
       </body>
     </html>

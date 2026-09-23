@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { ownedLabIds, ownsLab, parseList } from "@/lib/access";
 import { getLabPreview } from "@/lib/labPreview";
 import { CATALOG_STATUSES, formatLaunchDate } from "@/lib/labStatus";
+import { buildLearnerLab } from "@/lib/learnerLabs";
 import LabCatalogClient, { type CatalogLab } from "./LabCatalogClient";
 import { type MyLabRequest } from "./CustomLabRequestPanel";
 
@@ -38,11 +39,25 @@ export default async function LabsCatalog() {
 
   const owned = await ownedLabIds(user.id, user.role);
 
-  const catalog: CatalogLab[] = labs.map((lab) => ({
+  /* This learner's stored tutorial progress, keyed by slug, so the cards can
+     show where they got to and the status filter has something to filter on. */
+  const progressRows = await prisma.labProgress.findMany({ where: { userId: user.id } });
+  const progressBySlug = new Map(progressRows.map((r) => [r.labSlug, r]));
+
+  const catalog: CatalogLab[] = labs.map((lab) => {
+    const learner = buildLearnerLab(lab, progressBySlug.get(lab.slug ?? lab.id));
+    return {
     id: lab.id,
     slug: lab.slug ?? lab.id,
     title: lab.name,
     synopsis: lab.synopsis ?? lab.description ?? "",
+    image: learner.image,
+    progress: learner.status,
+    totalSteps: learner.totalSteps,
+    completedSteps: learner.completedSteps,
+    percent: learner.percent,
+    nextStep: learner.nextStep,
+    minutesLeft: learner.minutesLeft,
     subject: lab.subject ?? "General",
     difficulty: lab.difficulty ?? "Beginner",
     points: lab.points,
@@ -53,7 +68,8 @@ export default async function LabsCatalog() {
     launchLabel: formatLaunchDate(lab.launchAt),
     // Hover reveal is for labs you can actually open today.
     preview: lab.status === "ACTIVE" ? getLabPreview(lab.slug) : null,
-  }));
+    };
+  });
 
   const myRequests: MyLabRequest[] = requests.map((r) => ({
     ...r,

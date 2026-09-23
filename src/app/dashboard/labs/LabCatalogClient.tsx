@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Lock, CheckCircle2, Award, ArrowRight, FlaskConical, CalendarClock, Wrench, ListChecks, Clapperboard, Clock } from "lucide-react";
+import { Search, ArrowRight, FlaskConical, CalendarClock, Wrench } from "lucide-react";
 import type { LabPreview } from "@/lib/labPreview";
+import LearnerLabCard from "@/components/learner-lab-card";
 import CustomLabRequestPanel, { type MyLabRequest } from "./CustomLabRequestPanel";
 
 export type CatalogLab = {
@@ -16,6 +17,15 @@ export type CatalogLab = {
   points: number;
   keySkills: string[];
   owned: boolean;
+  /** A real screenshot of the lab, or null when it has no authored guide. */
+  image: string | null;
+  /** This learner's progress. "not-started" for labs they cannot open yet. */
+  progress: "not-started" | "in-progress" | "completed";
+  totalSteps: number;
+  completedSteps: number;
+  percent: number;
+  nextStep: string | null;
+  minutesLeft: number;
   /** ACTIVE (open now), UPCOMING (announced) or MAINTENANCE (temporarily down). */
   status: string;
   /** Pre-formatted launch date for upcoming labs; null when none is set. */
@@ -51,6 +61,11 @@ export default function LabCatalogClient({
   const [query, setQuery] = useState(initialQuery);
   const [subject, setSubject] = useState("All");
   const [difficulty, setDifficulty] = useState("All");
+  /* Progress filter. Only meaningful where the learner owns the labs, so it is
+     rendered on My Labs and not on the public Explore page. */
+  const [progress, setProgress] = useState<"All" | "in-progress" | "not-started" | "completed">(
+    "All",
+  );
 
   const subjects = useMemo(
     () => ["All", ...Array.from(new Set(labs.map((l) => l.subject))).sort()],
@@ -67,9 +82,10 @@ export default function LabCatalogClient({
       if (difficulty !== "All" && l.difficulty !== difficulty) return false;
       if (q && !(`${l.title} ${l.synopsis} ${l.keySkills.join(" ")}`.toLowerCase().includes(q)))
         return false;
+      if (!publicMode && progress !== "All" && l.progress !== progress) return false;
       return true;
     };
-  }, [query, subject, difficulty]);
+  }, [query, subject, difficulty, progress, publicMode]);
 
   const filtered = useMemo(
     () =>
@@ -128,20 +144,20 @@ export default function LabCatalogClient({
       </div>
 
       {/* Filters */}
-      <div className="glass rounded-xl p-3 sm:p-4 mb-6 flex flex-col md:flex-row gap-3">
+      <div className="mb-4 flex flex-col gap-3 rounded-xl border border-border bg-card p-3 shadow-sm sm:p-4 md:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search labs, skills…"
-            className="h-10 w-full rounded-lg border border-input bg-background/50 pl-10 pr-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-10 w-full rounded-lg border border-input bg-background pl-10 pr-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
         <select
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          className="h-10 rounded-lg border border-input bg-background/50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-10 rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {subjects.map((s) => (
             <option key={s} value={s}>
@@ -152,7 +168,7 @@ export default function LabCatalogClient({
         <select
           value={difficulty}
           onChange={(e) => setDifficulty(e.target.value)}
-          className="h-10 rounded-lg border border-input bg-background/50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-10 rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {difficulties.map((d) => (
             <option key={d} value={d}>
@@ -161,6 +177,45 @@ export default function LabCatalogClient({
           ))}
         </select>
       </div>
+
+      {/* Progress filter. Counts are shown on the chip so an empty result is
+          predictable before it is clicked. */}
+      {!publicMode && (
+        <div className="mb-5 flex flex-wrap gap-2">
+          {(
+            [
+              ["All", "All"],
+              ["in-progress", "In progress"],
+              ["not-started", "Not started"],
+              ["completed", "Completed"],
+            ] as const
+          ).map(([value, label]) => {
+            const count =
+              value === "All"
+                ? labs.filter((l) => l.status === "ACTIVE" && (isAdmin || l.owned)).length
+                : labs.filter(
+                    (l) => l.status === "ACTIVE" && (isAdmin || l.owned) && l.progress === value,
+                  ).length;
+            const active = progress === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setProgress(value)}
+                aria-pressed={active}
+                className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-sm transition-colors ${
+                  active
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card hover:bg-accent"
+                }`}
+              >
+                {label}
+                <span className={active ? "opacity-80" : "text-muted-foreground"}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* On Explore the grid is one of three status sections, so it gets a name
           of its own. "My Labs" keeps the plain count it always had. */}
@@ -176,139 +231,58 @@ export default function LabCatalogClient({
         </p>
       )}
 
-      {/* Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/*
+          Grid. The card is `@/components/learner-lab-card`, shared with the
+          dashboard, so both surfaces show the same statuses, the same progress
+          bar and the same two action names.
+
+          The hover-reveal panel that used to sit over each card is gone: the
+          card now carries a screenshot, and an overlay covering it defeats the
+          point of having one. What the reveal was for — how many steps, how
+          long, how long the demo runs — is on the card itself, as progress for
+          a lab the learner owns and as a plain meta line for one they do not.
+      */}
+      <div className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((lab) => (
-          <Link
+          <LearnerLabCard
             key={lab.id}
-            href={`/dashboard/labs/${lab.slug}`}
-            className="card-glow hairline-top group relative flex flex-col rounded-2xl border border-border bg-card overflow-hidden"
-          >
-            {/*
-              What's actually inside the lab, revealed on hover (and on keyboard
-              focus, so it isn't mouse-only). Built from the authored guide, so
-              it shows the real tutorial rather than a second lot of blurb.
-            */}
-            {lab.preview && (
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 z-10 flex flex-col gap-3 overflow-hidden bg-card/97 p-5 opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
-              >
-                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
-                  <ListChecks className="h-3.5 w-3.5" />
-                  Inside this lab
-                </div>
-
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <ListChecks className="h-3 w-3" /> {lab.preview.stepCount} steps
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="h-3 w-3" /> ~{lab.preview.minutes} min
-                  </span>
-                  {lab.preview.videoLabel && (
-                    <span className="inline-flex items-center gap-1">
-                      <Clapperboard className="h-3 w-3" /> {lab.preview.videoLabel} demo
-                    </span>
-                  )}
-                </div>
-
-                {/* The card already shows the synopsis, so the reveal spends its
-                    space on what the synopsis can't say: the actual outcomes and
-                    the opening moves of the tutorial. */}
-                <div className="min-h-0 flex-1 overflow-hidden">
-                  <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
-                    You&apos;ll be able to
-                  </p>
-                  <ul className="mb-2 space-y-0.5">
-                    {lab.preview.outcomes.map((o) => (
-                      <li key={o} className="flex gap-1.5 text-xs leading-tight text-muted-foreground">
-                        <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" />
-                        <span className="line-clamp-1">{o}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
-                    Starts with
-                  </p>
-                  <ol className="space-y-0.5">
-                    {lab.preview.steps.map((s, i) => (
-                      <li key={s} className="flex gap-1.5 text-xs leading-tight text-muted-foreground">
-                        <span className="shrink-0 tabular-nums text-primary">{i + 1}.</span>
-                        <span className="line-clamp-1">{s}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
-                  {lab.owned ? "Open the lab" : "See the full tutorial"}
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </div>
-            )}
-
-            <div className="p-5 flex-1">
-              <div className="flex items-center justify-between mb-3">
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary uppercase tracking-wider">
-                  <FlaskConical className="w-3.5 h-3.5" />
-                  {lab.subject}
-                </span>
-                {lab.owned ? (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">
-                    <CheckCircle2 className="w-4 h-4" /> Owned
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
-                    <Lock className="w-3.5 h-3.5" /> Locked
-                  </span>
-                )}
-              </div>
-              <h3 className="text-lg font-bold leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                {lab.title}
-              </h3>
-              <p className="text-sm text-muted-foreground line-clamp-3 mb-4">{lab.synopsis}</p>
-              <div className="flex flex-wrap gap-1.5">
-                {lab.keySkills.slice(0, 3).map((s) => (
-                  <span
-                    key={s}
-                    className="text-[11px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="px-5 py-3 border-t border-border flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span
-                  className={`text-[11px] font-medium px-2 py-0.5 rounded-full border ${
-                    difficultyColor[lab.difficulty] ?? "text-muted-foreground border-border"
-                  }`}
-                >
-                  {lab.difficulty}
-                </span>
-                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                  <Award className="w-3.5 h-3.5" /> {lab.points} pts
-                </span>
-              </div>
-              {/*
-                  The card's call to action. It used to be the lab's price;
-                  browsing is kept free of amounts, so both states now say what
-                  the click does instead.
-              */}
-              <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary transition-transform group-hover:translate-x-0.5">
-                {lab.owned ? "Open" : "View lab"} <ArrowRight className="w-4 h-4" />
-              </span>
-            </div>
-          </Link>
+            lab={{ ...lab, status: lab.progress }}
+            locked={!lab.owned}
+            meta={
+              lab.preview
+                ? [
+                    `${lab.preview.stepCount} steps`,
+                    `~${lab.preview.minutes} min`,
+                    lab.preview.videoLabel ? `${lab.preview.videoLabel} demo` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")
+                : null
+            }
+          />
         ))}
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-20 text-muted-foreground">
-          No labs match your filters.
+        <div className="rounded-xl border border-dashed border-border bg-card/50 px-6 py-14 text-center">
+          <p className="font-medium">No labs match these filters</p>
+          <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+            {progress !== "All"
+              ? `Nothing is marked "${progress === "in-progress" ? "In progress" : progress === "completed" ? "Completed" : "Not started"}" yet.`
+              : "Try a different subject or level, or clear the search."}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setSubject("All");
+              setDifficulty("All");
+              setProgress("All");
+            }}
+            className="mt-4 inline-flex h-9 items-center rounded-lg border border-border px-4 text-sm font-medium transition-colors hover:bg-accent"
+          >
+            Clear filters
+          </button>
         </div>
       )}
 

@@ -6,9 +6,9 @@ import AppShell, { type NavGroup } from "@/components/app-shell";
 const navGroups: NavGroup[] = [
   {
     items: [
-      { href: "/dashboard", label: "My Profile", icon: User },
+      { href: "/dashboard", label: "Dashboard", icon: User },
       { href: "/dashboard/labs", label: "My Labs", icon: FlaskConical },
-      { href: "/dashboard/certificates", label: "Certificates", icon: Award },
+      { href: "/dashboard/certificates", label: "Progress", icon: Award },
       { href: "/dashboard/settings", label: "Account Settings", icon: Settings },
     ],
   },

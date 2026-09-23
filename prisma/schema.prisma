@@ -50,6 +50,7 @@ model User {
   /// disagree.
   isReviewer        Boolean  @default(false)
   labProjects   LabProject[]
+  labProgress   LabProgress[]
 }
 
 model Account {
@@ -655,4 +656,37 @@ model LabProject {
   @@unique([userId, labId, projectRef])
   @@index([userId, labId, updatedAt])
   @@map("lab_projects")
+}
+
+/// A learner's progress through a lab's authored tutorial.
+///
+/// This used to live only in the browser's `localStorage`, which meant it did
+/// not follow the learner to a second device and the dashboard could not show
+/// it at all — every "progress" figure on a dashboard built over that storage
+/// would have been a guess. This is the account-scoped store behind it.
+///
+/// Keyed by `labSlug` rather than `Lab.id` because the steps are defined by the
+/// authored guide in `src/content/labs/<slug>.ts`, which is keyed by slug. A
+/// lab row can be re-imported and change id; the guide it points at does not.
+model LabProgress {
+  id             String    @id @default(cuid())
+  userId         String
+  labSlug        String
+  /// Indices of completed steps, in the guide's authored order.
+  completedSteps Int[]
+  /// How many steps the guide had when this row was last written. Stored so the
+  /// dashboard can show a percentage without loading every guide module, and so
+  /// a guide that later gains a step cannot report more than 100% complete.
+  totalSteps     Int       @default(0)
+  startedAt      DateTime  @default(now())
+  lastActiveAt   DateTime  @updatedAt
+  /// Set when every step is ticked, and cleared again if one is un-ticked, so
+  /// "Completed" always reflects the current state rather than a high-water mark.
+  completedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, labSlug])
+  @@index([userId, lastActiveAt])
+  @@map("lab_progress")
 }

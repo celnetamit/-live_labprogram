@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import { Check, Eye, Lightbulb, ListChecks, Lock, RotateCcw } from "lucide-react";
 import type { LabGuide } from "@/content/labs";
 import { RichText } from "@/components/rich-text";
@@ -48,16 +48,34 @@ function parseDone(raw: string | null): Set<number> {
 /**
  * The step-by-step tutorial, with per-step completion.
  *
- * A tutorial is longer than one sitting, so progress is kept in localStorage
- * per lab and a learner can close the tab and come back to where they were.
- * There is no server-side progress model to hang it on, and inventing one is
- * out of scope for a content page.
+ * A tutorial is longer than one sitting, so progress has to survive closing the
+ * tab. It is now kept in two places at once, on purpose:
+ *
+ *   localStorage  written synchronously on every tick, so the checkbox never
+ *                 waits on the network and the page still works offline.
+ *   LabProgress   the account-scoped row behind `/api/labs/progress`, so the
+ *                 same learner sees the same progress on another machine and
+ *                 the dashboard can report it at all.
+ *
+ * On mount the two are merged by UNION rather than one overwriting the other.
+ * A learner who ticked steps before this table existed would otherwise lose
+ * them to an empty server row, and a learner who worked offline on a second
+ * device would lose whichever side loaded second.
  *
  * When `locked`, step titles and goals still render, but the actions, expected
  * results and explanations are not emitted at all. Gating by omission rather
  * than by CSS: content that ships to the browser is not gated.
  */
-export default function TutorialSteps({ guide, locked }: { guide: LabGuide; locked: boolean }) {
+export default function TutorialSteps({
+  guide,
+  locked,
+  serverCompleted = [],
+}: {
+  guide: LabGuide;
+  locked: boolean;
+  /** Completed step indices already stored against the account, from the server render. */
+  serverCompleted?: number[];
+}) {
   const storageKey = `lab-progress:${guide.slug}`;
 
   const getSnapshot = useCallback(() => readRaw(storageKey), [storageKey]);
@@ -68,6 +86,39 @@ export default function TutorialSteps({ guide, locked }: { guide: LabGuide; lock
 
   const done = useMemo(() => parseDone(raw), [raw]);
 
+  /*
+    The server write is debounced because ticking several steps in a row is
+    normal, and each one would otherwise be its own round trip. The timer is a
+    ref so a re-render cannot lose the pending handle and leave a write unsent.
+  */
+  const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const pushToServer = useCallback(
+    (next: Set<number>) => {
+      if (pushTimer.current) clearTimeout(pushTimer.current);
+      pushTimer.current = setTimeout(() => {
+        void fetch("/api/labs/progress", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug: guide.slug,
+            completedSteps: [...next],
+            totalSteps: guide.steps.length,
+          }),
+          keepalive: true,
+        }).catch(() => {
+          /* Offline, or signed out in another tab. localStorage already has it,
+             and the next tick — or the next page load's merge — resends. */
+        });
+      }, 600);
+    },
+    [guide.slug, guide.steps.length],
+  );
+
+  useEffect(() => () => {
+    if (pushTimer.current) clearTimeout(pushTimer.current);
+  }, []);
+
   const persist = useCallback(
     (next: Set<number>) => {
       try {
@@ -76,9 +127,27 @@ export default function TutorialSteps({ guide, locked }: { guide: LabGuide; lock
         /* Private mode or a full quota — nothing to do but carry on. */
       }
       notify();
+      pushToServer(next);
     },
-    [storageKey],
+    [storageKey, pushToServer],
   );
+
+  /*
+    Merge the account's stored progress with whatever this browser has, once,
+    on mount. Union, not replace — see the note on this component above. The
+    write only happens when the two actually differ, so a learner who is
+    already in sync causes no request.
+  */
+  const merged = useRef(false);
+  useEffect(() => {
+    if (merged.current) return;
+    merged.current = true;
+    const local = parseDone(readRaw(storageKey));
+    const union = new Set<number>([...local, ...serverCompleted]);
+    const sameAsServer =
+      union.size === serverCompleted.length && serverCompleted.every((n) => union.has(n));
+    if (union.size !== local.size || !sameAsServer) persist(union);
+  }, [storageKey, serverCompleted, persist]);
 
   /*
    * Reads the store at click time rather than closing over the rendered value.

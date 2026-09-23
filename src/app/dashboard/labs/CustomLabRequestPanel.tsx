@@ -73,8 +73,9 @@ export default function CustomLabRequestPanel({
 
   return (
     <section className="mt-10">
-      <div className="glass brand-ring relative overflow-hidden rounded-2xl p-6 sm:p-8">
-        <div className="aurora-blob animate-aurora bg-brand-3 w-56 h-56 -top-20 -right-10 opacity-25" />
+      {/* Plain card: the rest of My Labs dropped the glass-and-aurora treatment,
+          and one panel keeping it made the page look like two designs. */}
+      <div className="relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
         <div className="relative flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
           <div className="flex gap-4">
             <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-secondary text-primary">

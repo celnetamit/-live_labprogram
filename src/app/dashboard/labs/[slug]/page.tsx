@@ -9,6 +9,7 @@ import {
   BarChart3,
   CalendarClock,
   CheckCircle2,
+  Clock,
   Clapperboard,
   ExternalLink,
   FlaskConical,
@@ -18,7 +19,7 @@ import {
 } from "lucide-react";
 import { hasLabAccess, parseList } from "@/lib/access";
 import { formatLaunchDate } from "@/lib/labStatus";
-import { getLabGuide } from "@/content/labs";
+import { getLabGuide, totalMinutes } from "@/content/labs";
 import CheckoutButton from "./CheckoutButton";
 import DemoVideo from "./DemoVideo";
 import SectionNav, { type Section } from "./SectionNav";
@@ -83,6 +84,14 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
 
   const lab = await prisma.lab.findUnique({ where: { slug } });
   if (!lab || !lab.enabled) notFound();
+
+  /* Rendered with the tutorial, so the steps arrive already ticked rather than
+     flashing empty while a client fetch resolves. */
+  const progressRow = await prisma.labProgress.findUnique({
+    where: { userId_labSlug: { userId: user.id, labSlug: slug } },
+    select: { completedSteps: true },
+  });
+  const serverCompleted = progressRow?.completedSteps ?? [];
 
   // Announced but not open yet: there is nothing to launch or buy, so the page
   // is just the pitch and the date.
@@ -155,12 +164,30 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
         ).padStart(2, "0")}`
       : null;
 
+  /*
+    No points tile. Nothing in the platform ever awards points — every reference
+    to `Lab.points` is a read — so the figure measured nothing. The hands-on time
+    the guide actually adds up to is a real number and more use to a learner
+    deciding whether to start now.
+  */
+  const guideMinutes = guide ? totalMinutes(guide) : 0;
   const stats = [
     ...(guide ? [{ icon: ListChecks, value: `${guide.steps.length}`, label: "Steps" }] : []),
     videoLength
       ? { icon: Clapperboard, value: videoLength, label: "Demo" }
       : { icon: BarChart3, value: lab.difficulty ?? "—", label: "Level" },
-    { icon: Award, value: `${lab.points}`, label: "Points" },
+    ...(guideMinutes
+      ? [
+          {
+            icon: Clock,
+            value:
+              guideMinutes >= 60
+                ? `${Math.floor(guideMinutes / 60)}h ${guideMinutes % 60}m`
+                : `${guideMinutes}m`,
+            label: "Hands-on",
+          },
+        ]
+      : [{ icon: BarChart3, value: lab.difficulty ?? "—", label: "Level" }]),
   ];
 
   /**
@@ -324,7 +351,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
               <LabSummarySection guide={guide} />
               <DemoVideo video={guide.video} labName={lab.name} />
               <PrerequisitesSection guide={guide} />
-              <TutorialSteps guide={guide} locked={!owned} />
+              <TutorialSteps guide={guide} locked={!owned} serverCompleted={serverCompleted} />
               {owned && <TroubleshootingSection guide={guide} />}
               {!owned && (
                 <section className="glass brand-ring rounded-2xl p-6 text-center sm:p-8">

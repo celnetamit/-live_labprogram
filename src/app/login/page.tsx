@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
@@ -29,25 +29,12 @@ export default function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Auto-redirect if already logged in
-  useEffect(() => {
-    getSession().then((session) => {
-      if (session?.user) {
-        const role = (session.user as { role?: string } | undefined)?.role;
-        handleRedirect(role, true);
-        return;
-      }
-
-      /*
-        Google sends the user back here with ?error=… when it refuses; without
-        this they would land on a blank login form with no idea what went wrong.
-      */
-      const code = new URLSearchParams(window.location.search).get("error");
-      if (code) setError(OAUTH_ERRORS[code] ?? "Google sign-in failed");
-    });
-  }, []);
-
-  const handleRedirect = async (role: string | undefined, forceRedirect = true) => {
+  /*
+    `useCallback` so the identity is stable across renders: the auto-redirect
+    effect below depends on it, and without this the effect would re-run — and
+    re-issue `getSession()` — on every keystroke in the form.
+  */
+  const handleRedirect = useCallback(async (role: string | undefined, forceRedirect = true) => {
     let dest = role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
     const cbRaw = new URLSearchParams(window.location.search).get("callbackUrl");
     
@@ -77,7 +64,26 @@ export default function Login() {
       router.push(dest);
       router.refresh();
     }
-  };
+  }, [router]);
+
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    getSession().then((session) => {
+      if (session?.user) {
+        const role = (session.user as { role?: string } | undefined)?.role;
+        handleRedirect(role, true);
+        return;
+      }
+
+      /*
+        Google sends the user back here with ?error=… when it refuses; without
+        this they would land on a blank login form with no idea what went wrong.
+      */
+      const code = new URLSearchParams(window.location.search).get("error");
+      if (code) setError(OAUTH_ERRORS[code] ?? "Google sign-in failed");
+    });
+  }, [handleRedirect]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,15 +105,18 @@ export default function Login() {
       const role = (session?.user as { role?: string } | undefined)?.role;
 
       await handleRedirect(role, true);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sign-in failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-mesh relative overflow-hidden">
+    <main
+      id="main"
+      className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-mesh relative overflow-hidden"
+    >
       {/* Background gradients */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
@@ -128,7 +137,9 @@ export default function Login() {
             <div className="w-14 h-14 rounded-2xl btn-brand flex items-center justify-center text-primary-foreground font-bold text-2xl mb-4">
               P
             </div>
-            <h2 className="text-2xl font-bold text-center tracking-tight">Sign in to Panoptical</h2>
+            {/* An <h1>, not an <h2>: this is the page's own heading, and there
+                was no h1 above it for it to sit under. */}
+            <h1 className="text-2xl font-bold text-center tracking-tight">Sign in to Panoptical</h1>
             <p className="text-sm text-muted-foreground mt-2 text-center">
               Enter your credentials to access your labs
             </p>
@@ -194,13 +205,13 @@ export default function Login() {
           <GoogleSignInButton />
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/register" className="font-medium text-primary hover:underline">
               Request access
             </Link>
           </p>
         </motion.div>
       </div>
-    </div>
+    </main>
   );
 }

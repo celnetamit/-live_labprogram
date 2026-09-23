@@ -391,7 +391,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="flex-grow">
+      <main id="main" className="flex-grow">
         {/* ===== Hero ===== */}
         <section className="relative pt-32 pb-20 md:pt-40 overflow-hidden">
           <div className="absolute inset-0 bg-grid" />

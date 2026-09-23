@@ -6,6 +6,7 @@ import Navbar from "@/components/navbar";
 import { ownedLabIds, ownsLab, parseList } from "@/lib/access";
 import { getLabPreview } from "@/lib/labPreview";
 import { EXPLORE_STATUSES, formatLaunchDate } from "@/lib/labStatus";
+import { buildLearnerLab } from "@/lib/learnerLabs";
 import LabCatalogClient, { type CatalogLab } from "@/app/dashboard/labs/LabCatalogClient";
 
 export const metadata: Metadata = {
@@ -43,11 +44,27 @@ export default async function PublicLabs({
     ownedLabIds(user?.id, user?.role),
   ]);
 
-  const catalog: CatalogLab[] = labs.map((lab) => ({
+  /* Explore is reachable signed out, where there is no progress to read. A
+     signed-in visitor gets the same cards as My Labs, already filled in. */
+  const progressRows = user?.id
+    ? await prisma.labProgress.findMany({ where: { userId: user.id } })
+    : [];
+  const progressBySlug = new Map(progressRows.map((r) => [r.labSlug, r]));
+
+  const catalog: CatalogLab[] = labs.map((lab) => {
+    const learner = buildLearnerLab(lab, progressBySlug.get(lab.slug ?? lab.id));
+    return {
     id: lab.id,
     slug: lab.slug ?? lab.id,
     title: lab.name,
     synopsis: lab.synopsis ?? lab.description ?? "",
+    image: learner.image,
+    progress: learner.status,
+    totalSteps: learner.totalSteps,
+    completedSteps: learner.completedSteps,
+    percent: learner.percent,
+    nextStep: learner.nextStep,
+    minutesLeft: learner.minutesLeft,
     subject: lab.subject ?? "General",
     difficulty: lab.difficulty ?? "Beginner",
     points: lab.points,
@@ -58,12 +75,13 @@ export default async function PublicLabs({
     launchLabel: formatLaunchDate(lab.launchAt),
     // Hover reveal is for labs you can actually open today.
     preview: lab.status === "ACTIVE" ? getLabPreview(lab.slug) : null,
-  }));
+    };
+  });
 
   return (
     <>
       <Navbar user={user ? { name: user.name, email: user.email } : null} />
-      <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
+      <main id="main" className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
         <LabCatalogClient
           labs={catalog}
           isAdmin={user?.role === "SUPER_ADMIN"}

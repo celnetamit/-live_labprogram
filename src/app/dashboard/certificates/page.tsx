@@ -1,138 +1,162 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
-import { Award, Download, Share2, Medal, CheckCircle2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
+import prisma from "@/lib/prisma";
+import { buildLearnerLab, formatMinutes } from "@/lib/learnerLabs";
+import { ProgressBar } from "@/components/learner-lab-card";
 
-export default async function CertificatesDashboard() {
+/**
+ * The learner's completion record.
+ *
+ * This page previously rendered two hardcoded certificates with invented
+ * issuers ("Panoptical AI Institute"), invented credential IDs (P-AI-9823) and
+ * invented dates, shown to every account regardless of what they had done.
+ * There is no Certificate model in the schema and nothing in the platform
+ * issues one, so none of it could be true for anybody.
+ *
+ * What is real is completion: `LabProgress.completedAt` is set when a learner
+ * ticks off every step of a lab's authored tutorial. That is what this page
+ * shows now, and it says plainly what it is — the learner's own record, not an
+ * issued credential — so nobody is handed a document to put on a CV that this
+ * platform never actually awarded.
+ */
+
+export const dynamic = "force-dynamic";
+
+export default async function CompletionRecord() {
   const session = await getServerSession(authOptions);
+  const user = session?.user as { id?: string; name?: string } | undefined;
+  if (!user?.id) redirect("/login");
+  const userId = user.id;
 
-  if (!session?.user) {
-    redirect("/login");
-  }
+  const [progressRows, labs] = await Promise.all([
+    prisma.labProgress.findMany({ where: { userId }, orderBy: { lastActiveAt: "desc" } }),
+    prisma.lab.findMany({ where: { enabled: true, status: "ACTIVE" } }),
+  ]);
 
-  // Mock data for certificates
-  const certificates = [
-    {
-      id: "CERT-9823-AI",
-      title: "Advanced Artificial Intelligence Certification",
-      issuer: "Panoptical AI Institute",
-      issueDate: "Oct 12, 2025",
-      skills: ["Neural Networks", "Deep Learning", "TensorFlow"],
-      credentialId: "P-AI-9823",
-      color: "blue"
-    },
-    {
-      id: "CERT-4412-CYBER",
-      title: "Cyber Security Fundamentals",
-      issuer: "Panoptical Security Labs",
-      issueDate: "Jan 05, 2026",
-      skills: ["Network Security", "Penetration Testing", "Cryptography"],
-      credentialId: "P-SEC-4412",
-      color: "emerald"
-    }
-  ];
+  const progressBySlug = new Map(progressRows.map((r) => [r.labSlug, r]));
+  const touched = labs
+    .map((lab) => ({
+      lab: buildLearnerLab(lab, progressBySlug.get(lab.slug ?? lab.id)),
+      completedAt: progressBySlug.get(lab.slug ?? lab.id)?.completedAt ?? null,
+    }))
+    .filter((r) => r.lab.completedSteps > 0);
+
+  const done = touched.filter((r) => r.lab.status === "completed");
+  const inProgress = touched.filter((r) => r.lab.status === "in-progress");
 
   return (
-    <div className="max-w-6xl mx-auto p-6 pt-10">
-      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Certificates</h1>
-          <p className="text-muted-foreground mt-1">View, download, and share your earned credentials and achievements.</p>
-        </div>
-      </div>
+    <div className="mx-auto max-w-4xl pb-12">
+      <header className="mb-6">
+        <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Your progress record</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Labs you have worked through, and how far you got in each.
+        </p>
+      </header>
 
-      {certificates.length === 0 ? (
-        <div className="bg-card border border-border rounded-xl p-12 text-center flex flex-col items-center justify-center">
-          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-            <Award className="w-8 h-8 text-muted-foreground" />
-          </div>
-          <h3 className="text-xl font-bold mb-2">No Certificates Yet</h3>
-          <p className="text-muted-foreground max-w-md text-center mb-6">
-            You haven't earned any certificates yet. Complete labs to start building your credentials.
+      {/* Said once, plainly, rather than implied by a certificate-shaped card. */}
+      <p className="mb-8 rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+        This is your own record of what you have completed. Live Labs does not currently issue a
+        formal certificate or a verifiable credential for finishing a lab — if that changes, it will
+        appear here.
+      </p>
+
+      {done.length === 0 && inProgress.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border bg-card/50 px-6 py-14 text-center">
+          <h2 className="font-semibold">Nothing completed yet</h2>
+          <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+            Work through a lab&apos;s tutorial and tick off the steps as you go. Whatever you finish
+            shows up here.
           </p>
-          <Link href="/dashboard/labs" className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
-            Go to My Labs
+          <Link
+            href="/dashboard/labs"
+            className="mt-4 inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          >
+            Go to your labs <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {certificates.map((cert) => (
-            <div key={cert.id} className="bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col">
-              {/* Certificate Header Graphic */}
-              <div className={`h-24 bg-${cert.color}-500/10 border-b border-border flex items-center justify-between px-6 relative overflow-hidden`}>
-                <div className={`absolute top-[-50%] right-[-10%] w-[50%] h-[200%] bg-${cert.color}-500/20 rounded-full blur-[40px]`} />
-                <div className="flex items-center gap-3 z-10">
-                  <div className={`w-12 h-12 bg-background rounded-full flex items-center justify-center border-2 border-${cert.color}-500 shadow-sm`}>
-                    <Medal className={`w-6 h-6 text-${cert.color}-500`} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg leading-tight">{cert.title}</h3>
-                    <p className="text-sm text-muted-foreground font-medium">{cert.issuer}</p>
-                  </div>
-                </div>
-                <div className="z-10 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full border border-border text-xs font-bold flex items-center gap-1.5 shadow-sm">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
-                  Verified
-                </div>
-              </div>
-
-              {/* Certificate Details */}
-              <div className="p-6 flex-1 flex flex-col">
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <div className="text-xs text-muted-foreground font-medium mb-1 uppercase tracking-wider">Date Earned</div>
-                    <div className="font-medium">{cert.issueDate}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground font-medium mb-1 uppercase tracking-wider">Credential ID</div>
-                    <div className="font-medium font-mono text-sm">{cert.credentialId}</div>
-                  </div>
-                </div>
-
-                <div className="mb-8">
-                  <div className="text-xs text-muted-foreground font-medium mb-3 uppercase tracking-wider">Skills Verified</div>
-                  <div className="flex flex-wrap gap-2">
-                    {cert.skills.map(skill => (
-                      <span key={skill} className="px-2.5 py-1 bg-muted text-muted-foreground rounded-md text-xs font-medium">
-                        {skill}
+        <div className="space-y-8">
+          {done.length > 0 && (
+            <section>
+              <h2 className="mb-3 text-base font-semibold">
+                Completed <span className="font-normal text-muted-foreground">({done.length})</span>
+              </h2>
+              <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+                {done.map(({ lab, completedAt }) => (
+                  <li key={lab.slug}>
+                    <Link
+                      href={`/dashboard/labs/${lab.slug}`}
+                      className="flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-accent/50"
+                    >
+                      <CheckCircle2 className="h-5 w-5 shrink-0 text-[color:var(--color-success)]" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">{lab.title}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          {lab.subject} · all {lab.totalSteps} steps
+                          {formatMinutes(lab.minutesTotal)
+                            ? ` · ${formatMinutes(lab.minutesTotal)} of hands-on work`
+                            : ""}
+                        </span>
                       </span>
-                    ))}
-                  </div>
-                </div>
+                      {completedAt && (
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {completedAt.toLocaleDateString(undefined, {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-                {/* Actions */}
-                <div className="mt-auto flex gap-3 pt-4 border-t border-border">
-                  <button className="flex-1 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-sm">
-                    <Download className="w-4 h-4" /> Download PDF
-                  </button>
-                  <button className="px-4 py-2 border border-input bg-background hover:bg-muted text-foreground text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
-                    <Share2 className="w-4 h-4" /> Share
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+          {inProgress.length > 0 && (
+            <section>
+              <h2 className="mb-3 text-base font-semibold">
+                Still going{" "}
+                <span className="font-normal text-muted-foreground">({inProgress.length})</span>
+              </h2>
+              <ul className="space-y-3">
+                {inProgress.map(({ lab }) => (
+                  <li key={lab.slug}>
+                    <Link
+                      href={`/dashboard/labs/${lab.slug}`}
+                      className="block rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-foreground/20"
+                    >
+                      <div className="mb-2 flex items-baseline justify-between gap-3">
+                        <span className="truncate font-medium">{lab.title}</span>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {lab.completedSteps} of {lab.totalSteps}
+                        </span>
+                      </div>
+                      <ProgressBar percent={lab.percent} />
+                      <div className="mt-2 flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
+                        {lab.nextStep && (
+                          <span className="truncate">
+                            Next: <span className="text-foreground">{lab.nextStep}</span>
+                          </span>
+                        )}
+                        {lab.minutesLeft > 0 && (
+                          <span className="inline-flex shrink-0 items-center gap-1">
+                            <Clock className="h-3 w-3" /> {formatMinutes(lab.minutesLeft)} left
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
       )}
-
-      {/* Verification section */}
-      <div className="mt-12 p-6 bg-secondary/30 rounded-xl border border-secondary/50 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-start gap-4">
-          <div className="bg-background p-3 rounded-xl shadow-sm border border-border">
-            <ShieldCheck className="w-6 h-6 text-primary" />
-          </div>
-          <div>
-            <h3 className="font-bold text-lg">Blockchain Verifiable</h3>
-            <p className="text-sm text-muted-foreground mt-1 max-w-xl">
-              All Panoptical Labs certificates are cryptographically signed and independently verifiable. You can add them directly to your LinkedIn profile with one click.
-            </p>
-          </div>
-        </div>
-        <button className="whitespace-nowrap px-4 py-2 bg-background border border-border text-sm font-medium rounded-lg hover:bg-muted transition-colors shadow-sm">
-          Verify a Certificate
-        </button>
-      </div>
     </div>
   );
 }

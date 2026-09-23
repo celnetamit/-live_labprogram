@@ -62,7 +62,9 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
               <Link
                 key={l.href}
                 href={l.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                /* `py-1.5` takes the hit box to 24px+ — WCAG 2.2 AA target size.
+                   The inline-link exception does not cover site navigation. */
+                className="inline-flex items-center rounded-md px-1 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 {l.label}
               </Link>
