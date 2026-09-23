@@ -4,7 +4,13 @@ import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { isBlogStatus, parseKeywordInput, slugify } from "@/lib/blog";
+import {
+  firstImageAltInMarkdown,
+  firstImageInMarkdown,
+  isBlogStatus,
+  parseKeywordInput,
+  slugify,
+} from "@/lib/blog";
 import prisma from "@/lib/prisma";
 
 export type SavePostResult = { ok: true; id: string; status: string } | { ok: false; error: string };
@@ -49,19 +55,36 @@ export async function savePost(id: string | null, formData: FormData): Promise<S
   const title = text("title");
   const slug = slugify(text("slug") || title);
   const status = text("status");
-  const coverImage = text("coverImage") || null;
   const labId = text("labId") || null;
+
+  /*
+    The post's image.
+
+    An author who drops a banner into the body and never touches the cover field
+    had a post that was plainly illustrated everywhere except the places that
+    represent it — the blog listing card, social previews, the RSS entry. So
+    when the cover field is left empty, the first image in the body becomes the
+    post's cover, stored on the row rather than worked out again on every
+    render.
+
+    Only ever fills a blank. An explicit cover always wins, including the
+    explicit choice of clearing it on a post whose body has no image.
+  */
+  const body = String(formData.get("body") ?? "").replace(/\s+$/, "");
+  const typedCover = text("coverImage") || null;
+  const adoptedCover = typedCover ? null : firstImageInMarkdown(body);
+  const coverImage = typedCover ?? (adoptedCover && isImageSource(adoptedCover) ? adoptedCover : null);
 
   const data = {
     title,
     slug,
     metaTitle: text("metaTitle") || null,
     description: text("description"),
-    body: String(formData.get("body") ?? "").replace(/\s+$/, ""),
+    body,
     focusKeyword: text("focusKeyword"),
     keywords: JSON.stringify(parseKeywordInput(text("keywords"))),
     coverImage,
-    coverAlt: text("coverAlt") || null,
+    coverAlt: text("coverAlt") || (coverImage && !typedCover ? firstImageAltInMarkdown(body) : null),
     authorName: text("authorName"),
     status: isBlogStatus(status) ? status : "DRAFT",
     labId,
@@ -69,7 +92,7 @@ export async function savePost(id: string | null, formData: FormData): Promise<S
 
   if (!title) return { ok: false, error: "A headline is required, even for a draft." };
   if (!slug) return { ok: false, error: "The URL is empty — it needs at least one letter or number." };
-  if (coverImage && !isImageSource(coverImage)) {
+  if (typedCover && !isImageSource(typedCover)) {
     return { ok: false, error: "The cover image must be a site path such as /showcase/virtual-ai.jpg, or an http(s) URL." };
   }
   if (data.status === "PUBLISHED") {

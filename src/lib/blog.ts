@@ -470,3 +470,34 @@ export function seoChecks(input: SeoInput, focusKeywordsInUse: string[]): SeoChe
 
   return checks;
 }
+
+/**
+ * The first image in a Markdown body, and its alt text.
+ *
+ * The editor writes images as `![alt](/blog/image/<id>)`, so this is the
+ * picture an author actually put in the post. Used when they leave the cover
+ * field blank, so the post still has an image to represent it on the listing,
+ * in social previews and in the feed.
+ *
+ * Deliberately narrow: standard Markdown image syntax only, and an inline HTML
+ * `<img>` for bodies written before the toolbar existed. A linked image
+ * (`[![alt](src)](href)`) still matches, because the inner image is the one
+ * being shown.
+ */
+const MD_IMAGE = /!\[([^\]]*)\]\(\s*<?([^)\s>]+)>?(?:\s+["'][^"']*["'])?\s*\)/;
+const HTML_IMAGE = /<img\b[^>]*?\bsrc\s*=\s*["']([^"']+)["']/i;
+
+export function firstImageInMarkdown(body: string | null | undefined): string | null {
+  if (!body) return null;
+  const md = body.match(MD_IMAGE)?.[2];
+  if (md) return md.trim() || null;
+  const html = body.match(HTML_IMAGE)?.[1];
+  return html ? html.trim() || null : null;
+}
+
+/** The alt text of that same image, so an adopted cover is not left undescribed. */
+export function firstImageAltInMarkdown(body: string | null | undefined): string | null {
+  if (!body) return null;
+  const alt = body.match(MD_IMAGE)?.[1];
+  return alt && alt.trim() ? alt.trim() : null;
+}

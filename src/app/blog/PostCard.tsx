@@ -20,9 +20,9 @@ export default function PostCard({
     <article className="card-glow flex flex-col overflow-hidden rounded-2xl border border-border bg-card">
       {/* The image repeats the title link, so it is skipped by keyboard and screen readers. */}
       <Link href={href} tabIndex={-1} aria-hidden="true" className="block">
-        {post.coverImage ? (
+        {post.cardImage ? (
           // eslint-disable-next-line @next/next/no-img-element -- an author-supplied URL of unknown host and size.
-          <img src={post.coverImage} alt="" loading="lazy" className="aspect-[1200/630] w-full object-cover" />
+          <img src={post.cardImage} alt="" loading="lazy" className="aspect-[1200/630] w-full object-cover" />
         ) : (
           <div className="grid aspect-[1200/630] place-items-center bg-mesh">
             <FlaskConical className="h-8 w-8 text-primary/60" />
