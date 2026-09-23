@@ -17,7 +17,7 @@ import {
   Lock,
   Play,
 } from "lucide-react";
-import { hasLabAccess, parseList } from "@/lib/access";
+import { formatPrice, hasLabAccess, parseList } from "@/lib/access";
 import { formatLaunchDate } from "@/lib/labStatus";
 import { getLabGuide, totalMinutes } from "@/content/labs";
 import AccessRequestPanel, { type AccessRequestState } from "./AccessRequestPanel";
@@ -110,6 +110,15 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
       : latestRequest?.status === "REJECTED"
         ? "rejected"
         : "none";
+  /*
+    The fee for this lab, shown on the lab page only — the catalogue and Explore
+    stay free of amounts. Access is granted by an administrator rather than
+    bought here, so the price is stated as information a learner needs before
+    asking, not as a checkout. The wording says so, so nobody waits for a
+    payment step that does not exist on this page.
+  */
+  const price = formatPrice(lab.priceMinor, lab.currency);
+
   const requestProps = {
     labId: lab.id,
     state: requestState,
@@ -424,6 +433,10 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                       </li>
                     ))}
                   </ul>
+                  <p className="mb-1 text-3xl font-extrabold tabular-nums">{price}</p>
+                  <p className="mb-5 text-xs text-muted-foreground">
+                    One-time fee · access granted by an administrator
+                  </p>
                   <AccessRequestPanel {...requestProps} compact />
                 </section>
               )}
@@ -458,11 +471,12 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                       <p className="text-xs uppercase tracking-wider text-muted-foreground">
                         Full access
                       </p>
-                      <p className="my-1 text-base font-bold leading-snug">
+                      <p className="my-1 text-2xl font-extrabold tabular-nums">{price}</p>
+                      <p className="text-sm font-medium leading-snug">
                         Tutorial, troubleshooting and the live launch link
                       </p>
-                      <p className="mb-3 text-xs text-muted-foreground">
-                        Granted by an administrator
+                      <p className="mb-3 mt-1 text-xs text-muted-foreground">
+                        One-time fee · access granted by an administrator
                       </p>
                       <AccessRequestPanel {...requestProps} variant="rail" />
                     </>
@@ -530,14 +544,21 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
       */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/90 p-3 backdrop-blur-md xl:hidden [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
         {/*
-            The bar used to pair the button with a price; with no amount to show,
-            a second label only competed with the button for a phone's width and
-            truncated, so the button carries the whole message. It is capped and
-            centred rather than stretched — this bar runs up to `xl`, and a
-            full-bleed button on a tablet is a very long way for one label.
+            Capped and centred rather than stretched — this bar runs up to `xl`,
+            and a full-bleed control on a tablet is a very long way for one
+            label. The price sits beside the button for a learner who never
+            scrolls as far as the panel.
         */}
-        <div className="mx-auto w-full max-w-sm">
-          {owned ? launchButton("full") : <AccessRequestPanel {...requestProps} variant="bar" />}
+        <div className="mx-auto flex w-full max-w-md items-center gap-3">
+          {!owned && (
+            <div className="min-w-0 shrink-0">
+              <p className="truncate text-[11px] text-muted-foreground">One-time fee</p>
+              <p className="font-bold leading-tight tabular-nums">{price}</p>
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            {owned ? launchButton("full") : <AccessRequestPanel {...requestProps} variant="bar" />}
+          </div>
         </div>
       </div>
     </div>
