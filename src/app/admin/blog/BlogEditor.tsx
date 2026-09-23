@@ -26,10 +26,12 @@ import {
   replaceSelection,
   toggleMark,
 } from "@/lib/markdownEdit";
+import { altFromFilename, imageFilesFrom, uploadImage } from "@/lib/imageUpload";
 import { SITE_URL } from "@/lib/site";
 import AiAssistant from "./AiAssistant";
 import AnalysisPanel from "./AnalysisPanel";
 import EditorToolbar, { type View } from "./EditorToolbar";
+import { UploadButton } from "./ImagePicker";
 import { deletePost, savePost } from "./actions";
 
 export type EditorLab = { id: string; slug: string | null; name: string; enabled: boolean };
@@ -155,6 +157,8 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [dropping, setDropping] = useState(false);
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
 
   const bodyRef = useRef<HTMLTextAreaElement>(null);
@@ -361,6 +365,46 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
   /* -------------------------------------------------------------------- */
   /* Toolbar commands that need the DOM                                   */
   /* -------------------------------------------------------------------- */
+
+  /**
+   * Upload dropped or pasted pictures and put them in the article at the caret.
+   *
+   * Every file is uploaded before anything is inserted, then all of them go in
+   * as one edit. Inserting each in turn would read a caret position the
+   * textarea has not been re-rendered with yet, and the second image would land
+   * in the middle of the first one's Markdown.
+   */
+  const insertImageFiles = useCallback(
+    async (files: File[]) => {
+      if (!files.length || uploading) return;
+      setUploading(true);
+      setMessage(null);
+      try {
+        const markdown: string[] = [];
+        for (const file of files) {
+          const image = await uploadImage(file);
+          markdown.push(`![${altFromFilename(file.name)}](${image.url})`);
+        }
+        apply((state) => insertBlockText(state, markdown.join("\n\n")), { reveal: true });
+        setMessage({
+          tone: "ok",
+          text:
+            files.length === 1
+              ? "Image added. Give it alt text in the brackets — the checklist counts it."
+              : `${files.length} images added. Give each one alt text in the brackets.`,
+        });
+      } catch (failure) {
+        console.error(failure);
+        setMessage({
+          tone: "error",
+          text: failure instanceof Error ? failure.message : "The image could not be uploaded.",
+        });
+      } finally {
+        setUploading(false);
+      }
+    },
+    [apply, uploading],
+  );
 
   const copyMarkdown = useCallback(async () => {
     try {
@@ -624,14 +668,22 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
         <label htmlFor="coverImage" className={LABEL}>
           Cover image
         </label>
-        <input
-          id="coverImage"
-          name="coverImage"
-          value={coverImage}
-          onChange={(e) => setCoverImage(e.target.value)}
-          placeholder="/showcase/virtual-ai.jpg"
-          className={`${FIELD} mt-1.5`}
-        />
+        <div className="mt-1.5 flex flex-wrap items-start gap-2">
+          <input
+            id="coverImage"
+            name="coverImage"
+            value={coverImage}
+            onChange={(e) => setCoverImage(e.target.value)}
+            placeholder="/showcase/virtual-ai.jpg"
+            className={`${FIELD} min-w-0 flex-1`}
+          />
+          <UploadButton
+            onUploaded={(image, filename) => {
+              setCoverImage(image.url);
+              if (!coverAlt.trim()) setCoverAlt(altFromFilename(filename));
+            }}
+          />
+        </div>
         <p className={HELP}>Optional. Without one, a branded share card is generated.</p>
       </div>
 
@@ -774,10 +826,37 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
           />
 
           <div
-            className={`rounded-b-xl border border-border bg-card ${
-              splitting ? "grid divide-y divide-border lg:grid-cols-2 lg:divide-x lg:divide-y-0" : ""
-            }`}
+            onDragOver={(event) => {
+              // Only a file drag; dragging selected text inside the editor is
+              // the textarea's own business.
+              if (!event.dataTransfer.types.includes("Files")) return;
+              event.preventDefault();
+              setDropping(true);
+            }}
+            onDragLeave={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDropping(false);
+            }}
+            onDrop={(event) => {
+              const files = imageFilesFrom(event.dataTransfer);
+              setDropping(false);
+              if (!files.length) return;
+              event.preventDefault();
+              void insertImageFiles(files);
+            }}
+            className={`relative rounded-b-xl border bg-card transition-colors ${
+              dropping ? "border-primary bg-primary/5" : "border-border"
+            } ${splitting ? "grid divide-y divide-border lg:grid-cols-2 lg:divide-x lg:divide-y-0" : ""}`}
           >
+            {dropping ? (
+              <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-b-xl bg-background/80 text-sm font-medium text-primary">
+                Drop to add the image to this article
+              </div>
+            ) : null}
+            {uploading ? (
+              <div className="pointer-events-none absolute right-3 top-3 z-10 inline-flex items-center gap-2 rounded-full border border-border bg-popover px-3 py-1 text-xs text-muted-foreground shadow-sm">
+                <Loader2 className="h-3 w-3 animate-spin" /> Uploading image…
+              </div>
+            ) : null}
             {/* Hidden rather than unmounted while previewing, so the body is still in the submitted form. */}
             <textarea
               ref={bodyRef}
@@ -791,6 +870,14 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
               onSelect={(e) =>
                 setSelection({ start: e.currentTarget.selectionStart, end: e.currentTarget.selectionEnd })
               }
+              onPaste={(event) => {
+                // A screenshot on the clipboard arrives as a file; text pastes
+                // are left to the textarea.
+                const files = imageFilesFrom(event.clipboardData);
+                if (!files.length) return;
+                event.preventDefault();
+                void insertImageFiles(files);
+              }}
               spellCheck
               className="w-full resize-y bg-transparent p-4 font-mono text-sm leading-relaxed focus:outline-none"
             />
@@ -811,7 +898,7 @@ export default function BlogEditor({ post, labs, otherFocusKeywords, defaults }:
 
           <p className="mt-2 font-mono text-xs leading-relaxed text-muted-foreground">
             # Heading · ## Section · ### Subsection · **bold** · *italic* · [link](/labs) · - list · 1. list · &gt;
-            quote · | table | · ![alt text](/image.jpg)
+            quote · | table | · ![alt text](/image.jpg) — or drop an image here, or paste one
           </p>
         </section>
       </div>

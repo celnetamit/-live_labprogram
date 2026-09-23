@@ -8,7 +8,6 @@ import {
   Columns2,
   Copy,
   Eye,
-  Image as ImageIcon,
   IndentDecrease,
   IndentIncrease,
   Italic,
@@ -25,6 +24,8 @@ import {
   TextQuote,
   Undo2,
 } from "lucide-react";
+import { ImageButton } from "./ImagePicker";
+import { Divider, Tool } from "./toolbarUi";
 import {
   type BlockStyle,
   type EditorState,
@@ -153,42 +154,6 @@ function MenuItem({
 
 function MenuSeparator() {
   return <div className="my-1 border-t border-border" />;
-}
-
-const TOOL =
-  "inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-40 disabled:hover:bg-transparent";
-const TOOL_ON = "inline-flex h-8 w-8 items-center justify-center rounded-md bg-secondary text-foreground";
-
-function Tool({
-  title,
-  onClick,
-  active,
-  disabled,
-  children,
-}: {
-  title: string;
-  onClick: () => void;
-  active?: boolean;
-  disabled?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      title={title}
-      aria-label={title}
-      aria-pressed={active}
-      disabled={disabled}
-      onClick={onClick}
-      className={active ? TOOL_ON : TOOL}
-    >
-      {children}
-    </button>
-  );
-}
-
-function Divider() {
-  return <span aria-hidden className="mx-1 h-5 w-px bg-border" />;
 }
 
 /**
@@ -530,19 +495,8 @@ export default function EditorToolbar(props: Props) {
         <Tool title="Remove link" onClick={() => apply(removeLink)}>
           <Link2Off className="h-4 w-4" />
         </Tool>
-        <Popover
-          title="Insert image"
-          icon={<ImageIcon className="h-4 w-4" />}
-          label="Insert an image on its own line"
-          submitLabel="Insert image"
-          fields={[
-            { name: "src", label: "Image path or URL", placeholder: "/showcase/virtual-ai.jpg", value: "" },
-            { name: "alt", label: "Alt text — what the image shows", value: "" },
-          ]}
-          onSubmit={(values) => {
-            const src = values.src.trim();
-            if (src) apply((state) => insertImage(state, src, values.alt.trim()), { reveal: true });
-          }}
+        <ImageButton
+          onInsert={(src, alt) => apply((state) => insertImage(state, src, alt), { reveal: true })}
         />
         <Popover
           title="Insert table"

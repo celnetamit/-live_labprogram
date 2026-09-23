@@ -700,3 +700,30 @@ model LabProgress {
   @@index([userId, lastActiveAt])
   @@map("lab_progress")
 }
+
+/// An image uploaded from the blog editor.
+///
+/// The bytes live in the database rather than on disk because the app runs from
+/// a container image that bakes `public/` in at build time — anything written
+/// to the filesystem at runtime disappears on the next deploy, silently and
+/// only for pictures uploaded since the last one. Posts already live here for
+/// the same reason: publishing needs no deploy.
+model BlogImage {
+  /// The SHA-256 of the stored bytes. It is the URL (/blog/image/<id>), which
+  /// makes that URL immutable and lets re-uploading the same picture reuse this
+  /// row instead of storing a second copy.
+  id        String   @id
+  mimeType  String
+  data      Bytes
+  /// Read out of the file's own header on upload, not reported by the browser.
+  width     Int
+  height    Int
+  size      Int
+  /// The name it had on the author's computer, for the sake of recognising it.
+  filename  String   @default("")
+  createdAt DateTime @default(now())
+  createdBy String?
+
+  @@index([createdAt])
+  @@map("blog_images")
+}
