@@ -38,25 +38,34 @@ function PageViews() {
 }
 
 export function Analytics() {
-  if (!GA_MEASUREMENT_ID) return null;
-
   return (
     <>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
-      />
-      <Script id="ga-init" strategy="afterInteractive">
-        {`window.dataLayer = window.dataLayer || [];
+      {/* Google Analytics */}
+      {GA_MEASUREMENT_ID && (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga-init" strategy="afterInteractive">
+            {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '${GA_MEASUREMENT_ID}');`}
-      </Script>
-      {/* useSearchParams requires a Suspense boundary to avoid opting the
-          whole tree out of static rendering. */}
-      <Suspense fallback={null}>
-        <PageViews />
-      </Suspense>
+          </Script>
+          {/* useSearchParams requires a Suspense boundary to avoid opting the
+              whole tree out of static rendering. */}
+          <Suspense fallback={null}>
+            <PageViews />
+          </Suspense>
+        </>
+      )}
+      {/* Umami Analytics */}
+      <Script
+        src="https://umami.panoptical.org/script.js"
+        data-website-id="bc43306c-86bc-4cb3-ac3e-ac9df1ec25d3"
+        strategy="afterInteractive"
+      />
     </>
   );
 }
