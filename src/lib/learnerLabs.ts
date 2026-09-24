@@ -42,11 +42,31 @@ export type LearnerLab = {
 };
 
 /**
- * Every lab slug has a poster frame in `public/demos/` — verified as an exact
- * one-to-one match with the authored guides. Labs without a guide have no
- * poster, and get a lettered tile instead of a broken image.
+ * Labs whose card leads with a photograph rather than a screenshot of the app.
+ *
+ * The default card image is the demo poster — a screenshot of the lab's own
+ * interface. That works for a tool whose screen is the point, but for these
+ * three the subject is what the learner is actually studying, and a browser
+ * window full of panels says less about it than the instrument or the specimen
+ * does. The screenshots are untouched: the demo video still opens on its own
+ * poster inside the lab page.
+ */
+const COVER_PHOTO: Record<string, string> = {
+  "drugdiscovery-ai": "/labs/drugdiscovery-ai.jpg",
+  omicslab: "/labs/omicslab.jpg",
+  "virtual-ai": "/labs/virtual-ai.jpg",
+};
+
+/**
+ * The image for a lab's card.
+ *
+ * A cover photograph wins where one exists; otherwise the demo poster in
+ * `public/demos/`, which is an exact one-to-one match with the authored
+ * guides. A lab with neither gets a lettered tile rather than a broken image.
  */
 export function labImage(slug: string, hasGuide: boolean): string | null {
+  const photo = COVER_PHOTO[slug];
+  if (photo) return photo;
   return hasGuide ? `/demos/${slug}.jpg` : null;
 }
 

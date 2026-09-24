@@ -3,7 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { EXPLORE_STATUSES } from "@/lib/labStatus";
-import { buildLearnerLab, type LearnerLab } from "@/lib/learnerLabs";
+import { buildLearnerLab, labImage, type LearnerLab } from "@/lib/learnerLabs";
 import DashboardClient, { type ActivityItem, type Suggestion } from "./DashboardClient";
 
 // Reads the session and this learner's own rows on every request.
@@ -133,7 +133,8 @@ export default async function UserDashboard() {
         title: lab.name,
         subject,
         difficulty: lab.difficulty ?? "Beginner",
-        image: `/demos/${slug}.jpg`,
+        // Same source as the cards, so a cover photo is not missed here.
+        image: labImage(slug, true) ?? `/demos/${slug}.jpg`,
         matchesSubject: enrolledSubjects.has(subject),
       };
     })
