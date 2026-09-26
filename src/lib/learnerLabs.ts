@@ -26,6 +26,8 @@ export type LearnerLab = {
   skills: string[];
   /** A real screenshot of the lab, or null for a lab with no guide/poster. */
   image: string | null;
+  /** Source line for the cover photograph, with its colours. */
+  imageCredit: ImageCredit | null;
   sourceUrl: string | null;
   status: LearnerLabStatus;
   totalSteps: number;
@@ -46,16 +48,47 @@ export type LearnerLab = {
  *
  * The default card image is the demo poster — a screenshot of the lab's own
  * interface. That works for a tool whose screen is the point, but for these
- * three the subject is what the learner is actually studying, and a browser
- * window full of panels says less about it than the instrument or the specimen
- * does. The screenshots are untouched: the demo video still opens on its own
- * poster inside the lab page.
+ * the subject is what the learner is actually studying, and a browser window
+ * full of panels says less about it than the instrument or the specimen does.
+ * The screenshots are untouched: the demo video still opens on its own poster
+ * inside the lab page.
+ *
+ * `credit` is the source line for a photograph that is not ours to use
+ * unattributed. It is rendered on the image itself, because the card is the
+ * only place these appear — the lab page leads with the demo poster — and an
+ * attribution nobody can see is not an attribution.
  */
-const COVER_PHOTO: Record<string, string> = {
-  "drugdiscovery-ai": "/labs/drugdiscovery-ai.jpg",
-  omicslab: "/labs/omicslab.jpg",
-  "virtual-ai": "/labs/virtual-ai.jpg",
+type CoverPhoto = {
+  src: string;
+  credit?: string;
+  /**
+   * The photograph's own average colour across its bottom 18% — the band the
+   * credit sits over.
+   *
+   * The strip is not painted in this colour; it is painted in a pale wash of
+   * it (see the card). A black gradient fought every picture it was laid over,
+   * and simply using the measured colour was no better: average a photograph
+   * of pink, teal and red bacteria and you get mud — #624f55 — which is dark
+   * enough to read as the same black bar. Carrying the hue and lightening it
+   * gives a strip that belongs to the image without going dark on it.
+   */
+  tint: string;
 };
+
+const COVER_PHOTO: Record<string, CoverPhoto> = {
+  "denovo-genai-lab": { src: "/labs/denovo-genai-lab.jpg", tint: "#303438" },
+  "drugdiscovery-ai": { src: "/labs/drugdiscovery-ai.jpg", tint: "#cbc0c6" },
+  "micro-ai": {
+    src: "/labs/micro-ai.jpg",
+    tint: "#624f55",
+    credit: "Yong, E. Microbiome sequencing offers hope for diagnostics. Nature (2012)",
+  },
+  omicslab: { src: "/labs/omicslab.jpg", tint: "#888990" },
+  "virtual-ai": { src: "/labs/virtual-ai.jpg", tint: "#918a8a" },
+};
+
+/** A photograph's source line, with the hue to wash its strip in. */
+export type ImageCredit = { text: string; tint: string };
 
 /**
  * The image for a lab's card.
@@ -66,8 +99,15 @@ const COVER_PHOTO: Record<string, string> = {
  */
 export function labImage(slug: string, hasGuide: boolean): string | null {
   const photo = COVER_PHOTO[slug];
-  if (photo) return photo;
+  if (photo) return photo.src;
   return hasGuide ? `/demos/${slug}.jpg` : null;
+}
+
+/** A lab's cover credit, with the tint taken from the photograph itself. */
+export function labImageCredit(slug: string): ImageCredit | null {
+  const photo = COVER_PHOTO[slug];
+  if (!photo?.credit) return null;
+  return { text: photo.credit, tint: photo.tint };
 }
 
 export function buildLearnerLab(lab: Lab, progress: LabProgress | undefined): LearnerLab {
@@ -104,6 +144,7 @@ export function buildLearnerLab(lab: Lab, progress: LabProgress | undefined): Le
     synopsis: lab.synopsis ?? lab.description ?? "",
     skills: parseList(lab.keySkills),
     image: labImage(slug, !!guide),
+    imageCredit: labImageCredit(slug),
     sourceUrl: lab.sourceUrl,
     status,
     totalSteps,

@@ -59,6 +59,7 @@ export default async function PublicLabs({
     title: lab.name,
     synopsis: lab.synopsis ?? lab.description ?? "",
     image: learner.image,
+    imageCredit: learner.imageCredit,
     progress: learner.status,
     totalSteps: learner.totalSteps,
     completedSteps: learner.completedSteps,

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { ImageCredit } from "@/lib/learnerLabs";
 import { ArrowRight, CheckCircle2, Clock, Lock } from "lucide-react";
 
 /**
@@ -25,6 +26,8 @@ export type LearnerCardLab = {
   difficulty: string;
   synopsis: string;
   image: string | null;
+  /** Source line for a cover photograph that is not ours, with its colours. */
+  imageCredit?: ImageCredit | null;
   status: "not-started" | "in-progress" | "completed";
   totalSteps: number;
   completedSteps: number;
@@ -132,6 +135,35 @@ export default function LearnerLabCard({
         {locked && (
           <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-md bg-background/85 px-2 py-1 text-xs font-medium text-muted-foreground backdrop-blur-sm">
             <Lock className="h-3 w-3" /> Locked
+          </span>
+        )}
+        {/*
+            Photo credit, over a scrim so it stays readable whatever the image
+            beneath it. The card is the only place these photographs appear, so
+            this is the only place the source can be shown. `title` carries the
+            full line for the cases where the card is narrow enough to truncate.
+        */}
+        {lab.imageCredit && (
+          <span
+            title={lab.imageCredit.text}
+            style={{
+              /*
+                A pale wash of the photograph's own hue — 38% of the measured
+                colour over white — rather than a dark bar.
+
+                Two earlier attempts were worse. A black gradient fought every
+                picture. Painting the measured colour itself was no better: the
+                average of a photograph of pink, teal and red bacteria is mud
+                dark enough to look like the same black bar. Keeping the hue
+                and lightening it hard gives a strip that reads as part of the
+                image and still holds 10px type, which is why the ink is dark
+                here regardless of the photograph.
+              */
+              backgroundColor: `color-mix(in srgb, ${lab.imageCredit.tint} 38%, white)`,
+            }}
+            className="absolute inset-x-0 bottom-0 line-clamp-2 px-2 py-1 text-[10px] font-medium leading-tight text-black/75 backdrop-blur-[3px]"
+          >
+            {lab.imageCredit.text}
           </span>
         )}
       </Link>
