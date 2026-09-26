@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, ArrowRight, FlaskConical, CalendarClock, Wrench } from "lucide-react";
 import type { LabPreview } from "@/lib/labPreview";
 import LearnerLabCard from "@/components/learner-lab-card";
-import type { ImageCredit } from "@/lib/learnerLabs";
+import type { CoverEdge, ImageCredit } from "@/lib/learnerLabs";
 import CustomLabRequestPanel, { type MyLabRequest } from "./CustomLabRequestPanel";
 
 export type CatalogLab = {
@@ -22,6 +22,8 @@ export type CatalogLab = {
   image: string | null;
   /** Source line for a cover photograph that is not ours, with its colours. */
   imageCredit: ImageCredit | null;
+  /** The colour the cover ends in, carried into the card body. */
+  imageEdge: CoverEdge | null;
   /** This learner's progress. "not-started" for labs they cannot open yet. */
   progress: "not-started" | "in-progress" | "completed";
   totalSteps: number;

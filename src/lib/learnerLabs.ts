@@ -28,6 +28,8 @@ export type LearnerLab = {
   image: string | null;
   /** Source line for the cover photograph, with its colours. */
   imageCredit: ImageCredit | null;
+  /** The colour the cover ends in, carried into the card body. */
+  imageEdge: CoverEdge | null;
   sourceUrl: string | null;
   status: LearnerLabStatus;
   totalSteps: number;
@@ -80,22 +82,44 @@ type CoverPhoto = {
    * gives a strip that belongs to the image without going dark on it.
    */
   tint: string;
+  /**
+   * The colour the photograph actually ends in — the average of its last 4% of
+   * rows, not a broad band.
+   *
+   * This is what the card carries downward: the credit strip rises out of it
+   * and the body fades from it, so the panel below the picture reads as the
+   * same object rather than a dark box bolted underneath. Sampling a wide band
+   * would average in content nobody sees at the seam.
+   */
+  edge: string;
+  /** Whether that edge is light enough to need dark ink over it. */
+  edgeIsLight?: boolean;
 };
 
 const COVER_PHOTO: Record<string, CoverPhoto> = {
-  "denovo-genai-lab": { src: "/labs/denovo-genai-lab.9d533526.jpg", tint: "#303438" },
-  "drugdiscovery-ai": { src: "/labs/drugdiscovery-ai.5f1f39da.jpg", tint: "#cbc0c6" },
+  "denovo-genai-lab": { src: "/labs/denovo-genai-lab.9d533526.jpg", tint: "#303438", edge: "#24282b" },
+  "drugdiscovery-ai": { src: "/labs/drugdiscovery-ai.5f1f39da.jpg", tint: "#cbc0c6", edge: "#c8cbd9", edgeIsLight: true },
   "micro-ai": {
     src: "/labs/micro-ai.0ec11f8b.jpg",
-    tint: "#624f55",
+    tint: "#624f55", edge: "#645157",
     credit: "Yong, E. Microbiome sequencing offers hope for diagnostics. Nature (2012)",
   },
-  omicslab: { src: "/labs/omicslab.9a645e33.jpg", tint: "#888990" },
-  "virtual-ai": { src: "/labs/virtual-ai.82c2a62d.jpg", tint: "#918a8a" },
+  omicslab: { src: "/labs/omicslab.9a645e33.jpg", tint: "#888990", edge: "#8c8a88" },
+  "virtual-ai": { src: "/labs/virtual-ai.82c2a62d.jpg", tint: "#918a8a", edge: "#736e6f" },
 };
 
 /** A photograph's source line, with the hue to wash its strip in. */
 export type ImageCredit = { text: string; tint: string };
+
+/** The colour a cover photograph ends in, carried into the card below it. */
+export type CoverEdge = { color: string; isLight: boolean };
+
+/** The seam colour for a lab's cover, or null for a lab with no photograph. */
+export function labImageEdge(slug: string): CoverEdge | null {
+  const photo = COVER_PHOTO[slug];
+  if (!photo) return null;
+  return { color: photo.edge, isLight: photo.edgeIsLight ?? false };
+}
 
 /**
  * The image for a lab's card.
@@ -152,6 +176,7 @@ export function buildLearnerLab(lab: Lab, progress: LabProgress | undefined): Le
     skills: parseList(lab.keySkills),
     image: labImage(slug, !!guide),
     imageCredit: labImageCredit(slug),
+    imageEdge: labImageEdge(slug),
     sourceUrl: lab.sourceUrl,
     status,
     totalSteps,

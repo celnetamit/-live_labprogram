@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { ImageCredit } from "@/lib/learnerLabs";
+import type { CoverEdge, ImageCredit } from "@/lib/learnerLabs";
 import { ArrowRight, CheckCircle2, Clock, Lock } from "lucide-react";
 
 /**
@@ -28,6 +28,8 @@ export type LearnerCardLab = {
   image: string | null;
   /** Source line for a cover photograph that is not ours, with its colours. */
   imageCredit?: ImageCredit | null;
+  /** The colour the cover ends in, carried into the body below it. */
+  imageEdge?: CoverEdge | null;
   status: "not-started" | "in-progress" | "completed";
   totalSteps: number;
   completedSteps: number;
@@ -106,6 +108,11 @@ export default function LearnerLabCard({
   meta?: string | null;
 }) {
   const href = `/dashboard/labs/${lab.slug}`;
+  const edge = lab.imageEdge ?? null;
+  // The credit sits on the photograph, so it follows the photograph's edge
+  // rather than the card; fall back to the wash tint when there is no edge.
+  const edgeColor = edge?.color ?? lab.imageCredit?.tint ?? "#000";
+  const edgeIsLight = edge?.isLight ?? false;
   const primaryLabel =
     lab.status === "completed" ? "Review lab" : lab.status === "in-progress" ? "Resume lab" : "Start lab";
   const left = formatLeft(lab.minutesLeft);
@@ -148,27 +155,43 @@ export default function LearnerLabCard({
             title={lab.imageCredit.text}
             style={{
               /*
-                A pale wash of the photograph's own hue — 38% of the measured
-                colour over white — rather than a dark bar.
-
-                Two earlier attempts were worse. A black gradient fought every
-                picture. Painting the measured colour itself was no better: the
-                average of a photograph of pink, teal and red bacteria is mud
-                dark enough to look like the same black bar. Keeping the hue
-                and lightening it hard gives a strip that reads as part of the
-                image and still holds 10px type, which is why the ink is dark
-                here regardless of the photograph.
+                The strip rises out of the picture in the colour the picture
+                actually ends in, rather than sitting on it as a bar. Earlier
+                attempts were a black gradient, which fought every photograph,
+                and a flat wash of the average colour, which on a picture of
+                pink, teal and red bacteria is mud.
               */
-              backgroundColor: `color-mix(in srgb, ${lab.imageCredit.tint} 38%, white)`,
+              backgroundImage: `linear-gradient(to top, ${edgeColor} 55%, color-mix(in srgb, ${edgeColor} 55%, transparent) 85%, transparent)`,
+              color: edgeIsLight ? "rgba(0,0,0,0.78)" : "rgba(255,255,255,0.92)",
             }}
-            className="absolute inset-x-0 bottom-0 line-clamp-2 px-2 py-1 text-[10px] font-medium leading-tight text-black/75 backdrop-blur-[3px]"
+            className="absolute inset-x-0 bottom-0 line-clamp-2 px-2 pb-1 pt-4 text-[10px] font-medium leading-tight"
           >
             {lab.imageCredit.text}
           </span>
         )}
       </Link>
 
-      <div className="flex flex-1 flex-col p-4">
+      {/*
+          The photograph's closing colour bleeds a little way into the body, so
+          the panel reads as the same object as the picture rather than a dark
+          box bolted underneath.
+
+          The bleed stops within the body's top padding — a `28px` stop, not a
+          percentage — so no text ever sits on it. That is not fussiness: at
+          34% carried behind the copy, the subject line measured 2.86:1 on
+          RepurposeAI in dark and 1.66:1 on MicrobeAI in light, against a 4.5
+          minimum, because a light photograph lifts a dark card and a dark one
+          drops a light card. Keeping the colour above the text gives the seam
+          without touching the contrast of anything written on it.
+      */}
+      <div
+        className={`relative flex flex-1 flex-col px-4 pb-4 ${edge ? "pt-7" : "pt-4"}`}
+        style={
+          edge
+            ? { backgroundImage: `linear-gradient(to bottom, ${edge.color}, transparent 28px)` }
+            : undefined
+        }
+      >
         <div className="mb-1.5 flex items-center justify-between gap-2">
           <span className="truncate text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {lab.subject}
