@@ -118,7 +118,14 @@ export default function LearnerLabCard({
   const left = formatLeft(lab.minutesLeft);
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-colors hover:border-foreground/20">
+    /*
+      Hover lifts the whole card very slightly, which makes everything written
+      on it read a touch larger without changing a single font size. A scale
+      transform costs no layout, so a row of cards cannot reflow or jitter as
+      the pointer crosses it — growing the type itself would do both. Skipped
+      entirely for anyone who has asked for reduced motion.
+    */
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:border-foreground/25 hover:shadow-lg motion-safe:hover:scale-[1.025]">
       <Link href={href} className="relative block aspect-[16/9] overflow-hidden bg-muted">
         {lab.image ? (
           /*
@@ -172,26 +179,52 @@ export default function LearnerLabCard({
       </Link>
 
       {/*
-          The photograph's closing colour bleeds a little way into the body, so
-          the panel reads as the same object as the picture rather than a dark
-          box bolted underneath.
+          The whole panel below the picture is tinted with the picture's own
+          colour, all the way down past the buttons — not a dark box bolted
+          under a photograph.
 
-          The bleed stops within the body's top padding — a `28px` stop, not a
-          percentage — so no text ever sits on it. That is not fussiness: at
-          34% carried behind the copy, the subject line measured 2.86:1 on
-          RepurposeAI in dark and 1.66:1 on MicrobeAI in light, against a 4.5
-          minimum, because a light photograph lifts a dark card and a dark one
-          drops a light card. Keeping the colour above the text gives the seam
-          without touching the contrast of anything written on it.
+          It is done with `mix-blend-mode: color`, which is the only way to
+          have both. That mode takes hue and saturation from this layer and
+          keeps the *luminance* of what is underneath, so the card's own
+          lightness survives and every contrast ratio on it survives with it.
+          Painting the colour in directly does not: carried behind the copy at
+          34% opacity the subject line measured 2.86:1 on RepurposeAI in dark
+          and 1.66:1 on MicrobeAI in light, against a 4.5 minimum, because a
+          light photograph lifts a dark card and a dark photograph drops a
+          light one — it fails in both directions at once and no single
+          opacity fixes it.
+
+          The overlay is painted before the content and the content is lifted
+          above it, so the blend reaches the surface and never the text.
       */}
-      <div
-        className={`relative flex flex-1 flex-col px-4 pb-4 ${edge ? "pt-7" : "pt-4"}`}
-        style={
-          edge
-            ? { backgroundImage: `linear-gradient(to bottom, ${edge.color}, transparent 28px)` }
-            : undefined
-        }
-      >
+      <div className="relative flex flex-1 flex-col">
+        {edge && (
+          <>
+            {/*
+              A thin ordinary wash first. The blend layer below it cannot tint
+              a white card on its own — `color` keeps the backdrop's luminance,
+              and white is already at maximum, so in the light theme the hue
+              had nowhere to land and the panel stayed pure white. Eight per
+              cent moves the surface just off white so the hue has something to
+              colour. The figure is set by the darkest cover: Denovo ends at
+              #24282b, and at twelve per cent that dragged the light card's
+              body copy to 4.39:1, under the 4.5 minimum. Eight clears it on
+              every cover in both themes.
+            */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{ backgroundColor: edge.color, opacity: 0.08 }}
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{ backgroundColor: edge.color, mixBlendMode: "color", opacity: 0.9 }}
+            />
+          </>
+        )}
+        {/* Above the blend layer, so the copy keeps the card's own ink. */}
+        <div className="relative z-10 flex flex-1 flex-col px-4 pb-4 pt-4">
         <div className="mb-1.5 flex items-center justify-between gap-2">
           <span className="truncate text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {lab.subject}
@@ -257,6 +290,7 @@ export default function LearnerLabCard({
               </>
             )}
           </div>
+        </div>
         </div>
       </div>
     </div>
