@@ -1,5 +1,5 @@
 import type { Lab, LabProgress } from "@prisma/client";
-import { getLabGuide, totalMinutes } from "@/content/labs";
+import { getLabGuide, totalMinutes, type LabShowcase } from "@/content/labs";
 import { parseList } from "@/lib/access";
 
 /**
@@ -16,6 +16,19 @@ import { parseList } from "@/lib/access";
  */
 
 export type LearnerLabStatus = "not-started" | "in-progress" | "completed";
+
+/**
+ * What a showcase card needs from the guide's `showcase` — the copy, the
+ * palette and the split wordmark — and nothing else, since it is serialised
+ * into the client catalogue for every learner.
+ */
+export type CardShowcase = {
+  badge: string;
+  description: string;
+  palette: LabShowcase["palette"];
+  /** Null when the wordmark no longer spells `Lab.name`; the card then shows the plain name. */
+  title: LabShowcase["title"] | null;
+};
 
 export type LearnerLab = {
   slug: string;
@@ -43,6 +56,8 @@ export type LearnerLab = {
   minutesLeft: number;
   /** ISO string, or null if this learner has never opened the tutorial. */
   lastActiveAt: string | null;
+  /** Set for a lab with a showcase design; its card is drawn to match. */
+  showcase: CardShowcase | null;
 };
 
 /**
@@ -186,6 +201,19 @@ export function buildLearnerLab(lab: Lab, progress: LabProgress | undefined): Le
     minutesTotal,
     minutesLeft,
     lastActiveAt: progress?.lastActiveAt?.toISOString() ?? null,
+    showcase: cardShowcase(guide?.showcase, lab.name),
+  };
+}
+
+/** The card's slice of a guide's showcase, or null for a lab without one. */
+export function cardShowcase(showcase: LabShowcase | undefined, name: string): CardShowcase | null {
+  if (!showcase) return null;
+  const wordmark = showcase.title.map((s) => s.text).join("");
+  return {
+    badge: showcase.card.badge,
+    description: showcase.card.description,
+    palette: showcase.palette,
+    title: wordmark === name ? showcase.title : null,
   };
 }
 

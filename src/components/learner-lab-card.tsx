@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { CoverEdge, ImageCredit } from "@/lib/learnerLabs";
+import type { CardShowcase, CoverEdge, ImageCredit } from "@/lib/learnerLabs";
 import { ArrowRight, CheckCircle2, Clock, Lock } from "lucide-react";
+import ShowcaseLabCard from "./showcase-lab-card";
 
 /**
  * One lab, as a learner sees it, on both the dashboard and My Labs.
@@ -36,6 +37,10 @@ export type LearnerCardLab = {
   percent: number;
   nextStep: string | null;
   minutesLeft: number;
+  /** Authored time for the whole tutorial. Only the showcase card shows it. */
+  minutesTotal?: number;
+  /** A lab with a showcase design gets its own card (`showcase-lab-card.tsx`). */
+  showcase?: CardShowcase | null;
 };
 
 function formatLeft(mins: number): string | null {
@@ -54,7 +59,7 @@ function formatLeft(mins: number): string | null {
 function StatusChip({ status }: { status: LearnerCardLab["status"] }) {
   if (status === "completed") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-[color:var(--color-success)]">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-[color:var(--color-success-ink)]">
         <CheckCircle2 className="h-3.5 w-3.5" /> Completed
       </span>
     );
@@ -107,6 +112,8 @@ export default function LearnerLabCard({
    */
   meta?: string | null;
 }) {
+  if (lab.showcase) return <ShowcaseLabCard lab={lab} showcase={lab.showcase} locked={locked} />;
+
   const href = `/dashboard/labs/${lab.slug}`;
   const edge = lab.imageEdge ?? null;
   // The credit sits on the photograph, so it follows the photograph's edge

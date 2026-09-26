@@ -25,6 +25,44 @@
   --input: oklch(0.92 0.006 264);
   --ring: oklch(0.55 0.22 274);
 
+  /*
+    Semantic colours again, at a lightness that survives being used as text.
+
+    `--success`, `--warning` and `--destructive` are tuned to be legible as
+    fills and borders, and every one of them fails as small type on a light
+    surface: measured against the palest panel these pages produce (#edeeee,
+    a white card under the 8% cover wash) the warning amber reads 1.78:1, the
+    success green 2.62:1 and the destructive red 3.85:1, against the 4.5
+    minimum. They are used as text in the difficulty chips, the status chips
+    on every catalogue card, and the tutorial's completion line.
+
+    The `-ink` variants keep each hue and chroma and only drop the lightness
+    until the worst surface clears 4.5. Use `-ink` for anything a reader has
+    to read; keep the originals for fills, borders, icons and chart series.
+  */
+  /* The accent is in the family too: `text-primary` over a `bg-primary/10`
+     fill — the step-number badge and the rail's current section — measured
+     3.94:1 on a tinted panel. */
+  --primary-ink: oklch(0.49 0.22 274);
+  --success-ink: oklch(0.49 0.16 155);
+  --warning-ink: oklch(0.53 0.16 75);
+  --destructive-ink: oklch(0.54 0.23 27);
+  /* No `--info`: "upcoming" and "coming soon" were raw `sky-400`, a fixed
+     palette class that never flips with the theme and sat at 1.86:1. */
+  --info-ink: oklch(0.5 0.16 232);
+
+  /*
+    A filled success swatch and the ink that goes on it.
+
+    The completed-step tick was `bg-[--color-success] text-white`, which is
+    3.01:1 in light and 2.32:1 in dark — the dark green is the *lighter* of
+    the two, so white fails hardest exactly where it looks safest, and the
+    control carries the step number, so it is text. A fill needs its own pair
+    rather than reusing a text colour: 5.57:1 here, 8.38:1 in dark.
+  */
+  --success-solid: oklch(0.49 0.16 155);
+  --success-solid-fg: oklch(0.99 0 0);
+
   /* Brand gradient stops */
   --brand-1: oklch(0.55 0.22 274); /* violet */
   --brand-2: oklch(0.62 0.19 232); /* blue */
@@ -71,6 +109,22 @@
   --input: oklch(0.3 0.018 266);
   --ring: oklch(0.66 0.2 278);
 
+  /* Dark needs almost no correction: on the lightest panel this theme
+     produces, success measures 6.67:1 and warning 8.11:1 as they stand. Only
+     the red was short, at 4.46:1. */
+  /* Not simply `var(--primary)` here: the step-number badge is
+     `bg-primary/10` over the dark card, and the accent on that measured
+     4.39:1. A little lighter clears it at 5.00 and reads better on the card
+     too (6.16 against 5.40). */
+  --primary-ink: oklch(0.7 0.2 278);
+  --success-ink: var(--success);
+  --warning-ink: var(--warning);
+  --destructive-ink: oklch(0.68 0.22 25);
+  --info-ink: oklch(0.7 0.17 232);
+  /* Dark keeps the brighter green and puts dark ink on it instead. */
+  --success-solid: oklch(0.72 0.16 158);
+  --success-solid-fg: oklch(0.16 0.014 266);
+
   --brand-1: oklch(0.68 0.2 278);
   --brand-2: oklch(0.68 0.18 232);
   --brand-3: oklch(0.75 0.16 198);
@@ -111,6 +165,13 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-primary-ink: var(--primary-ink);
+  --color-success-ink: var(--success-ink);
+  --color-warning-ink: var(--warning-ink);
+  --color-destructive-ink: var(--destructive-ink);
+  --color-info-ink: var(--info-ink);
+  --color-success-solid: var(--success-solid);
+  --color-success-solid-fg: var(--success-solid-fg);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -434,5 +495,1138 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================
+   Lab detail page surfaces
+   ========================================================= */
+@layer components {
+  /*
+    One surface for every panel on a lab page.
+
+    These were six separate copies of `glass rounded-2xl`, which is a
+    translucent card over a blur. Two problems with that here. The review
+    asked for a plainer, human-designed look and named glassmorphism
+    specifically; and a translucent surface makes the cover tint below
+    unpredictable, because the blend then has the page background showing
+    through the panel as part of its backdrop rather than the panel itself.
+
+    Opaque card, hairline border, one-pixel shadow — the same vocabulary the
+    catalogue cards were rebuilt in, so a lab looks like the card it was
+    opened from.
+  */
+  /*
+    The focus indicator.
+
+    Controls here were written as `focus-visible:outline-none
+    focus-visible:ring-2 focus-visible:ring-ring`, which on a `bg-primary` or
+    `btn-brand` button is invisible: `--ring` and `--primary` are the same
+    oklch value in both themes, so the ring measured 1.00:1 against the
+    button it was drawn on, and `outline-none` had already removed the
+    fallback. A keyboard user tabbing to the only action on a locked lab page
+    saw nothing.
+
+    An outline rather than a box-shadow ring, because an outline is not
+    clipped by an ancestor's `overflow-hidden` — which the hero, the demo
+    panel and every card set — and it survives forced-colors mode.
+  */
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  .panel {
+    position: relative;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: 0 1px 2px 0 color-mix(in oklch, var(--foreground) 6%, transparent);
+  }
+
+  /*
+    The cover photograph's hue, carried across every panel.
+
+    `--lab-tint` is set once, on the page root, from the colour the lab's own
+    cover photograph ends in. It inherits, so no panel takes a prop; a lab
+    with no photograph never sets it and the fallback here is `transparent`,
+    which makes both layers a no-op. The panel's content must sit in a
+    `relative z-10` wrapper so these are painted under it and the blend never
+    reaches the text.
+
+    Both layers are needed, for the same reason as on the catalogue card:
+    `color` keeps the backdrop's luminance — which is what every contrast
+    ratio on the page rests on — but for that same reason it cannot tint a
+    white surface, because white is already at maximum lightness and the hue
+    has nowhere to land. The flat 8% wash moves the surface just off its base
+    tone so the blend has something to colour. 8% rather than 12%: the darkest
+    cover in the set (Denovo, #24282b) took light-theme body copy to 4.39:1 at
+    twelve, under the 4.5 minimum.
+  */
+  /*
+    The two bars that are not panels — the sticky section strip and the fixed
+    mobile action bar — need the same tint, so the layers live on their own
+    class and `.panel` simply shares the rule. Both bars also had to become
+    opaque first: they were `bg-background/85` over a blurred backdrop, and a
+    blend needs a surface to colour.
+
+    Each bar carries a z-index on a positioned element, so it is its own
+    stacking context and the blend cannot reach the panels scrolling beneath.
+  */
+  .lab-tinted {
+    position: relative;
+  }
+  .panel::before,
+  .panel::after,
+  .lab-tinted::before,
+  .lab-tinted::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--lab-tint, transparent);
+    pointer-events: none;
+  }
+  .panel::before,
+  .lab-tinted::before {
+    opacity: 0.08;
+  }
+  .panel::after,
+  .lab-tinted::after {
+    mix-blend-mode: color;
+    opacity: 0.9;
+  }
+}
+
+/*
+  Showcase labs (`ShowcaseHero.tsx`) — the MicrobeAI design.
+
+  Deliberately unlayered. The page's shared components (panel headings, the
+  section rail) carry Tailwind utilities, and anything in `@layer components`
+  loses to `@layer utilities` whatever its specificity; unlayered rules win,
+  which is what lets a showcase restyle them without touching the markup of
+  every other lab.
+
+  The palette arrives as inline custom properties on the page root, sampled
+  from the lab's cover photograph. `.showcase-scope` turns each pair into one
+  `-fg` colour per theme — the photograph's own tone on a dark surface, its
+  darkened `ink` partner on a light one — and re-points the hub's `--primary`
+  at it, so every primary-coloured control on the page speaks the palette.
+  The tokens are `@theme inline`, so the override reaches the utilities.
+*/
+.showcase-scope {
+  font-family: var(--font-sc-body), ui-sans-serif, system-ui, sans-serif;
+  /* Re-resolved here: `body` computed its colour from the hub's token, and
+     children inherit that value, not the variable. */
+  color: var(--foreground);
+  --sc-primary-fg: var(--sc-primary-ink);
+  --sc-secondary-fg: var(--sc-secondary-ink);
+  --sc-action-fg: var(--sc-action-ink);
+  --sc-quiet-fg: var(--sc-quiet-ink);
+  --primary: var(--sc-primary-ink);
+  --primary-ink: var(--sc-primary-ink);
+  --primary-foreground: #ffffff;
+  --ring: var(--sc-primary-ink);
+  /* Surfaces inside panels: hairline and wash. */
+  --sc-line: var(--border);
+  --sc-wash: color-mix(in oklch, var(--foreground) 2.5%, transparent);
+  --sc-about-fg: var(--muted-foreground);
+  --sc-quiet-text: var(--muted-foreground);
+}
+.dark .showcase-scope {
+  --sc-primary-fg: var(--sc-primary);
+  --sc-secondary-fg: var(--sc-secondary);
+  --sc-action-fg: var(--sc-action);
+  --sc-quiet-fg: var(--sc-quiet);
+  --primary: var(--sc-primary);
+  --primary-ink: var(--sc-primary);
+  --primary-foreground: #0b1416;
+  --ring: var(--sc-primary);
+  /* The design's warm white and green-grey, in place of the hub's blue-grey. */
+  --foreground: #f5f1e9;
+  --muted-foreground: #9ca8a2;
+  --border: rgb(255 255 255 / 0.08);
+  --sc-line: rgb(255 255 255 / 0.06);
+  --sc-wash: rgb(255 255 255 / 0.022);
+  --sc-about-fg: #aeb9b3;
+  --sc-quiet-text: #83918a;
+}
+/*
+  The design's ground, behind the whole page — shell included — while a
+  showcase is on it. Neutrals only; the accent comes from the lab's palette,
+  emitted by `showcaseChromeCss`.
+*/
+.dark body:has(.showcase-scope) {
+  --background: #0a0f0e;
+  --foreground: #f5f1e9;
+  --muted-foreground: #9ca8a2;
+  --border: rgb(255 255 255 / 0.08);
+  --accent: rgb(255 255 255 / 0.04);
+  --accent-foreground: #e7ece9;
+  --sidebar: #0b1012;
+  --sidebar-foreground: #f5f1e9;
+  --sidebar-border: rgb(255 255 255 / 0.08);
+  color: var(--foreground);
+  background:
+    radial-gradient(circle at 84% 10%, rgb(143 184 199 / 0.06), transparent 28%),
+    radial-gradient(circle at 18% 0%, rgb(215 153 169 / 0.05), transparent 24%),
+    #0a0f0e;
+}
+
+/* ---------- Panels ---------- */
+
+.showcase-scope .panel {
+  border-radius: 22px;
+  box-shadow: 0 18px 50px -28px rgb(15 23 20 / 0.28);
+}
+.dark .showcase-scope .panel {
+  background: linear-gradient(145deg, rgb(22 29 27 / 0.96), rgb(13 19 17 / 0.96));
+  border-color: rgb(255 255 255 / 0.07);
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.2);
+}
+.panel-heading-icon {
+  display: inline-flex;
+}
+.showcase-scope .panel-heading {
+  gap: 12px;
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.showcase-scope .panel-heading-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--sc-primary-fg) 14%, transparent);
+  background: color-mix(in srgb, var(--sc-primary-fg) 7%, transparent);
+}
+.showcase-scope .panel-heading-icon svg {
+  width: 18px;
+  height: 18px;
+  color: var(--sc-primary-fg);
+}
+
+/* ---------- Hero ---------- */
+
+/* A photograph under a scrim in both themes, so the colours in here are
+   fixed and measured against the scrim rather than taken from tokens. */
+.showcase-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 470px;
+  border-radius: 28px;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: #101715;
+  color: #f5f1e9;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 0.32);
+}
+:root:not(.dark) .showcase-hero {
+  box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.45);
+}
+.showcase-hero .sc-photo {
+  transform: scale(1.015);
+}
+/*
+  The design's scrim: dark on the left where the copy sits, opening to the
+  right where the photograph shows. Below `xl` the copy spans the full width,
+  so the scrim goes even — a left-to-right fade there would leave the end of
+  every line over bright cells.
+*/
+.showcase-hero .sc-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, rgb(8 13 12 / 0.55), transparent 40%),
+    linear-gradient(180deg, rgb(8 13 12 / 0.84), rgb(8 13 12 / 0.93));
+}
+@media (min-width: 80rem) {
+  .showcase-hero .sc-scrim {
+    background:
+      linear-gradient(90deg, rgb(8 13 12 / 0.96) 0%, rgb(8 13 12 / 0.89) 45%, rgb(8 13 12 / 0.52) 72%, rgb(8 13 12 / 0.22) 100%),
+      linear-gradient(0deg, rgb(8 13 12 / 0.74), transparent 42%);
+  }
+}
+.showcase-hero .sc-rings {
+  position: absolute;
+  right: -80px;
+  bottom: -140px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  border: 1px dashed color-mix(in srgb, var(--sc-primary) 14%, transparent);
+  box-shadow:
+    0 0 0 60px color-mix(in srgb, var(--sc-primary) 2.5%, transparent),
+    0 0 0 120px color-mix(in srgb, var(--sc-action) 1.8%, transparent);
+  pointer-events: none;
+}
+.sc-hero-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 34px;
+  align-items: center;
+  padding: 26px 22px;
+}
+@media (min-width: 40rem) {
+  .sc-hero-inner {
+    padding: 34px 38px;
+  }
+}
+@media (min-width: 80rem) {
+  .sc-hero-inner {
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.72fr);
+    gap: 46px;
+    min-height: 470px;
+  }
+}
+
+.sc-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+.sc-badge {
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.sc-badge-subject {
+  color: var(--sc-primary);
+  border-color: color-mix(in srgb, var(--sc-primary) 20%, transparent);
+  background: color-mix(in srgb, var(--sc-primary) 7%, transparent);
+}
+.sc-badge-level {
+  color: #e6c9bc;
+  border-color: rgb(197 163 141 / 0.19);
+  background: rgb(197 163 141 / 0.06);
+}
+.sc-badge-lock {
+  color: #bbb3b0;
+  border-color: rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.025);
+}
+.sc-badge-open {
+  color: var(--sc-quiet);
+  border-color: color-mix(in srgb, var(--sc-quiet) 22%, transparent);
+  background: color-mix(in srgb, var(--sc-quiet) 7%, transparent);
+}
+
+.sc-overline {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 9px;
+  color: var(--sc-action);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.sc-overline::before {
+  content: "";
+  width: 26px;
+  height: 1px;
+  background: currentColor;
+}
+
+.sc-title {
+  margin: 0;
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(52px, 5.6vw, 78px);
+  font-weight: 700;
+  line-height: 0.93;
+  letter-spacing: -0.065em;
+}
+.sc-title-primary {
+  color: var(--sc-primary);
+}
+.sc-title-secondary {
+  color: var(--sc-secondary);
+}
+
+.sc-copy {
+  margin: 18px 0 0;
+  max-width: 670px;
+  color: #d4dbd7;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.sc-copy strong {
+  color: var(--sc-action);
+  font-weight: 600;
+}
+@media (min-width: 40rem) {
+  .sc-copy {
+    font-size: 17px;
+  }
+}
+
+.sc-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+  margin-top: 23px;
+}
+.sc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 0 17px;
+  border-radius: 13px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 700;
+  transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
+}
+.sc-btn-primary {
+  color: var(--sc-action-text);
+  background: linear-gradient(90deg, var(--sc-action), color-mix(in srgb, var(--sc-action) 82%, white));
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--sc-action) 16%, transparent);
+}
+.sc-btn-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+}
+.sc-btn-ghost {
+  color: #f5f1e9;
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.035);
+  backdrop-filter: blur(8px);
+}
+.sc-btn-ghost:hover {
+  background: rgb(255 255 255 / 0.06);
+}
+
+/* Value over label, divided by hairlines; on a phone, one per row. */
+.sc-stats {
+  display: grid;
+  gap: 12px;
+  max-width: 700px;
+  margin: 25px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+}
+.sc-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  padding: 0 0 11px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+}
+.sc-stat dd {
+  margin: 0;
+  color: #f5f1e9;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.sc-stat dt {
+  margin-top: 4px;
+  color: #9da9a3;
+  font-size: 11px;
+}
+@media (min-width: 40rem) {
+  .sc-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+  .sc-stat {
+    min-width: 0;
+    padding: 0 18px;
+    border-bottom: 0;
+  }
+  .sc-stat:first-child {
+    padding-left: 0;
+  }
+  .sc-stat:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 3px;
+    width: 1px;
+    height: 44px;
+    background: rgb(255 255 255 / 0.08);
+  }
+}
+
+.sc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 17px;
+}
+.sc-tag {
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.07);
+  background: rgb(255 255 255 / 0.02);
+  color: #a5b0aa;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.sc-video-wrap {
+  position: relative;
+  max-width: 650px;
+}
+@media (min-width: 80rem) {
+  .sc-video-wrap {
+    max-width: none;
+  }
+}
+.sc-video {
+  position: relative;
+  display: block;
+  min-height: 300px;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgb(231 183 194 / 0.2);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.34);
+}
+/* The same card laid over the demo player until it starts. */
+.sc-video-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  border-radius: 0.75rem;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.sc-video::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgb(6 10 9 / 0.04), rgb(6 10 9 / 0.12) 50%, rgb(6 10 9 / 0.9));
+}
+.sc-video::after {
+  content: "";
+  position: absolute;
+  inset: 15px;
+  z-index: 2;
+  border: 1px solid rgb(255 255 255 / 0.11);
+  border-radius: 16px;
+  pointer-events: none;
+}
+.sc-play {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 49%;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--sc-action) 55%, transparent);
+  background: color-mix(in srgb, var(--sc-action) 92%, transparent);
+  color: var(--sc-action-text);
+  box-shadow:
+    0 0 0 9px color-mix(in srgb, var(--sc-action) 6%, transparent),
+    0 0 34px color-mix(in srgb, var(--sc-action) 22%, transparent);
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s ease;
+}
+.sc-video:hover .sc-play {
+  transform: translate(-50%, -50%) scale(1.07);
+}
+.sc-video-foot {
+  position: absolute;
+  z-index: 3;
+  left: 22px;
+  right: 22px;
+  bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sc-video-foot small {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--sc-action);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.sc-video-foot strong {
+  display: block;
+  max-width: 230px;
+  color: #f5f1e9;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.sc-duration {
+  flex-shrink: 0;
+  padding: 7px 9px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(0 0 0 / 0.34);
+  color: #f5f1e9;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+/* The photograph's source line. In flow on a narrow hero; tucked into the
+   bottom padding once the hero is two columns and has room below the card. */
+.sc-credit {
+  position: relative;
+  z-index: 2;
+  margin: -12px 0 0;
+  padding: 0 22px 14px;
+  color: rgb(255 255 255 / 0.5);
+  font-size: 10px;
+  line-height: 1.3;
+}
+@media (min-width: 80rem) {
+  .sc-credit {
+    position: absolute;
+    right: 38px;
+    bottom: 12px;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* ---------- About ---------- */
+
+.sc-about p {
+  max-width: 900px;
+  margin: 0 0 8px;
+  color: var(--sc-about-fg);
+  font-size: 14px;
+  line-height: 1.72;
+}
+.sc-feature-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+@container (min-width: 28rem) {
+  .sc-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container (min-width: 48rem) {
+  .sc-feature-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.sc-feature {
+  --tone: var(--sc-primary-fg);
+  position: relative;
+  overflow: hidden;
+  min-height: 145px;
+  padding: 16px;
+  border-radius: 17px;
+  border: 1px solid var(--sc-line);
+  background: var(--sc-wash);
+  transition: transform 0.22s ease, border-color 0.22s ease;
+}
+.sc-feature:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--sc-primary-fg) 18%, transparent);
+}
+.sc-feature::after {
+  content: "";
+  position: absolute;
+  right: -32px;
+  top: -38px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  opacity: 0.48;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tone) 28%, transparent), transparent 68%);
+  pointer-events: none;
+}
+.sc-tone-secondary {
+  --tone: var(--sc-secondary-fg);
+}
+.sc-tone-action {
+  --tone: var(--sc-action-fg);
+}
+.sc-tone-quiet {
+  --tone: var(--sc-quiet-fg);
+}
+.sc-feature-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 17px;
+  border-radius: 11px;
+  border: 1px solid var(--sc-line);
+  background: var(--sc-wash);
+  color: var(--tone);
+}
+.sc-feature-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.sc-feature h3 {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.sc-feature p {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  color: var(--sc-quiet-text);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+/* ---------- Rail ---------- */
+
+.sc-toc-label {
+  margin: 3px 8px 10px;
+  color: var(--sc-quiet-text);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.sc-toc ul {
+  display: grid;
+  gap: 3px;
+}
+.sc-toc-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+.sc-toc-link svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+.sc-toc-link:hover {
+  color: var(--foreground);
+  background: var(--sc-wash);
+}
+.sc-toc-link[aria-current] {
+  color: var(--sc-primary-fg);
+  border-color: color-mix(in srgb, var(--sc-primary-fg) 12%, transparent);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--sc-primary-fg) 11%, transparent),
+    color-mix(in srgb, var(--sc-primary-fg) 2.5%, transparent)
+  );
+}
+.sc-toc-link[aria-current] svg {
+  opacity: 1;
+}
+
+.sc-progress-card {
+  margin-top: 15px;
+  padding: 14px;
+  border-radius: 15px;
+  border: 1px solid var(--sc-line);
+  background: var(--sc-wash);
+}
+.sc-progress-card small {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--sc-secondary-fg);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.sc-progress-card strong {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.sc-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  color: var(--sc-quiet-text);
+  font-size: 9px;
+}
+.sc-progress-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--foreground) 7%, transparent);
+}
+.sc-progress-track-dark {
+  background: rgb(255 255 255 / 0.1);
+}
+.sc-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--sc-primary-fg), var(--sc-action-fg));
+}
+.showcase-hero .sc-progress-fill {
+  background: linear-gradient(90deg, var(--sc-primary), var(--sc-action));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-btn,
+  .sc-feature,
+  .sc-play {
+    transition: none;
+  }
+  .sc-btn-primary:hover,
+  .sc-feature:hover {
+    transform: none;
+  }
+  .sc-video:hover .sc-play {
+    transform: translate(-50%, -50%);
+  }
+}
+
+/*
+  Showcase catalogue card (`showcase-lab-card.tsx`) — the MicrobeAI card
+  design. Unlayered, like the page block above, and scoped to `.sc-card`
+  rather than `.showcase-scope`: that class re-themes the whole page and its
+  shell, which a single card in a catalogue must not do.
+
+  Same palette resolution as the page: the photograph's own colours in the
+  dark theme, their `ink` partners in the light one. The photograph is dark
+  in both; the body follows the theme.
+*/
+.sc-card {
+  --sc-primary-fg: var(--sc-primary-ink);
+  --sc-secondary-fg: var(--sc-secondary-ink);
+  --sc-action-fg: var(--sc-action-ink);
+  --sc-quiet-fg: var(--sc-quiet-ink);
+  --sc-line: var(--border);
+  --sc-wash: color-mix(in oklch, var(--foreground) 2.5%, transparent);
+  --sc-text: var(--foreground);
+  --sc-copy: var(--muted-foreground);
+  --sc-quiet-text: var(--muted-foreground);
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  border-radius: 26px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--sc-text);
+  font-family: var(--font-sc-body), ui-sans-serif, system-ui, sans-serif;
+  box-shadow: 0 18px 44px -28px rgb(15 23 20 / 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.dark .sc-card {
+  --sc-primary-fg: var(--sc-primary);
+  --sc-secondary-fg: var(--sc-secondary);
+  --sc-action-fg: var(--sc-action);
+  --sc-quiet-fg: var(--sc-quiet);
+  --sc-line: rgb(255 255 255 / 0.055);
+  --sc-wash: rgb(255 255 255 / 0.025);
+  --sc-text: #f7f3eb;
+  --sc-copy: #aab5b0;
+  --sc-quiet-text: #87958e;
+  border-color: rgb(255 255 255 / 0.08);
+  background: linear-gradient(145deg, rgb(24 31 29 / 0.98), rgb(14 20 18 / 0.98));
+  box-shadow: 0 26px 70px rgb(0 0 0 / 0.38);
+}
+.sc-card:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--sc-primary-fg) 28%, transparent);
+  box-shadow: 0 30px 70px -30px rgb(15 23 20 / 0.45);
+}
+.dark .sc-card:hover {
+  border-color: color-mix(in srgb, var(--sc-primary) 22%, transparent);
+  box-shadow: 0 34px 90px rgb(0 0 0 / 0.46);
+}
+
+/* ---- Photograph ---- */
+
+.sc-card-photo {
+  position: relative;
+  height: 230px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #101715;
+}
+.sc-card-photo img {
+  transition: transform 0.5s ease;
+}
+.sc-card:hover .sc-card-photo img {
+  transform: scale(1.035);
+}
+.sc-card-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0.03) 0%, rgb(0 0 0 / 0.08) 56%, rgb(10 15 14 / 0.82) 100%);
+}
+.sc-card-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sc-primary) 92%, transparent);
+  color: #071016;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--sc-primary) 22%, transparent);
+}
+.sc-card-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sc-primary) 25%, #071016);
+}
+.sc-card-category-row {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 42px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.sc-card-category {
+  color: #d6dde0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  /* Lettering straight on a busy micrograph: a soft shadow keeps it off the
+     bright cells without a box the design does not have. */
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.75);
+}
+.sc-card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(8 14 13 / 0.64);
+  color: #c5cfca;
+  font-size: 10px;
+  line-height: 1.2;
+  backdrop-filter: blur(8px);
+}
+.sc-card-citation {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  overflow: hidden;
+  padding: 9px 14px;
+  border-top: 1px solid rgb(255 255 255 / 0.05);
+  background: rgb(69 53 60 / 0.78);
+  color: #ebe7e4;
+  font-size: 9px;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(6px);
+}
+
+/* ---- Body ---- */
+
+.sc-card-body {
+  padding: 20px 18px 18px;
+}
+.sc-card-title {
+  margin: 0;
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+/* The title's link covers the whole card, so the photograph and the empty
+   space are a way in; the actions sit above it. */
+.sc-card-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.sc-card-title-primary {
+  color: var(--sc-primary-fg);
+}
+.sc-card-title-secondary {
+  color: var(--sc-secondary-fg);
+}
+.sc-card-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--sc-action-fg) 13%, transparent);
+  background: color-mix(in srgb, var(--sc-action-fg) 8%, transparent);
+  color: var(--sc-action-fg);
+}
+.sc-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.sc-card-description {
+  display: -webkit-box;
+  margin: 10px 0 0;
+  overflow: hidden;
+  color: var(--sc-copy);
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+/* Three figures; two and one on a card too narrow for "Intermediate". */
+.sc-card-figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+  gap: 9px;
+  margin: 18px 0 0;
+}
+.sc-card-figures > div {
+  min-height: 60px;
+  padding: 10px 11px;
+  border-radius: 13px;
+  border: 1px solid var(--sc-line);
+  background: var(--sc-wash);
+}
+.sc-card-figures dt {
+  margin-bottom: 5px;
+  color: var(--sc-quiet-text);
+  font-size: 9px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.sc-card-figures dd {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.sc-card-figures > div:nth-child(1) dd {
+  color: var(--sc-primary-fg);
+}
+.sc-card-figures > div:nth-child(2) dd {
+  color: var(--sc-action-fg);
+}
+.sc-card-figures > div:nth-child(3) dd {
+  color: var(--sc-quiet-fg);
+}
+
+/* ---- Actions ---- */
+
+/* Padding, not margin: the markup pins this with `mt-auto`, and an unlayered
+   margin here would override it and unpin the row. */
+.sc-card-actions {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding-top: 16px;
+}
+.sc-card-actions > :only-child {
+  grid-column: 1 / -1;
+}
+.sc-card-primary,
+.sc-card-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 46px;
+  border-radius: 13px;
+  font-size: 13px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.sc-card-primary {
+  padding: 0 18px;
+  color: #ffffff;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--sc-primary-ink), color-mix(in srgb, var(--sc-primary-ink) 88%, white));
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--sc-primary-ink) 18%, transparent);
+}
+.dark .sc-card-primary {
+  color: #101717;
+  background: linear-gradient(90deg, var(--sc-primary), color-mix(in srgb, var(--sc-primary) 82%, white));
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--sc-primary) 14%, transparent);
+}
+.sc-card-primary:hover {
+  transform: translateY(-2px);
+}
+.sc-card-secondary {
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  background: var(--sc-wash);
+  color: var(--sc-text);
+  font-weight: 600;
+}
+.dark .sc-card-secondary {
+  border-color: rgb(255 255 255 / 0.1);
+  color: #dce3df;
+}
+.sc-card-secondary:hover {
+  background: color-mix(in oklch, var(--foreground) 6%, transparent);
+}
+
+@container (max-width: 20rem) {
+  .sc-card-actions {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 32.5rem) {
+  .sc-card {
+    border-radius: 22px;
+  }
+  .sc-card-photo {
+    height: 205px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-card,
+  .sc-card-photo img,
+  .sc-card-primary {
+    transition: none;
+  }
+  .sc-card:hover,
+  .sc-card-primary:hover {
+    transform: none;
+  }
+  .sc-card:hover .sc-card-photo img {
+    transform: none;
   }
 }

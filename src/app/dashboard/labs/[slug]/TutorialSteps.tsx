@@ -170,15 +170,21 @@ export default function TutorialSteps({
   return (
     <section
       id="tutorial"
-      className="scroll-mt-24 glass rounded-2xl p-5 sm:p-6"
+      className="panel scroll-mt-[8.5rem] xl:scroll-mt-24"
       aria-labelledby="tutorial-heading"
     >
+      {/* Above the panel's tint layers, so the blend colours the surface
+          and never the text. */}
+      <div className="relative z-10 p-5 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <h2
           id="tutorial-heading"
-          className="text-base sm:text-lg font-semibold flex items-center gap-2"
+          className="panel-heading flex items-center gap-2 text-lg font-semibold tracking-tight"
         >
-          <ListChecks className="w-5 h-5 text-primary shrink-0" /> Step-by-step tutorial
+          <span aria-hidden className="panel-heading-icon">
+            <ListChecks className="h-[1.125rem] w-[1.125rem] shrink-0 text-primary" />
+          </span>{" "}
+          Step-by-step tutorial
         </h2>
         <span className="text-xs text-muted-foreground">
           {guide.steps.length} steps
@@ -194,11 +200,11 @@ export default function TutorialSteps({
       {/* Progress. Renders empty on the server and fills in on the first client
           render — one frame, and hydration stays consistent. */}
       {!locked && (
-        <div className="mt-4 rounded-xl border border-border bg-background/40 p-3.5">
+        <div className="mt-4">
           <div className="flex items-center justify-between gap-3 text-sm">
             <span className="font-medium">
               {completed === guide.steps.length && guide.steps.length > 0 ? (
-                <span className="text-[color:var(--color-success)]">Tutorial complete</span>
+                <span className="text-[color:var(--color-success-ink)]">Tutorial complete</span>
               ) : (
                 <>
                   {completed} of {guide.steps.length} steps done
@@ -216,7 +222,7 @@ export default function TutorialSteps({
             className="mt-2 h-2 w-full overflow-hidden rounded-full bg-secondary"
           >
             <div
-              className="h-full rounded-full btn-brand transition-[width] duration-500"
+              className="h-full rounded-full bg-primary transition-[width] duration-500"
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -224,7 +230,11 @@ export default function TutorialSteps({
             <button
               type="button"
               onClick={() => persist(new Set())}
-              className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              /* `text-xs` alone gave a 16px hit area — under the 24px
+                 minimum — with no focus ring, for the only irreversible
+                 control on the page. The negative margin keeps its visible
+                 left edge aligned with the text above it. */
+              className="focus-ring -ml-1.5 mt-2 inline-flex h-8 items-center gap-1.5 rounded-md px-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             >
               <RotateCcw className="w-3 h-3" /> Reset progress
             </button>
@@ -238,10 +248,15 @@ export default function TutorialSteps({
           return (
             <li
               key={step.title}
-              className={`relative rounded-xl border p-4 transition-colors sm:p-5 ${
+              /* `rounded-lg` inside the panel's 16px, and a `muted` recess:
+                 `bg-background/40` is 4/255 from the card in the light theme,
+                 so a done card and a not-done card differed by 1.05:1 —
+                 indistinguishable. The done state gets a left rule as well as
+                 a wash, so it does not rest on colour alone. */
+              className={`relative rounded-lg border p-4 transition-colors sm:p-5 ${
                 isDone
-                  ? "border-[color:color-mix(in_oklch,var(--color-success)_35%,transparent)] bg-[color:color-mix(in_oklch,var(--color-success)_7%,transparent)]"
-                  : "border-border bg-background/40"
+                  ? "border-[color:color-mix(in_oklch,var(--color-success)_35%,transparent)] border-l-2 border-l-[color:var(--color-success-solid)] bg-[color:color-mix(in_oklch,var(--color-success)_10%,transparent)]"
+                  : "border-border bg-muted/50"
               }`}
             >
               <div className="flex items-start gap-3 sm:gap-4">
@@ -250,7 +265,7 @@ export default function TutorialSteps({
                 {locked ? (
                   <span
                     aria-hidden
-                    className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-primary/40 bg-primary/10 text-sm font-semibold text-primary"
+                    className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-primary/40 bg-primary/10 text-sm font-semibold text-[color:var(--color-primary-ink)]"
                   >
                     {index + 1}
                   </span>
@@ -264,10 +279,10 @@ export default function TutorialSteps({
                         ? `Mark step ${index + 1} as not done`
                         : `Mark step ${index + 1} as done`
                     }
-                    className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border text-sm font-semibold transition-colors focus-ring ${
                       isDone
-                        ? "border-transparent bg-[color:var(--color-success)] text-white"
-                        : "border-primary/40 bg-primary/10 text-primary hover:border-primary hover:bg-primary/20"
+                        ? "border-transparent bg-[color:var(--color-success-solid)] text-[color:var(--color-success-solid-fg)]"
+                        : "border-primary/40 bg-primary/10 text-[color:var(--color-primary-ink)] hover:border-primary hover:bg-primary/20"
                     }`}
                   >
                     {isDone ? <Check className="h-4 w-4" strokeWidth={3} /> : index + 1}
@@ -276,7 +291,7 @@ export default function TutorialSteps({
 
                 <div className="min-w-0 flex-1">
                   <h3
-                    className={`font-semibold leading-snug ${isDone ? "text-muted-foreground line-through decoration-1" : ""}`}
+                    className={`text-[15px] font-semibold leading-snug ${isDone ? "text-muted-foreground line-through decoration-1" : ""}`}
                   >
                     {step.title}
                   </h3>
@@ -304,11 +319,11 @@ export default function TutorialSteps({
                         ))}
                       </ol>
 
-                      <div className="rounded-lg border border-[color:color-mix(in_oklch,var(--color-success)_30%,transparent)] bg-[color:color-mix(in_oklch,var(--color-success)_8%,transparent)] px-3 py-2.5">
+                      <div className="border-l-2 border-[color:color-mix(in_oklch,var(--color-success)_45%,transparent)] pl-3">
                         <p className="flex gap-2 text-sm">
-                          <Eye className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-success)]" />
+                          <Eye className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-success-ink)]" />
                           <span className="leading-relaxed text-muted-foreground">
-                            <span className="font-semibold text-[color:var(--color-success)]">
+                            <span className="font-semibold text-[color:var(--color-success-ink)]">
                               You should see:{" "}
                             </span>
                             <RichText>{step.expect}</RichText>
@@ -317,11 +332,11 @@ export default function TutorialSteps({
                       </div>
 
                       {step.why && (
-                        <div className="rounded-lg border border-[color:color-mix(in_oklch,var(--color-warning)_28%,transparent)] bg-[color:color-mix(in_oklch,var(--color-warning)_7%,transparent)] px-3 py-2.5">
+                        <div className="border-l-2 border-[color:color-mix(in_oklch,var(--color-warning)_45%,transparent)] pl-3">
                           <p className="flex gap-2 text-sm">
-                            <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-warning)]" />
+                            <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-warning-ink)]" />
                             <span className="leading-relaxed text-muted-foreground">
-                              <span className="font-semibold text-[color:var(--color-warning)]">
+                              <span className="font-semibold text-[color:var(--color-warning-ink)]">
                                 Why:{" "}
                               </span>
                               <RichText>{step.why}</RichText>
@@ -337,6 +352,7 @@ export default function TutorialSteps({
           );
         })}
       </ol>
+    </div>
     </section>
   );
 }

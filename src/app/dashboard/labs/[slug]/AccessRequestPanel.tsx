@@ -58,6 +58,21 @@ export default function AccessRequestPanel({
 
   const pending = state === "pending" || justSent;
 
+  /*
+    Pressing the button swaps this component's entire return, and focus never
+    moves, so a screen-reader user was told nothing at all — not that the
+    request went, not that it failed. The region has to be in the DOM before
+    the change for the change to be announced, so it is rendered in both
+    branches below rather than inserted alongside the new content.
+  */
+  const announcement = loading
+    ? "Sending your request"
+    : pending
+      ? "Request sent. Waiting for an administrator to approve it."
+      : error
+        ? `Request failed: ${error}`
+        : "";
+
   async function submit() {
     setLoading(true);
     setError("");
@@ -81,13 +96,20 @@ export default function AccessRequestPanel({
   if (pending) {
     return (
       <div className={compact ? "flex flex-col items-center gap-2" : "flex flex-col gap-2"}>
+        <p aria-live="polite" className="sr-only">
+          {announcement}
+        </p>
         <div
           className={`flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-sm ${
             compact ? "justify-center" : ""
           }`}
         >
-          <Clock className="h-4 w-4 shrink-0 text-[color:var(--color-warning)]" />
-          <span className="font-medium">Request sent — waiting for approval</span>
+          <Clock className="h-4 w-4 shrink-0 text-[color:var(--color-warning-ink)]" />
+          {/* The fixed mobile bar is 360px wide at its narrowest and shares
+              the row with the price, so it takes the short form. */}
+          <span className="font-medium">
+            {variant === "bar" ? "Request sent" : "Request sent — waiting for approval"}
+          </span>
         </div>
         {variant !== "bar" && (
           <p className={`text-xs text-muted-foreground ${compact ? "text-center" : ""}`}>
@@ -103,10 +125,13 @@ export default function AccessRequestPanel({
 
   return (
     <div className={compact ? "flex flex-col items-center gap-2" : "flex flex-col gap-2"}>
+      <p aria-live="polite" className="sr-only">
+        {announcement}
+      </p>
       {rejected && variant !== "bar" && (
         <div className="rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-left">
           <p className="flex items-center gap-2 text-sm font-medium">
-            <XCircle className="h-4 w-4 shrink-0 text-[color:var(--color-destructive)]" />
+            <XCircle className="h-4 w-4 shrink-0 text-[color:var(--color-destructive-ink)]" />
             Not approved
           </p>
           {note ? (
@@ -130,8 +155,8 @@ export default function AccessRequestPanel({
       <button
         onClick={submit}
         disabled={loading}
-        className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-60 ${
-          compact ? "px-6" : "w-full px-4"
+        className={`focus-ring inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-60 ${
+          compact ? "px-5" : "w-full px-4"
         }`}
       >
         {loading ? (
@@ -146,7 +171,11 @@ export default function AccessRequestPanel({
         </span>
       </button>
 
-      {error && <p className="text-sm text-[color:var(--color-destructive)]">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-[color:var(--color-destructive-ink)]">
+          {error}
+        </p>
+      )}
 
       {variant === "panel" && !rejected && (
         <p className="text-xs text-muted-foreground">

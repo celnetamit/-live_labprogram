@@ -67,6 +67,8 @@ export default async function PublicLabs({
     percent: learner.percent,
     nextStep: learner.nextStep,
     minutesLeft: learner.minutesLeft,
+    minutesTotal: learner.minutesTotal,
+    showcase: learner.showcase,
     subject: lab.subject ?? "General",
     difficulty: lab.difficulty ?? "Beginner",
     points: lab.points,

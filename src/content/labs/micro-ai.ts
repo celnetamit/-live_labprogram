@@ -48,6 +48,76 @@ const guide: LabGuide = {
   },
 
   /*
+   * The design's own copy, kept wherever it is true of the lab, and checked
+   * against it:
+   *  - "how community composition affects system performance" and "translate
+   *    biological composition into a working environmental model": true in
+   *    the narrow sense `engine/adm1Mapping.ts` defines — a detected organism
+   *    selects an ADM1 guild and perturbs the biomass in it, and never
+   *    overwrites a kinetic constant.
+   *  - "Real sequencing data": `engine/realDatasets.ts` ships ENA subsamples
+   *    (SRR2039580 and others). The draft went on to say "rather than
+   *    simplified classroom examples", which is not true — the curated sets
+   *    in `datasets.ts` are synthetic mock communities, and they are the
+   *    point, being the only data whose right answer is known. The body line
+   *    says both.
+   *  - "AI-assisted analysis": the Evidence screen's explanation is written by
+   *    the model from pipeline results; every number comes from the engines.
+   *
+   * The palette is sampled from the cover micrograph (Yong, Nature 2012): the
+   * blue rods, the coral clusters, the pink filament and the olive matrix.
+   * `ink` values are the same hues darkened until they hold at least 4.5:1 on
+   * the light-theme panel.
+   */
+  showcase: {
+    overline: "Living intelligence",
+    title: [{ text: "Microbe" }, { text: "AI", accent: "primary" }, { text: " Lab", accent: "secondary" }],
+    headline: "Decode microbial communities. Model living ecosystems.",
+    intro:
+      "Read the DNA of a whole microbial population, discover who is there, and simulate how that living system behaves inside a digester.",
+    about: [
+      "Fewer than one microbe in a hundred will grow in a laboratory dish, so most organisms living in soil, sludge or the human gut are never seen through traditional culture methods.",
+      "Metagenomics solves this by reading the DNA of an entire microbial community at once. In this lab, you will inspect sequencing data, perform quality control, identify microbial populations and run a digester simulation to understand how community composition affects system performance.",
+    ],
+    tags: ["Metagenomics", "Bioinformatics", "AI-assisted analysis", "Simulation"],
+    walkthroughTitle: "From microbial community to ecosystem model",
+    journey: "MicrobeAI",
+    card: {
+      badge: "Interactive lab",
+      description:
+        "Explore an AI-powered bioinformatics laboratory. Analyze microbial communities, simulate anaerobic bioreactors and connect sequencing data to ecosystem behavior.",
+    },
+    palette: {
+      primary: { onDark: "#8fb8c7", ink: "#2f6477" },
+      secondary: { onDark: "#d96058", ink: "#b0372e" },
+      action: { onDark: "#d799a9", ink: "#9c3f58", text: "#241216" },
+      quiet: { onDark: "#9da68c", ink: "#56603f" },
+    },
+    features: [
+      {
+        icon: "sequence",
+        title: "Real sequencing data",
+        body: "Public ENA sequencing runs, alongside mock communities whose true composition is known.",
+      },
+      {
+        icon: "analysis",
+        title: "Interactive analysis",
+        body: "Inspect patterns, compare signals and interpret community-level results.",
+      },
+      {
+        icon: "simulation",
+        title: "System simulation",
+        body: "Translate biological composition into a working environmental model.",
+      },
+      {
+        icon: "insight",
+        title: "Practical insight",
+        body: "Connect genomics, data science and ecosystem behavior in one workflow.",
+      },
+    ],
+  },
+
+  /*
    * The recorded walkthrough shows the previous version of the lab — the old
    * two-experiment layout, with controls that have since been replaced. Rather
    * than leave a video that contradicts the running application, the section

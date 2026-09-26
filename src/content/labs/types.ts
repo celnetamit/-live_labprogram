@@ -78,10 +78,79 @@ export type LabSummary = {
   outcomes: string[];
 };
 
+/**
+ * An accent drawn from the lab's own cover photograph. `onDark` is used where
+ * the surface is the photograph under its dark scrim, which is the same in
+ * both themes; `ink` is the darker partner for a light-theme panel, where the
+ * photograph's pastel would fail 3:1 as an icon or 4.5:1 as text.
+ */
+export type ShowcaseAccent = { onDark: string; ink: string };
+
+/**
+ * An editorial hero for a lab that has one: the cover photograph full-bleed
+ * behind the copy, a split-colour wordmark, and four "what makes this lab
+ * different" cards under the overview.
+ *
+ * Opt-in per lab. A guide without it keeps the standard hero, so a lab only
+ * gets this treatment once someone has written copy that is true of it — the
+ * feature cards in particular are claims about the lab, and are held to the
+ * same standard as a tutorial step.
+ */
+export type LabShowcase = {
+  /** Small line above the title, e.g. "Living intelligence". */
+  overline: string;
+  /**
+   * The title, in coloured segments. Rendered as one heading; the colours are
+   * decoration and the accessible name is the joined text.
+   */
+  title: { text: string; accent?: "primary" | "secondary" }[];
+  /** One bold line leading the hero copy. */
+  headline: string;
+  /** The sentence under the headline. Replaces the guide's tagline in the hero. */
+  intro: string;
+  /**
+   * The "About this lab" prose, as paragraphs. The guide's longer `why`,
+   * `whoFor` and `outcomes` move to their own "Learning outcomes" panel on a
+   * showcase page, so this is the short version.
+   */
+  about: string[];
+  /** Topic chips under the hero figures, in place of the database skills. */
+  tags: string[];
+  /** Caption on the walkthrough card, e.g. "From microbial community to ecosystem model". */
+  walkthroughTitle: string;
+  /** Used in the progress card: "Ready to begin the {journey} journey." */
+  journey: string;
+  /** The catalogue card's own copy. */
+  card: {
+    /** Pill on the card photograph, e.g. "Interactive lab". */
+    badge: string;
+    /** Replaces the database synopsis on the card. Four lines at most. */
+    description: string;
+  };
+  /** Sampled from the cover photograph so the page and the picture agree. */
+  palette: {
+    /** Title highlight, links, active states. */
+    primary: ShowcaseAccent;
+    /** Second title segment and the progress label. */
+    secondary: ShowcaseAccent;
+    /** The call to action and the overline. */
+    action: ShowcaseAccent & { text: string };
+    /** Fourth feature card. */
+    quiet: ShowcaseAccent;
+  };
+  /** Exactly four, one per accent, in palette order: primary, secondary, action, quiet. */
+  features: {
+    icon: "sequence" | "analysis" | "simulation" | "insight";
+    title: string;
+    body: string;
+  }[];
+};
+
 export type LabGuide = {
   /** Must match `Lab.slug` in the database. */
   slug: string;
   summary: LabSummary;
+  showcase?: LabShowcase;
   video: LabVideo;
   /** What to have ready before starting. Empty array renders nothing. */
   prerequisites: string[];

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, ArrowRight, FlaskConical, CalendarClock, Wrench } from "lucide-react";
 import type { LabPreview } from "@/lib/labPreview";
 import LearnerLabCard from "@/components/learner-lab-card";
-import type { CoverEdge, ImageCredit } from "@/lib/learnerLabs";
+import type { CardShowcase, CoverEdge, ImageCredit } from "@/lib/learnerLabs";
 import CustomLabRequestPanel, { type MyLabRequest } from "./CustomLabRequestPanel";
 
 export type CatalogLab = {
@@ -31,6 +31,10 @@ export type CatalogLab = {
   percent: number;
   nextStep: string | null;
   minutesLeft: number;
+  /** Authored time for the whole tutorial, in minutes. */
+  minutesTotal: number;
+  /** Set for a lab drawn with its showcase design. */
+  showcase: CardShowcase | null;
   /** ACTIVE (open now), UPCOMING (announced) or MAINTENANCE (temporarily down). */
   status: string;
   /** Pre-formatted launch date for upcoming labs; null when none is set. */
@@ -39,10 +43,19 @@ export type CatalogLab = {
   preview?: LabPreview | null;
 };
 
+/*
+  Difficulty chips. Token `-ink` colours, not raw palette classes: a fixed
+  `text-[color:var(--color-warning-ink)]` does not flip with the theme, and on the light catalogue it
+  measured 2.00:1 as 12px text against a 4.5 minimum. The fill and border stay
+  on the untuned tokens, which only have to clear 3:1 as non-text.
+*/
 const difficultyColor: Record<string, string> = {
-  Beginner: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-  Intermediate: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-  Advanced: "text-rose-400 bg-rose-500/10 border-rose-500/20",
+  Beginner:
+    "text-[color:var(--color-success-ink)] bg-[color:color-mix(in_oklch,var(--color-success)_10%,transparent)] border-[color:color-mix(in_oklch,var(--color-success)_25%,transparent)]",
+  Intermediate:
+    "text-[color:var(--color-warning-ink)] bg-[color:color-mix(in_oklch,var(--color-warning)_10%,transparent)] border-[color:color-mix(in_oklch,var(--color-warning)_25%,transparent)]",
+  Advanced:
+    "text-[color:var(--color-destructive-ink)] bg-[color:color-mix(in_oklch,var(--color-destructive)_10%,transparent)] border-[color:color-mix(in_oklch,var(--color-destructive)_25%,transparent)]",
 };
 
 export default function LabCatalogClient({
@@ -226,9 +239,9 @@ export default function LabCatalogClient({
           of its own. "My Labs" keeps the plain count it always had. */}
       {publicMode ? (
         <div className="mb-4 flex items-center gap-2">
-          <FlaskConical className="h-5 w-5 text-emerald-400" />
+          <FlaskConical className="h-5 w-5 text-[color:var(--color-success-ink)]" />
           <h2 className="text-xl font-bold tracking-tight">Active labs</h2>
-          <span className="pill text-emerald-400">{filtered.length}</span>
+          <span className="pill text-[color:var(--color-success-ink)]">{filtered.length}</span>
         </div>
       ) : (
         <p className="text-sm text-muted-foreground mb-4">
@@ -296,9 +309,9 @@ export default function LabCatalogClient({
       {upcoming.length > 0 && (
         <section className="mt-12">
           <div className="mb-4 flex items-center gap-2">
-            <CalendarClock className="h-5 w-5 text-sky-400" />
+            <CalendarClock className="h-5 w-5 text-[color:var(--color-info-ink)]" />
             <h2 className="text-xl font-bold tracking-tight">Upcoming labs</h2>
-            <span className="pill text-sky-400">{upcoming.length}</span>
+            <span className="pill text-[color:var(--color-info-ink)]">{upcoming.length}</span>
           </div>
           <p className="mb-4 text-sm text-muted-foreground">
             In the works — announced here before they open.
@@ -316,7 +329,7 @@ export default function LabCatalogClient({
                       <FlaskConical className="h-3.5 w-3.5" />
                       {lab.subject}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-sky-400">
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-[color:var(--color-info-ink)]">
                       <CalendarClock className="h-3.5 w-3.5" /> Coming soon
                     </span>
                   </div>
@@ -356,9 +369,9 @@ export default function LabCatalogClient({
       {maintenance.length > 0 && (
         <section className="mt-12">
           <div className="mb-4 flex items-center gap-2">
-            <Wrench className="h-5 w-5 text-amber-400" />
+            <Wrench className="h-5 w-5 text-[color:var(--color-warning-ink)]" />
             <h2 className="text-xl font-bold tracking-tight">Under maintenance</h2>
-            <span className="pill text-amber-400">{maintenance.length}</span>
+            <span className="pill text-[color:var(--color-warning-ink)]">{maintenance.length}</span>
           </div>
           <p className="mb-4 text-sm text-muted-foreground">
             Temporarily offline while we work on them — back shortly.
@@ -376,7 +389,7 @@ export default function LabCatalogClient({
                       <FlaskConical className="h-3.5 w-3.5" />
                       {lab.subject}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400">
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-[color:var(--color-warning-ink)]">
                       <Wrench className="h-3.5 w-3.5" /> Maintenance
                     </span>
                   </div>

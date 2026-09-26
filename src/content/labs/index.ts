@@ -47,5 +47,5 @@ export function guideSlugs(): string[] {
   return Object.keys(GUIDES).sort();
 }
 
-export type { LabGuide, LabSummary, LabVideo, TutorialStep, VideoChapter } from "./types";
+export type { LabGuide, LabShowcase, LabSummary, LabVideo, TutorialStep, VideoChapter } from "./types";
 export { totalMinutes } from "./types";
