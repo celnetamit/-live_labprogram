@@ -2339,3 +2339,195 @@
     transform: none;
   }
 }
+
+/*
+  Blog article (`app/blog/[slug]/page.tsx`): an editorial layout — a sticky
+  left column with the breadcrumb and the article's contents, beside one
+  reading column. The band is a soft tint behind the header only.
+*/
+.blog-article {
+  position: relative;
+}
+.blog-band {
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  width: min(100%, 84rem);
+  height: 640px;
+  transform: translateX(-50%);
+  border-radius: 28px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary) 8%, transparent),
+    color-mix(in srgb, var(--primary) 3%, transparent) 60%,
+    transparent
+  );
+  pointer-events: none;
+}
+.dark .blog-band {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary) 11%, transparent),
+    color-mix(in srgb, var(--primary) 4%, transparent) 60%,
+    transparent
+  );
+}
+
+.blog-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted-foreground);
+  font-size: 14px;
+}
+.blog-crumbs a {
+  transition: color 0.15s ease;
+}
+.blog-crumbs a:hover {
+  color: var(--foreground);
+}
+.blog-side-label {
+  margin: 0 0 12px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+/* Its own margin: an unlayered one would override the column's `space-y`. */
+.blog-side-brand {
+  margin: 0 0 32px;
+  color: var(--primary-ink);
+}
+
+/* The contents rail: a hairline with the current section marked on it. */
+.blog-toc ol {
+  max-height: calc(100vh - 260px);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  border-left: 2px solid var(--border);
+}
+.blog-toc a {
+  display: block;
+  margin-left: -2px;
+  padding: 8px 12px 8px 14px;
+  border-left: 2px solid transparent;
+  border-radius: 0 8px 8px 0;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  line-height: 1.4;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.blog-toc a:hover {
+  color: var(--foreground);
+}
+.blog-toc a[aria-current] {
+  border-left-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 9%, transparent);
+  color: var(--foreground);
+  font-weight: 600;
+}
+.blog-toc-inline {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.blog-toc-inline summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+.blog-toc-inline summary::-webkit-details-marker {
+  display: none;
+}
+.blog-toc-inline[open] summary svg {
+  transform: rotate(180deg);
+}
+.blog-toc-inline ol {
+  margin: 0;
+  padding: 0 16px 14px;
+  list-style: none;
+}
+.blog-toc-inline a {
+  display: block;
+  padding: 6px 0;
+  color: var(--muted-foreground);
+  font-size: 14px;
+}
+
+/* Header. */
+.blog-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary-ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+.blog-title {
+  margin: 16px 0 0;
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(32px, 4.3vw, 54px);
+  font-weight: 800;
+  line-height: 1.07;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.blog-lede {
+  margin: 18px 0 0;
+  color: var(--muted-foreground);
+  font-size: clamp(17px, 1.35vw, 20px);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.blog-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, var(--primary), color-mix(in srgb, var(--primary) 55%, #38bdf8));
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.blog-hero {
+  margin: 36px 0 0;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: 0 24px 60px -36px rgb(15 23 42 / 0.45);
+}
+.blog-hero img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1200 / 630;
+  object-fit: cover;
+}
+.blog-hero figcaption {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+/* The body's headings in the display face, like the title. */
+.blog-body :is(h1, h2, h3) {
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.025em;
+}

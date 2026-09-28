@@ -12,9 +12,13 @@ import { parseList } from "@/lib/access";
 import { parseMarkdown, plainText, readingMinutes, searchTitle, truncate, wordCount, type Block } from "@/lib/blog";
 import { listPublicPosts } from "@/lib/blogData";
 import { formatLaunchDate } from "@/lib/labStatus";
+import { labImage, labImageCredit, labImageEdge } from "@/lib/learnerLabs";
+import { showcaseFontClass } from "@/lib/showcase";
+import { IconTile } from "@/components/learner-page";
 import prisma from "@/lib/prisma";
 import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 import PostCard from "../PostCard";
+import ArticleToc from "./ArticleToc";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +98,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/** Up to two initials for the author mark: "Live Labs Team" -> "LL". */
+function initials(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  return (words.length > 1 ? words[0][0] + words[1][0] : (words[0] ?? "?").slice(0, 2)).toUpperCase();
+}
+
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = await getPost(slug);
@@ -118,6 +128,20 @@ export default async function BlogPostPage({ params }: Props) {
             (candidate) => !sameLab.some((s) => s.id === candidate.id),
           ),
         ].slice(0, 3);
+
+  /*
+    The picture under the header: the post's own cover, else the cover
+    photograph of the lab it is about, else none. The generated share card is
+    not used here — it only repeats the title printed above it.
+  */
+  const labPhoto = lab && labImageEdge(lab.slug) ? labImage(lab.slug, true) : null;
+  const labCredit = lab ? labImageCredit(lab.slug) : null;
+  const heroImage = post.coverImage
+    ? { src: post.coverImage, alt: post.coverAlt ?? "", caption: null as string | null }
+    : labPhoto
+      ? { src: labPhoto, alt: "", caption: labCredit ? labCredit.text : null }
+      : null;
+  const tocItems = contents.map((heading) => ({ id: heading.id, text: plainText(heading.text) }));
 
   const breadcrumbs = [
     { name: "Home", item: SITE_URL },
@@ -166,119 +190,145 @@ export default async function BlogPostPage({ params }: Props) {
         />
       ) : null}
 
-      <article className="mx-auto max-w-3xl">
-        {!published ? (
-          <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
-            <strong className="font-semibold">Draft preview.</strong> Only administrators can open this page, and it
-            is marked noindex.{" "}
-            <Link href={`/admin/blog/${post.id}`} className="font-medium underline">
-              Back to the editor
-            </Link>
-          </div>
-        ) : null}
-
-        <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
-          <Link href="/blog" className="transition-colors hover:text-foreground">
-            Blog
-          </Link>
-          {lab ? (
-            <>
-              <ChevronRight className="h-3.5 w-3.5" />
-              <Link href={`/blog/lab/${lab.slug}`} className="transition-colors hover:text-foreground">
-                {lab.name}
-              </Link>
-            </>
-          ) : null}
-        </nav>
-
-        <header>
-          <h1 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{post.title}</h1>
-          {post.description ? (
-            <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{post.description}</p>
-          ) : null}
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
-            {post.authorName ? <span className="font-medium text-foreground">{post.authorName}</span> : null}
-            <span className="inline-flex items-center gap-1.5">
-              <CalendarDays className="h-4 w-4" />
-              {post.publishedAt ? (
-                <time dateTime={post.publishedAt.toISOString()}>{formatLaunchDate(post.publishedAt)}</time>
-              ) : (
-                "Not yet published"
-              )}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Clock className="h-4 w-4" />
-              {readingMinutes(blocks)} min read
-            </span>
-          </div>
-        </header>
-
-        {post.coverImage ? (
-          // eslint-disable-next-line @next/next/no-img-element -- an author-supplied URL of unknown host and size.
-          <img
-            src={post.coverImage}
-            alt={post.coverAlt ?? ""}
-            className="mt-8 aspect-[1200/630] w-full rounded-2xl border border-border object-cover"
-          />
-        ) : null}
-
-        {contents.length >= 3 ? (
-          <nav aria-label="In this article" className="mt-8 rounded-2xl border border-border bg-muted/30 p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">In this article</p>
-            <ol className="mt-3 space-y-1.5 text-sm">
-              {contents.map((heading) => (
-                <li key={heading.id}>
-                  <a href={`#${heading.id}`} className="text-muted-foreground transition-colors hover:text-foreground">
-                    {plainText(heading.text)}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
-        ) : null}
-
-        <div className="mt-10">
-          <Markdown blocks={blocks} />
-        </div>
-
-        {lab ? (
-          <aside className="glass brand-ring relative mt-14 overflow-hidden rounded-2xl p-6 sm:p-8">
-            <div className="aurora-blob animate-aurora bg-brand-2 -right-10 -top-24 h-64 w-64 opacity-25" />
-            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl btn-brand text-primary-foreground">
-                <FlaskConical className="h-6 w-6" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wider text-primary">Try it yourself</p>
-                <p className="mt-1 text-lg font-semibold">{lab.name}</p>
-                {guide?.summary.tagline || lab.synopsis ? (
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    {guide?.summary.tagline ?? lab.synopsis}
-                  </p>
+      {/*
+        Editorial layout: a sticky left column (where you are, and the
+        article's contents with the current section marked) beside one
+        reading column of about 72 characters. A soft band sits behind the
+        header only, so the body reads on the plain page.
+      */}
+      <div className={`blog-article ${showcaseFontClass}`}>
+        <div aria-hidden className="blog-band" />
+        <div className="relative mx-auto grid max-w-6xl gap-10 pt-6 sm:pt-10 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16">
+          <aside className="hidden lg:block">
+            <div className="sticky top-24 space-y-7">
+              <nav aria-label="Breadcrumb" className="blog-crumbs">
+                <Link href="/">Home</Link>
+                <ChevronRight aria-hidden className="h-3.5 w-3.5" />
+                <Link href="/blog">Blog</Link>
+                {lab ? (
+                  <>
+                    <ChevronRight aria-hidden className="h-3.5 w-3.5" />
+                    <Link href={`/blog/lab/${lab.slug}`}>{lab.name}</Link>
+                  </>
                 ) : null}
-              </div>
-            </div>
-            <div className="relative mt-5 flex flex-wrap gap-3">
-              <Link
-                href={`/labs?q=${encodeURIComponent(lab.name)}`}
-                className="btn-brand inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
-              >
-                Explore the lab <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href={`/blog/lab/${lab.slug}`}
-                className="glass inline-flex items-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors hover:bg-accent"
-              >
-                More on {lab.name}
-              </Link>
+              </nav>
+              <p className="blog-side-label blog-side-brand">The {SITE_NAME} blog</p>
+              {contents.length >= 2 ? <ArticleToc variant="rail" items={tocItems} /> : null}
             </div>
           </aside>
-        ) : null}
-      </article>
+
+          <article className="min-w-0 max-w-[760px]">
+            {!published ? (
+              <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
+                <strong className="font-semibold">Draft preview.</strong> Only administrators can open this page, and
+                it is marked noindex.{" "}
+                <Link href={`/admin/blog/${post.id}`} className="font-medium underline">
+                  Back to the editor
+                </Link>
+              </div>
+            ) : null}
+
+            {/* On a wrapper: `.blog-crumbs` sets `display`, which would beat
+                `lg:hidden` on the same element. */}
+            <div className="mb-5 lg:hidden">
+              <nav aria-label="Breadcrumb" className="blog-crumbs">
+                <Link href="/blog">Blog</Link>
+                {lab ? (
+                  <>
+                    <ChevronRight aria-hidden className="h-3.5 w-3.5" />
+                    <Link href={`/blog/lab/${lab.slug}`}>{lab.name}</Link>
+                  </>
+                ) : null}
+              </nav>
+            </div>
+
+            <header>
+              {lab ? (
+                <Link href={`/blog/lab/${lab.slug}`} className="blog-chip focus-ring">
+                  {lab.name}
+                </Link>
+              ) : (
+                <span className="blog-chip">Article</span>
+              )}
+              <h1 className="blog-title">{post.title}</h1>
+              {post.description ? <p className="blog-lede">{post.description}</p> : null}
+
+              <div className="mt-7 flex items-center gap-3.5">
+                <span aria-hidden className="blog-avatar">
+                  {initials(post.authorName || SITE_NAME)}
+                </span>
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground">{post.authorName || SITE_NAME}</p>
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                    <span className="inline-flex items-center gap-1.5">
+                      <CalendarDays aria-hidden className="h-4 w-4" />
+                      {post.publishedAt ? (
+                        <time dateTime={post.publishedAt.toISOString()}>{formatLaunchDate(post.publishedAt)}</time>
+                      ) : (
+                        "Not yet published"
+                      )}
+                    </span>
+                    <span aria-hidden>·</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Clock aria-hidden className="h-4 w-4" />
+                      {readingMinutes(blocks)} min read
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </header>
+
+            {heroImage ? (
+              <figure className="blog-hero">
+                {/* eslint-disable-next-line @next/next/no-img-element -- an author-supplied URL of unknown host and size. */}
+                <img src={heroImage.src} alt={heroImage.alt} />
+                {heroImage.caption ? <figcaption>{heroImage.caption}</figcaption> : null}
+              </figure>
+            ) : null}
+
+            {contents.length >= 2 ? (
+              <div className="mt-8 lg:hidden">
+                <ArticleToc variant="inline" items={tocItems} />
+              </div>
+            ) : null}
+
+            <div className="blog-body mt-10">
+              <Markdown blocks={blocks} />
+            </div>
+
+            {lab ? (
+              <aside className="ui-card mt-14 p-6 sm:p-7">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                  <IconTile icon={FlaskConical} />
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[color:var(--color-primary-ink)]">
+                      Try it yourself
+                    </p>
+                    <p className="ui-h2 mt-1 text-xl">{lab.name}</p>
+                    {guide?.summary.tagline || lab.synopsis ? (
+                      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                        {guide?.summary.tagline ?? lab.synopsis}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link href={`/labs?q=${encodeURIComponent(lab.name)}`} className="ui-btn ui-btn-primary focus-ring">
+                    Explore the lab <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link href={`/blog/lab/${lab.slug}`} className="ui-btn ui-btn-ghost focus-ring">
+                    More on {lab.name}
+                  </Link>
+                </div>
+              </aside>
+            ) : null}
+          </article>
+        </div>
+      </div>
 
       {related.length ? (
-        <section aria-labelledby="keep-reading" className="mx-auto mt-20 max-w-6xl">
-          <h2 id="keep-reading" className="mb-6 text-2xl font-bold tracking-tight">
+        <section aria-labelledby="keep-reading" className={`mx-auto mt-20 max-w-6xl ${showcaseFontClass}`}>
+          <h2 id="keep-reading" className="ui-h2 mb-6 text-2xl">
             Keep reading
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
