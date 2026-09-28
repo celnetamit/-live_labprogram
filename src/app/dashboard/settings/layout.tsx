@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import SettingsNav from "./SettingsNav";
+import { LearnerPage, PageHeader } from "@/components/learner-page";
 
 /**
  * Frame shared by every settings section. Each section is its own route, so a
@@ -13,18 +14,19 @@ export default async function SettingsLayout({ children }: { children: React.Rea
   if (!session?.user) redirect("/login");
 
   return (
-    <div className="max-w-4xl mx-auto p-6 pt-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your profile, preferences, and platform security.
-        </p>
-      </div>
+    <LearnerPage>
+      <div className="mx-auto max-w-5xl pb-12">
+        <PageHeader
+          eyebrow={session.user.email ? `Signed in as ${session.user.email}` : "Your account"}
+          title="Account Settings"
+          subtitle="Manage your profile, preferences, and platform security."
+        />
 
-      <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-8">
-        <SettingsNav />
-        <div className="space-y-6">{children}</div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[240px_1fr] lg:gap-8">
+          <SettingsNav />
+          <div className="min-w-0 space-y-6">{children}</div>
+        </div>
       </div>
-    </div>
+    </LearnerPage>
   );
 }

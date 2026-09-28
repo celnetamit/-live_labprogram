@@ -44,10 +44,10 @@ export default function ProfileForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-card border border-border rounded-xl shadow-sm overflow-hidden"
+      className="ui-card overflow-hidden"
     >
       <div className="p-6 border-b border-border">
-        <h2 className="text-xl font-semibold">Personal Information</h2>
+        <h2 className="ui-h2 text-lg">Personal Information</h2>
         <p className="text-sm text-muted-foreground mt-1">
           Update your personal details and public profile.
         </p>
@@ -56,9 +56,9 @@ export default function ProfileForm({
       <div className="p-6 space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Full Name</label>
+            <label className="ui-label">Full Name</label>
             <div className="relative">
-              <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <User className="absolute left-3.5 top-[13px] h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 name="name"
@@ -66,20 +66,20 @@ export default function ProfileForm({
                 minLength={2}
                 maxLength={80}
                 defaultValue={user.name || ""}
-                className="w-full pl-9 pr-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="ui-input ui-input-icon"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Email Address</label>
+            <label className="ui-label">Email Address</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Mail className="absolute left-3.5 top-[13px] h-4 w-4 text-muted-foreground" />
               <input
                 type="email"
                 defaultValue={user.email || ""}
                 disabled
-                className="w-full pl-9 pr-4 py-2 bg-muted border border-input rounded-md text-sm opacity-70 cursor-not-allowed"
+                className="ui-input ui-input-icon"
               />
             </div>
             <p className="text-xs text-muted-foreground">
@@ -90,53 +90,53 @@ export default function ProfileForm({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Organization / University</label>
+            <label className="ui-label">Organization / University</label>
             <div className="relative">
-              <Building className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Building className="absolute left-3.5 top-[13px] h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 name="organization"
                 maxLength={120}
                 defaultValue={user.organization || ""}
                 placeholder="e.g. MIT, Stanford, Acme Corp"
-                className="w-full pl-9 pr-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="ui-input ui-input-icon"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Role / Designation</label>
+            <label className="ui-label">Role / Designation</label>
             <div className="relative">
-              <Briefcase className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Briefcase className="absolute left-3.5 top-[13px] h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 name="designation"
                 maxLength={120}
                 defaultValue={user.designation || ""}
                 placeholder="e.g. Researcher, Student"
-                className="w-full pl-9 pr-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="ui-input ui-input-icon"
               />
             </div>
           </div>
         </div>
 
         {error && (
-          <p className="rounded-md border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <p className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-[color:var(--color-destructive-ink)]">
             {error}
           </p>
         )}
       </div>
 
-      <div className="p-4 bg-muted/30 border-t border-border flex items-center justify-end gap-3">
+      <div className="ui-card-foot">
         {message && (
-          <span className="inline-flex items-center gap-1.5 text-sm text-[color:var(--color-success,#10b981)]">
+          <span className="inline-flex items-center gap-1.5 text-sm text-[color:var(--color-success-ink)]">
             <Check className="h-4 w-4" /> {message}
           </span>
         )}
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+          className="ui-btn ui-btn-primary focus-ring"
         >
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}
           Save Changes

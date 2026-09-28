@@ -78,14 +78,14 @@ export default function NotificationForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl overflow-hidden">
+    <form onSubmit={handleSubmit} className="ui-card overflow-hidden">
       <div className="p-6 border-b border-border">
         <div className="flex gap-3">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+          <div className="ui-icon-tile ui-tone-primary">
             <Bell className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold">Email notifications</h2>
+            <h2 className="ui-h2 text-lg">Email notifications</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Choose what we email you about. Account security messages, like password
               resets, are always sent.
@@ -94,7 +94,7 @@ export default function NotificationForm({
         </div>
 
         {!mailConfigured && (
-          <p className="mt-4 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-sm text-amber-400">
+          <p className="mt-4 rounded-lg border border-[color:color-mix(in_srgb,var(--color-warning-ink)_25%,transparent)] bg-[color:color-mix(in_srgb,var(--color-warning-ink)_8%,transparent)] px-3 py-2 text-sm text-[color:var(--color-warning-ink)]">
             No email provider is configured on this deployment yet, so nothing is delivered
             for now. Your choices are saved and take effect as soon as one is set up.
           </p>
@@ -128,16 +128,16 @@ export default function NotificationForm({
         ))}
       </ul>
 
-      <div className="flex items-center justify-end gap-3 border-t border-border bg-muted/30 p-4">
+      <div className="ui-card-foot">
         {message && (
-          <span className="inline-flex items-center gap-1.5 text-sm text-emerald-400">
+          <span className="inline-flex items-center gap-1.5 text-sm text-[color:var(--color-success-ink)]">
             <Check className="h-4 w-4" /> {message}
           </span>
         )}
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+          className="ui-btn ui-btn-primary focus-ring"
         >
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}
           Save preferences

@@ -46,13 +46,13 @@ export default async function SecuritySettingsPage() {
   return (
     <>
       {/* At a glance: every way this account can be signed into. */}
-      <div className="bg-card border border-border rounded-xl p-6">
+      <div className="ui-card p-6">
         <div className="flex gap-3">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+          <div className="ui-icon-tile ui-tone-primary">
             <ShieldCheck className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold">Sign-in methods</h2>
+            <h2 className="ui-h2 text-lg">Sign-in methods</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Keep both available so losing one doesn&apos;t lock you out.
             </p>
@@ -61,14 +61,14 @@ export default async function SecuritySettingsPage() {
 
         <ul className="mt-5 grid gap-3 sm:grid-cols-2">
           {methods.map((m) => (
-            <li key={m.label} className="rounded-lg border border-border bg-background/40 p-4">
+            <li key={m.label} className="ui-subtile">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <m.icon className="h-4 w-4" />
                 <span className="text-xs font-medium uppercase tracking-wider">{m.label}</span>
               </div>
               <p
                 className={`mt-1.5 font-semibold ${
-                  m.active ? "text-emerald-400" : "text-muted-foreground"
+                  m.active ? "text-[color:var(--color-success-ink)]" : "text-muted-foreground"
                 }`}
               >
                 {m.state}

@@ -40,10 +40,10 @@ export default function DangerZone({ email }: { email: string }) {
 
   return (
     <>
-      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+      <div className="ui-card overflow-hidden">
         <div className="p-6 border-b border-border flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-red-500">Danger Zone</h2>
+            <h2 className="ui-h2 text-lg text-[color:var(--color-destructive-ink)]">Danger Zone</h2>
             <p className="text-sm text-muted-foreground mt-1">
               Irreversible actions concerning your account.
             </p>
@@ -63,7 +63,7 @@ export default function DangerZone({ email }: { email: string }) {
               setError("");
               setOpen(true);
             }}
-            className="shrink-0 px-4 py-2 bg-destructive/10 text-destructive border border-destructive/20 text-sm font-medium rounded-lg hover:bg-destructive hover:text-destructive-foreground transition-colors"
+            className="ui-btn ui-btn-danger focus-ring shrink-0"
           >
             Delete Account
           </button>
@@ -76,7 +76,7 @@ export default function DangerZone({ email }: { email: string }) {
             <div className="flex items-center justify-between border-b border-border px-6 py-4">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                <h3 className="text-lg font-bold">Delete your account?</h3>
+                <h3 className="ui-h2 text-lg">Delete your account?</h3>
               </div>
               <button
                 onClick={() => setOpen(false)}
@@ -93,20 +93,20 @@ export default function DangerZone({ email }: { email: string }) {
               </p>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">
+                <label className="ui-label">
                   Type <span className="font-mono text-foreground">{email}</span> to confirm
                 </label>
                 <input
                   value={confirmation}
                   onChange={(e) => setConfirmation(e.target.value)}
                   autoComplete="off"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="ui-input"
                   placeholder={email}
                 />
               </div>
 
               {error && (
-                <p className="rounded-md border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                <p className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-[color:var(--color-destructive-ink)]">
                   {error}
                 </p>
               )}

@@ -1977,3 +1977,365 @@
     0 18px 50px -30px rgb(0 0 0 / 0.45);
   backdrop-filter: blur(14px);
 }
+
+/*
+  Learner section UI (`components/learner-page.tsx`): the Dashboard, My Labs,
+  Progress and Account Settings share these, so the section is one design.
+
+  Built on the theme tokens, not fixed colours, so both themes hold. Every
+  transparency mix is sRGB — see `.labs-filters` for why oklch is avoided.
+*/
+.labs-title-compact {
+  font-size: clamp(28px, 3.4vw, 42px);
+  letter-spacing: -0.035em;
+}
+.labs-eyebrow-dot.is-idle {
+  background: var(--muted-foreground);
+  box-shadow: none;
+}
+.labs-eyebrow-dot.is-warn {
+  background: #f59e0b;
+  box-shadow: 0 0 0 3px rgb(245 158 11 / 0.2);
+}
+
+/* Tones, for icon tiles, figures and accents. */
+.ui-tone-primary {
+  --tone: var(--primary-ink);
+}
+.ui-tone-success {
+  --tone: var(--success-ink);
+}
+.ui-tone-warning {
+  --tone: var(--warning-ink);
+}
+.ui-tone-info {
+  --tone: var(--info-ink);
+}
+.ui-tone-destructive {
+  --tone: var(--destructive-ink);
+}
+
+/* Surfaces. */
+.ui-card {
+  position: relative;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow:
+    0 1px 2px rgb(15 23 42 / 0.04),
+    0 18px 44px -32px rgb(15 23 42 / 0.35);
+}
+.dark .ui-card {
+  border-color: rgb(255 255 255 / 0.07);
+  background: linear-gradient(145deg, var(--card), color-mix(in srgb, var(--card) 72%, var(--background)));
+  box-shadow: 0 18px 50px -30px rgb(0 0 0 / 0.6);
+}
+.ui-card-link {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ui-card-link:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+}
+.ui-row {
+  transition: background-color 0.15s ease;
+}
+.ui-row:hover {
+  background: color-mix(in srgb, var(--foreground) 3.5%, transparent);
+}
+.ui-divide > * + * {
+  border-top: 1px solid var(--border);
+}
+.dark .ui-divide > * + * {
+  border-color: rgb(255 255 255 / 0.06);
+}
+
+.ui-icon-tile {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--tone, var(--primary)) 20%, transparent);
+  background: color-mix(in srgb, var(--tone, var(--primary)) 10%, transparent);
+  color: var(--tone, var(--primary));
+}
+.ui-icon-tile-sm {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+}
+
+.ui-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.ui-h2 {
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.ui-count {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 7%, transparent);
+  color: var(--muted-foreground);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+.ui-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px;
+  color: var(--primary-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.ui-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* A figure tile. */
+.ui-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  overflow: hidden;
+}
+.ui-stat::after {
+  content: "";
+  position: absolute;
+  right: -30px;
+  top: -40px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tone) 16%, transparent), transparent 70%);
+  pointer-events: none;
+}
+.ui-stat-value {
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.ui-stat-label {
+  margin-top: 5px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+@media (max-width: 40rem) {
+  .ui-stat {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+  }
+  .ui-stat-value {
+    font-size: 24px;
+  }
+}
+
+/* A line of context in a tinted strip. */
+.ui-note {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--tone, var(--info-ink)) 22%, transparent);
+  background: color-mix(in srgb, var(--tone, var(--info-ink)) 7%, transparent);
+  color: var(--muted-foreground);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Buttons. */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform 0.18s ease, filter 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+.ui-btn:disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+.ui-btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--primary) 70%, transparent);
+}
+.ui-btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+.ui-btn-ghost {
+  border-color: var(--border);
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+  color: var(--foreground);
+}
+.ui-btn-ghost:hover {
+  background: color-mix(in srgb, var(--foreground) 7%, transparent);
+}
+.ui-btn-danger {
+  border-color: color-mix(in srgb, var(--destructive-ink) 30%, transparent);
+  background: color-mix(in srgb, var(--destructive-ink) 9%, transparent);
+  color: var(--destructive-ink);
+}
+.ui-btn-danger:hover {
+  background: var(--destructive);
+  color: #ffffff;
+}
+
+/* Form fields. `ui-input-icon` leaves room for a leading icon. */
+.ui-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--input);
+  background: color-mix(in srgb, var(--background) 70%, transparent);
+  color: var(--foreground);
+  font-size: 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ui-input-icon {
+  padding-left: 38px;
+}
+.ui-input::placeholder {
+  color: color-mix(in srgb, var(--muted-foreground) 80%, transparent);
+}
+.ui-input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--primary) 60%, var(--input));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 16%, transparent);
+}
+.ui-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+.ui-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* A small bordered tile inside a card (sign-in methods, billing figures). */
+.ui-subtile {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--foreground) 2.5%, transparent);
+}
+.dark .ui-subtile {
+  border-color: rgb(255 255 255 / 0.07);
+}
+
+/* A card's footer, where its save button lives. */
+.ui-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 20px 20px;
+  background: color-mix(in srgb, var(--foreground) 2.5%, transparent);
+}
+.dark .ui-card-foot {
+  border-color: rgb(255 255 255 / 0.06);
+}
+
+/* Side navigation (Account Settings). */
+.ui-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.ui-nav-link:hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+.ui-nav-link[aria-current] {
+  color: var(--primary-ink);
+  font-weight: 600;
+  border-color: color-mix(in srgb, var(--primary) 18%, transparent);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--primary) 13%, transparent),
+    color-mix(in srgb, var(--primary) 3%, transparent)
+  );
+}
+
+/* Continue-learning panel, in its lab's palette (resolved as on `.sc-card`). */
+.ui-resume {
+  --sc-primary-fg: var(--sc-primary-ink, var(--primary-ink));
+  --sc-secondary-fg: var(--sc-secondary-ink, var(--primary-ink));
+}
+.dark .ui-resume {
+  --sc-primary-fg: var(--sc-primary, var(--primary-ink));
+  --sc-secondary-fg: var(--sc-secondary, var(--primary-ink));
+}
+.ui-resume-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgb(0 0 0 / 0.25));
+  pointer-events: none;
+}
+.ui-resume-title {
+  margin: 0;
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(22px, 2.3vw, 30px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+/* The progress bar's fill, on every learner page. */
+.ui-progress-fill {
+  background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 50%, #38bdf8));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-card-link,
+  .ui-btn {
+    transition: none;
+  }
+  .ui-card-link:hover,
+  .ui-btn-primary:hover {
+    transform: none;
+  }
+}

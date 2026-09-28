@@ -81,7 +81,7 @@ export function ProgressBar({ percent, className = "" }: { percent: number; clas
       aria-valuemax={100}
     >
       <div
-        className="h-full rounded-full bg-primary transition-[width] duration-500"
+        className="ui-progress-fill h-full rounded-full transition-[width] duration-500"
         style={{ width: `${clamped}%` }}
       />
     </div>

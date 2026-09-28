@@ -3,8 +3,23 @@
 import { useCallback, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Clock, ExternalLink, Play, Wifi, WifiOff } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  CheckCircle2,
+  Clock,
+  Compass,
+  ExternalLink,
+  FlaskConical,
+  History,
+  ListChecks,
+  Play,
+  WifiOff,
+} from "lucide-react";
 import LearnerLabCard, { ProgressBar, type LearnerCardLab } from "@/components/learner-lab-card";
+import { IconTile, LearnerPage, PageHeader, SectionTitle, StatTile } from "@/components/learner-page";
+import { wordmark } from "@/components/showcase-wordmark";
+import { showcaseVars } from "@/lib/showcase";
 
 export type ActivityItem = {
   kind: "launch" | "progress" | "completed";
@@ -29,10 +44,9 @@ type DashboardLab = LearnerCardLab & { sourceUrl: string | null; lastActiveAt: s
 /**
  * The learner's home.
  *
- * Deliberately plain: subtle borders, small shadows, one accent colour. The
- * review this rewrite answers asked for something that looks designed by a
- * person rather than generated — so no gradient tiles, no glass, no decorative
- * sparkle, and the only large graphics are real screenshots of the labs.
+ * Drawn in the learner section's shared design (`components/learner-page`):
+ * the backdrop and display-face header, rounded panels, and figures with an
+ * icon each. The only large graphics are the labs' own cover pictures.
  *
  * Nothing here is invented. Progress comes from the account's `LabProgress`
  * rows, activity from real launches and real progress writes. There is no
@@ -131,29 +145,17 @@ const ACTIVITY_VERB: Record<ActivityItem["kind"], string> = {
   completed: "Finished",
 };
 
-function SectionHeading({
-  title,
-  href,
-  linkLabel,
-}: {
-  title: string;
-  href?: string;
-  linkLabel?: string;
-}) {
-  return (
-    <div className="mb-3 flex items-baseline justify-between gap-4">
-      <h2 className="text-base font-semibold">{title}</h2>
-      {href && linkLabel && (
-        <Link
-          href={href}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          {linkLabel} <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-      )}
-    </div>
-  );
-}
+const ACTIVITY_ICON: Record<ActivityItem["kind"], typeof Play> = {
+  launch: Play,
+  progress: ListChecks,
+  completed: CheckCircle2,
+};
+
+const ACTIVITY_TONE: Record<ActivityItem["kind"], "primary" | "info" | "success"> = {
+  launch: "primary",
+  progress: "info",
+  completed: "success",
+};
 
 export default function DashboardClient({
   userName,
@@ -192,283 +194,286 @@ export default function DashboardClient({
     null;
 
   const stats = [
-    { label: isAdmin ? "Labs available" : "Enrolled labs", value: labs.length },
-    { label: "In progress", value: inProgress.length },
-    { label: "Completed", value: completed.length },
+    { label: isAdmin ? "Labs available" : "Enrolled labs", value: labs.length, icon: FlaskConical, tone: "primary" as const },
+    { label: "In progress", value: inProgress.length, icon: Clock, tone: "warning" as const },
+    { label: "Completed", value: completed.length, icon: CheckCircle2, tone: "success" as const },
   ];
 
+  const dateLine = now
+    ? now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) +
+      " · " +
+      now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
+    : null;
+
   return (
-    <div className="mx-auto max-w-6xl pb-12">
-      {/* Header: greeting, date and local time, connection. Kept to one row so
-          the first lab card is visible without scrolling on a laptop. */}
-      <header className="mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-            {now ? `${greet(now.getHours())}, ${userName}` : `Welcome back, ${userName}`}
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {isAdmin
+    <LearnerPage>
+      <div className="mx-auto max-w-6xl pb-12">
+        {/* Header on the section's backdrop. The chip carries the date, the
+            local time and the connection — facts about this viewer, read on
+            the client, which is why it is blank for one frame. */}
+        <PageHeader
+          compact
+          eyebrowTone={online ? "live" : "warn"}
+          eyebrow={
+            <span suppressHydrationWarning>
+              {online ? "Online" : "Offline"}
+              {dateLine ? ` · ${dateLine}` : ""}
+            </span>
+          }
+          title={now ? `${greet(now.getHours())}, ${userName}` : `Welcome back, ${userName}`}
+          subtitle={
+            isAdmin
               ? "Admin access — every lab in the catalogue is open to you."
               : labs.length > 0
                 ? "Pick up where you left off."
-                : "Your labs will appear here once you have access to one."}
+                : "Your labs will appear here once you have access to one."
+          }
+          aside={
+            <Link href="/labs" className="ui-btn ui-btn-primary focus-ring">
+              Explore labs <ArrowRight className="h-4 w-4" />
+            </Link>
+          }
+        />
+
+        {!online && (
+          <p className="ui-note ui-tone-warning mb-6">
+            <WifiOff className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-warning-ink)]" />
+            You are offline. Steps you tick are kept on this device and sync when the connection
+            returns; labs themselves need a connection to open.
           </p>
-        </div>
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          {/* `suppressHydrationWarning`: the server cannot know the viewer's zone,
-              so this text legitimately differs between the two renders. */}
-          <span suppressHydrationWarning>
-            {now
-              ? now.toLocaleDateString(undefined, {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
-                }) +
-                " · " +
-                now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
-              : " "}
-          </span>
-          <span
-            className={`inline-flex items-center gap-1.5 ${online ? "" : "text-[color:var(--color-warning)]"}`}
-            title={online ? "Connected" : "You are offline — progress is saved on this device"}
-          >
-            {online ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
-            <span className="hidden sm:inline">{online ? "Online" : "Offline"}</span>
-          </span>
-        </div>
-      </header>
+        )}
 
-      {!online && (
-        <p className="mb-5 rounded-lg border border-border bg-muted/40 px-4 py-2.5 text-sm text-muted-foreground">
-          You are offline. Steps you tick are kept on this device and sync when the connection
-          returns; labs themselves need a connection to open.
-        </p>
-      )}
-
-      {/* Continue learning — the one action the dashboard exists to offer. */}
-      {resume && (
-        <section className="mb-8">
-          <SectionHeading title="Continue learning" />
-          <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-            <div className="flex flex-col sm:flex-row">
-              <Link
-                href={`/dashboard/labs/${resume.slug}`}
-                className="relative block shrink-0 bg-muted sm:w-64"
-              >
-                {resume.image ? (
-                  /* Sized for the two layouts this panel has: full width stacked
-                     on a phone, a 16rem column from `sm` up. */
-                  <Image
-                    src={resume.image}
-                    alt={`${resume.title} screenshot`}
-                    width={640}
-                    height={360}
-                    priority
-                    sizes="(max-width: 640px) 100vw, 256px"
-                    className="h-40 w-full object-cover sm:h-full"
-                  />
-                ) : (
-                  <div className="flex h-40 items-center justify-center sm:h-full">
-                    <span className="text-4xl font-semibold text-muted-foreground">
+        {/* Continue learning — the one action the dashboard exists to offer.
+            Drawn in the lab's own colours, as its catalogue card is. */}
+        {resume && (
+          <section className="mb-8">
+            <SectionTitle icon={Play} title="Continue learning" />
+            <div
+              className="ui-card ui-resume overflow-hidden"
+              style={resume.showcase ? showcaseVars(resume.showcase) : undefined}
+            >
+              <div className="grid sm:grid-cols-[minmax(0,340px)_1fr]">
+                <Link
+                  href={`/dashboard/labs/${resume.slug}`}
+                  tabIndex={-1}
+                  aria-hidden
+                  className="ui-resume-photo relative block min-h-[190px] bg-muted"
+                >
+                  {resume.image ? (
+                    <Image
+                      src={resume.image}
+                      alt=""
+                      fill
+                      loading="eager"
+                      sizes="(max-width: 640px) 100vw, 340px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-full items-center justify-center text-4xl font-semibold text-muted-foreground">
                       {resume.title.charAt(0)}
                     </span>
-                  </div>
-                )}
-              </Link>
+                  )}
+                </Link>
 
-              <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
-                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {resume.subject}
-                </span>
-                <h3 className="mt-0.5 truncate text-lg font-semibold">{resume.title}</h3>
-
-                {resume.nextStep ? (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Next up:{" "}
-                    <span className="text-foreground">{resume.nextStep}</span>
+                <div className="flex min-w-0 flex-col p-5 sm:p-6">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {resume.subject} · {resume.difficulty}
                   </p>
-                ) : (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Every step is ticked off — reopen it whenever you want to go back over it.
-                  </p>
-                )}
+                  <h3 className="ui-resume-title mt-1.5">
+                    <Link href={`/dashboard/labs/${resume.slug}`} className="focus-ring rounded-sm">
+                      {resume.showcase ? wordmark(resume.showcase, resume.title, "sc-card-title") : resume.title}
+                    </Link>
+                  </h3>
 
-                {resume.totalSteps > 0 && (
-                  <div className="mt-4">
-                    <div className="mb-1.5 flex items-center justify-between text-xs text-muted-foreground">
-                      <span>
-                        {resume.completedSteps} of {resume.totalSteps} steps · {resume.percent}%
-                      </span>
-                      {resume.minutesLeft > 0 && (
-                        <span className="inline-flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {Math.floor(resume.minutesLeft / 60) > 0
-                            ? `${Math.floor(resume.minutesLeft / 60)} h ${resume.minutesLeft % 60} min left`
-                            : `${resume.minutesLeft} min left`}
+                  {resume.nextStep ? (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Next up: <span className="font-medium text-foreground">{resume.nextStep}</span>
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Every step is ticked off — reopen it whenever you want to go back over it.
+                    </p>
+                  )}
+
+                  {resume.totalSteps > 0 && (
+                    <div className="mt-5">
+                      <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+                        <span>
+                          <span className="font-semibold text-foreground">
+                            {resume.completedSteps} of {resume.totalSteps}
+                          </span>{" "}
+                          steps · {resume.percent}%
                         </span>
-                      )}
+                        {resume.minutesLeft > 0 && (
+                          <span className="inline-flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {Math.floor(resume.minutesLeft / 60) > 0
+                              ? `${Math.floor(resume.minutesLeft / 60)} h ${resume.minutesLeft % 60} min left`
+                              : `${resume.minutesLeft} min left`}
+                          </span>
+                        )}
+                      </div>
+                      <ProgressBar percent={resume.percent} className="h-2" />
                     </div>
-                    <ProgressBar percent={resume.percent} />
-                  </div>
-                )}
+                  )}
 
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <Link
-                    href={`/dashboard/labs/${resume.slug}`}
-                    className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-                  >
-                    <Play className="h-4 w-4" />
-                    {resume.status === "not-started" ? "Start lab" : "Resume lab"}
-                  </Link>
-                  {resume.sourceUrl && (
-                    <a
-                      href={`/api/labs/${resume.slug}/launch`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border px-3 text-sm font-medium transition-colors hover:bg-accent"
+                  <div className="mt-auto flex flex-wrap items-center gap-2.5 pt-5">
+                    <Link
+                      href={`/dashboard/labs/${resume.slug}`}
+                      className={`${resume.showcase ? "sc-card-primary" : "ui-btn ui-btn-primary"} focus-ring`}
                     >
-                      Open the lab <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  )}
-                  {resume.lastActiveAt && (
-                    <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-                      Last worked on {relativeTime(resume.lastActiveAt, now)}
-                    </span>
-                  )}
+                      <Play className="h-4 w-4" />
+                      {resume.status === "not-started" ? "Start lab" : "Resume lab"}
+                    </Link>
+                    {resume.sourceUrl && (
+                      <a
+                        href={`/api/labs/${resume.slug}/launch`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ui-btn ui-btn-ghost focus-ring"
+                      >
+                        Open the lab <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    )}
+                    {resume.lastActiveAt && (
+                      <span className="text-xs text-muted-foreground" suppressHydrationWarning>
+                        Last worked on {relativeTime(resume.lastActiveAt, now)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-      )}
-
-      {/* Counts, named for what they are. There is no points figure: nothing in
-          the platform awards points, so "Points unlocked" measured nothing. */}
-      <section className="mb-8">
-        <div className="grid grid-cols-3 gap-3">
-          {stats.map((s) => (
-            <div key={s.label} className="rounded-xl border border-border bg-card p-4 shadow-sm">
-              <div className="text-2xl font-semibold tabular-nums">{s.value}</div>
-              <div className="mt-0.5 text-xs text-muted-foreground sm:text-sm">{s.label}</div>
-            </div>
-          ))}
-        </div>
-        {/*
-            This week, stated as a fact rather than a target. The review asked
-            for a weekly goal or a streak but warned against turning the work
-            into a game — a streak rewards opening a lab daily, which is not the
-            same as learning anything, so this counts days and stops there.
-        */}
-        {weekly.labsOpened > 0 && (
-          <p className="mt-2.5 text-xs text-muted-foreground">
-            This week: opened {weekly.labsOpened} {weekly.labsOpened === 1 ? "lab" : "labs"} across{" "}
-            {weekly.activeDays} {weekly.activeDays === 1 ? "day" : "days"}.
-          </p>
+          </section>
         )}
-      </section>
 
-      {/* Labs */}
-      <section className="mb-8">
-        <SectionHeading
-          title={isAdmin ? "All labs" : "Your labs"}
-          href="/dashboard/labs"
-          linkLabel="View all"
-        />
-        {labs.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border bg-card/50 p-8 text-center">
-            <h3 className="font-semibold">No labs yet</h3>
-            <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-              {catalogSize} labs are open to browse right now
-              {upcomingCount > 0 ? `, with ${upcomingCount} more announced` : ""}. Every lab&apos;s
-              overview, demo and step titles are free to read before you decide.
-            </p>
-            <Link
-              href="/dashboard/labs"
-              className="mt-4 inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              Browse labs <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {labs.slice(0, 6).map((lab) => (
-              <LearnerLabCard key={lab.slug} lab={lab} />
+        {/* Counts, named for what they are. There is no points figure: nothing in
+            the platform awards points, so "Points unlocked" measured nothing. */}
+        <section className="mb-9">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
+            {stats.map((s) => (
+              <StatTile key={s.label} icon={s.icon} tone={s.tone} value={s.value} label={s.label} />
             ))}
           </div>
-        )}
-      </section>
-
-      <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
-        {/* Recent activity — real launches and real progress writes, nothing else. */}
-        <section>
-          <SectionHeading title="Recent activity" />
-          {activity.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-border bg-card/50 p-6 text-sm text-muted-foreground">
-              Nothing yet. Opening a lab or ticking off a tutorial step will show up here.
+          {/*
+              This week, stated as a fact rather than a target. The review asked
+              for a weekly goal or a streak but warned against turning the work
+              into a game — a streak rewards opening a lab daily, which is not the
+              same as learning anything, so this counts days and stops there.
+          */}
+          {weekly.labsOpened > 0 && (
+            <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+              <CalendarDays className="h-3.5 w-3.5" />
+              This week: opened {weekly.labsOpened} {weekly.labsOpened === 1 ? "lab" : "labs"} across{" "}
+              {weekly.activeDays} {weekly.activeDays === 1 ? "day" : "days"}.
             </p>
-          ) : (
-            <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-              {activity.map((a) => (
-                <li key={`${a.kind}-${a.slug}-${a.at}`}>
-                  <Link
-                    href={`/dashboard/labs/${a.slug}`}
-                    className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-accent/50"
-                  >
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm">
-                        <span className="text-muted-foreground">{ACTIVITY_VERB[a.kind]} </span>
-                        <span className="font-medium">{a.title}</span>
-                      </span>
-                      {a.detail && (
-                        <span className="block text-xs text-muted-foreground">{a.detail}</span>
-                      )}
-                    </span>
-                    <span
-                      className="shrink-0 text-xs text-muted-foreground"
-                      suppressHydrationWarning
-                    >
-                      {relativeTime(a.at, now)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
           )}
         </section>
 
-        {/* Recommended — a stated rule, not a model, so it says why. */}
-        {suggestions.length > 0 && (
-          <section>
-            <SectionHeading title="Recommended for you" href="/dashboard/labs" linkLabel="See all" />
-            <ul className="space-y-3">
-              {suggestions.map((s) => (
-                <li key={s.slug}>
-                  <Link
-                    href={`/dashboard/labs/${s.slug}`}
-                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-2.5 shadow-sm transition-colors hover:border-foreground/20"
-                  >
-                    <Image
-                      src={s.image}
-                      alt=""
-                      width={128}
-                      height={96}
-                      sizes="64px"
-                      className="h-12 w-16 shrink-0 rounded-md object-cover"
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium">{s.title}</span>
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {s.matchesSubject ? `More ${s.subject}` : s.subject} · {s.difficulty}
-                      </span>
-                    </span>
-                    <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  </Link>
-                </li>
+        {/* Labs */}
+        <section className="mb-9">
+          <SectionTitle
+            icon={FlaskConical}
+            title={isAdmin ? "All labs" : "Your labs"}
+            count={labs.length}
+            href="/dashboard/labs"
+            linkLabel="View all"
+          />
+          {labs.length === 0 ? (
+            <div className="ui-card flex flex-col items-center px-6 py-12 text-center">
+              <IconTile icon={FlaskConical} />
+              <h3 className="ui-h2 mt-4 text-lg">No labs yet</h3>
+              <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+                {catalogSize} labs are open to browse right now
+                {upcomingCount > 0 ? `, with ${upcomingCount} more announced` : ""}. Every lab&apos;s
+                overview, demo and step titles are free to read before you decide.
+              </p>
+              <Link href="/dashboard/labs" className="ui-btn ui-btn-primary focus-ring mt-5">
+                Browse labs <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {labs.slice(0, 6).map((lab) => (
+                <LearnerLabCard key={lab.slug} lab={lab} />
               ))}
-            </ul>
+            </div>
+          )}
+        </section>
+
+        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+          {/* Recent activity — real launches and real progress writes, nothing else. */}
+          <section>
+            <SectionTitle icon={History} tone="info" title="Recent activity" />
+            {activity.length === 0 ? (
+              <p className="ui-card p-6 text-sm text-muted-foreground">
+                Nothing yet. Opening a lab or ticking off a tutorial step will show up here.
+              </p>
+            ) : (
+              <ul className="ui-card ui-divide overflow-hidden">
+                {activity.map((a) => (
+                  <li key={`${a.kind}-${a.slug}-${a.at}`}>
+                    <Link
+                      href={`/dashboard/labs/${a.slug}`}
+                      className="ui-row flex items-center gap-3 px-4 py-3.5"
+                    >
+                      <IconTile icon={ACTIVITY_ICON[a.kind]} tone={ACTIVITY_TONE[a.kind]} size="sm" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm">
+                          <span className="text-muted-foreground">{ACTIVITY_VERB[a.kind]} </span>
+                          <span className="font-semibold">{a.title}</span>
+                        </span>
+                        {a.detail && (
+                          <span className="block truncate text-xs text-muted-foreground">{a.detail}</span>
+                        )}
+                      </span>
+                      <span className="shrink-0 text-xs text-muted-foreground" suppressHydrationWarning>
+                        {relativeTime(a.at, now)}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
-        )}
+
+          {/* Recommended — a stated rule, not a model, so it says why. */}
+          {suggestions.length > 0 && (
+            <section>
+              <SectionTitle
+                icon={Compass}
+                tone="success"
+                title="Recommended for you"
+                href="/dashboard/labs"
+                linkLabel="See all"
+              />
+              <ul className="ui-card ui-divide overflow-hidden">
+                {suggestions.map((s) => (
+                  <li key={s.slug}>
+                    <Link href={`/dashboard/labs/${s.slug}`} className="ui-row flex items-center gap-3 p-3">
+                      <Image
+                        src={s.image}
+                        alt=""
+                        width={144}
+                        height={96}
+                        sizes="72px"
+                        className="h-12 w-[72px] shrink-0 rounded-lg object-cover"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold">{s.title}</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {s.matchesSubject ? `More ${s.subject}` : s.subject} · {s.difficulty}
+                        </span>
+                      </span>
+                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
       </div>
-    </div>
+    </LearnerPage>
   );
 }

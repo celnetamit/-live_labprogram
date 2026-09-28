@@ -8,7 +8,7 @@
  * layout's rhythm so the content does not jump when it arrives.
  */
 function Block({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-lg bg-muted ${className}`} />;
+  return <div className={`animate-pulse rounded-[20px] bg-muted ${className}`} />;
 }
 
 export default function DashboardLoading() {
@@ -24,17 +24,17 @@ export default function DashboardLoading() {
         <Block className="h-4 w-40" />
       </div>
 
-      <Block className="mb-8 h-48 w-full rounded-xl" />
+      <Block className="mb-8 h-48 w-full" />
 
       <div className="mb-8 grid grid-cols-3 gap-3">
         {[0, 1, 2].map((i) => (
-          <Block key={i} className="h-[86px] rounded-xl" />
+          <Block key={i} className="h-[86px]" />
         ))}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[0, 1, 2, 3, 4, 5].map((i) => (
-          <Block key={i} className="h-[340px] rounded-xl" />
+          <Block key={i} className="h-[340px]" />
         ))}
       </div>
     </div>

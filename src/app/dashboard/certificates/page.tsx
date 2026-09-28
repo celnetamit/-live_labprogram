@@ -2,10 +2,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, Info, ListChecks, Trophy } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { buildLearnerLab, formatMinutes } from "@/lib/learnerLabs";
 import { ProgressBar } from "@/components/learner-lab-card";
+import { IconTile, LearnerPage, PageHeader, SectionTitle, StatTile } from "@/components/learner-page";
 
 /**
  * The learner's completion record.
@@ -47,116 +48,132 @@ export default async function CompletionRecord() {
   const done = touched.filter((r) => r.lab.status === "completed");
   const inProgress = touched.filter((r) => r.lab.status === "in-progress");
 
+  /* Counted from the same rows as the lists below — nothing estimated. */
+  const stepsTicked = touched.reduce((n, r) => n + r.lab.completedSteps, 0);
+
   return (
-    <div className="mx-auto max-w-4xl pb-12">
-      <header className="mb-6">
-        <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Your progress record</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Labs you have worked through, and how far you got in each.
+    <LearnerPage>
+      <div className="mx-auto max-w-5xl pb-12">
+        <PageHeader
+          eyebrow={`${done.length} completed · ${inProgress.length} in progress`}
+          eyebrowTone={touched.length > 0 ? "live" : "idle"}
+          title="Your progress"
+          subtitle="Labs you have worked through, and how far you got in each."
+          aside={
+            <Link href="/dashboard/labs" className="ui-btn ui-btn-ghost focus-ring">
+              Go to My Labs <ArrowRight className="h-4 w-4" />
+            </Link>
+          }
+        />
+
+        <div className="mb-6 grid grid-cols-3 gap-3 sm:gap-4">
+          <StatTile icon={Trophy} tone="success" value={done.length} label="Labs completed" />
+          <StatTile icon={Clock} tone="warning" value={inProgress.length} label="In progress" />
+          <StatTile icon={ListChecks} tone="primary" value={stepsTicked} label="Steps ticked off" />
+        </div>
+
+        {/* Said once, plainly, rather than implied by a certificate-shaped card. */}
+        <p className="ui-note mb-9">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-info-ink)]" />
+          <span>
+            This is your own record of what you have completed. Live Labs does not currently issue a
+            formal certificate or a verifiable credential for finishing a lab — if that changes, it
+            will appear here.
+          </span>
         </p>
-      </header>
 
-      {/* Said once, plainly, rather than implied by a certificate-shaped card. */}
-      <p className="mb-8 rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-        This is your own record of what you have completed. Live Labs does not currently issue a
-        formal certificate or a verifiable credential for finishing a lab — if that changes, it will
-        appear here.
-      </p>
+        {done.length === 0 && inProgress.length === 0 ? (
+          <div className="ui-card flex flex-col items-center px-6 py-14 text-center">
+            <IconTile icon={Trophy} tone="success" />
+            <h2 className="ui-h2 mt-4 text-lg">Nothing completed yet</h2>
+            <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+              Work through a lab&apos;s tutorial and tick off the steps as you go. Whatever you
+              finish shows up here.
+            </p>
+            <Link href="/dashboard/labs" className="ui-btn ui-btn-primary focus-ring mt-5">
+              Go to your labs <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-9">
+            {done.length > 0 && (
+              <section>
+                <SectionTitle icon={CheckCircle2} tone="success" title="Completed" count={done.length} />
+                <ul className="ui-card ui-divide overflow-hidden">
+                  {done.map(({ lab, completedAt }) => (
+                    <li key={lab.slug}>
+                      <Link
+                        href={`/dashboard/labs/${lab.slug}`}
+                        className="ui-row flex items-center gap-4 px-4 py-4 sm:px-5"
+                      >
+                        <IconTile icon={CheckCircle2} tone="success" size="sm" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-semibold">{lab.title}</span>
+                          <span className="block text-xs text-muted-foreground">
+                            {lab.subject} · all {lab.totalSteps} steps
+                            {formatMinutes(lab.minutesTotal)
+                              ? ` · ${formatMinutes(lab.minutesTotal)} of hands-on work`
+                              : ""}
+                          </span>
+                        </span>
+                        {completedAt && (
+                          <span className="shrink-0 rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground">
+                            {completedAt.toLocaleDateString(undefined, {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
-      {done.length === 0 && inProgress.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card/50 px-6 py-14 text-center">
-          <h2 className="font-semibold">Nothing completed yet</h2>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-            Work through a lab&apos;s tutorial and tick off the steps as you go. Whatever you finish
-            shows up here.
-          </p>
-          <Link
-            href="/dashboard/labs"
-            className="mt-4 inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            Go to your labs <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {done.length > 0 && (
-            <section>
-              <h2 className="mb-3 text-base font-semibold">
-                Completed <span className="font-normal text-muted-foreground">({done.length})</span>
-              </h2>
-              <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-                {done.map(({ lab, completedAt }) => (
-                  <li key={lab.slug}>
-                    <Link
-                      href={`/dashboard/labs/${lab.slug}`}
-                      className="flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-accent/50"
-                    >
-                      <CheckCircle2 className="h-5 w-5 shrink-0 text-[color:var(--color-success)]" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-medium">{lab.title}</span>
-                        <span className="block text-xs text-muted-foreground">
-                          {lab.subject} · all {lab.totalSteps} steps
-                          {formatMinutes(lab.minutesTotal)
-                            ? ` · ${formatMinutes(lab.minutesTotal)} of hands-on work`
-                            : ""}
+            {inProgress.length > 0 && (
+              <section>
+                <SectionTitle icon={Clock} tone="warning" title="Still going" count={inProgress.length} />
+                <ul className="grid gap-4 sm:grid-cols-2">
+                  {inProgress.map(({ lab }) => (
+                    <li key={lab.slug}>
+                      <Link
+                        href={`/dashboard/labs/${lab.slug}`}
+                        className="ui-card ui-card-link block h-full p-5"
+                      >
+                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          {lab.subject}
                         </span>
-                      </span>
-                      {completedAt && (
-                        <span className="shrink-0 text-xs text-muted-foreground">
-                          {completedAt.toLocaleDateString(undefined, {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {inProgress.length > 0 && (
-            <section>
-              <h2 className="mb-3 text-base font-semibold">
-                Still going{" "}
-                <span className="font-normal text-muted-foreground">({inProgress.length})</span>
-              </h2>
-              <ul className="space-y-3">
-                {inProgress.map(({ lab }) => (
-                  <li key={lab.slug}>
-                    <Link
-                      href={`/dashboard/labs/${lab.slug}`}
-                      className="block rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-foreground/20"
-                    >
-                      <div className="mb-2 flex items-baseline justify-between gap-3">
-                        <span className="truncate font-medium">{lab.title}</span>
-                        <span className="shrink-0 text-xs text-muted-foreground">
-                          {lab.completedSteps} of {lab.totalSteps}
-                        </span>
-                      </div>
-                      <ProgressBar percent={lab.percent} />
-                      <div className="mt-2 flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
+                        <span className="ui-h2 mt-1 block truncate text-lg">{lab.title}</span>
+                        <div className="mb-2 mt-4 flex items-center justify-between text-xs text-muted-foreground">
+                          <span>
+                            <span className="font-semibold text-foreground">
+                              {lab.completedSteps} of {lab.totalSteps}
+                            </span>{" "}
+                            steps · {lab.percent}%
+                          </span>
+                          {lab.minutesLeft > 0 && (
+                            <span className="inline-flex shrink-0 items-center gap-1">
+                              <Clock className="h-3 w-3" /> {formatMinutes(lab.minutesLeft)} left
+                            </span>
+                          )}
+                        </div>
+                        <ProgressBar percent={lab.percent} className="h-2" />
                         {lab.nextStep && (
-                          <span className="truncate">
-                            Next: <span className="text-foreground">{lab.nextStep}</span>
-                          </span>
+                          <p className="mt-3 truncate text-xs text-muted-foreground">
+                            Next: <span className="font-medium text-foreground">{lab.nextStep}</span>
+                          </p>
                         )}
-                        {lab.minutesLeft > 0 && (
-                          <span className="inline-flex shrink-0 items-center gap-1">
-                            <Clock className="h-3 w-3" /> {formatMinutes(lab.minutesLeft)} left
-                          </span>
-                        )}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-        </div>
-      )}
-    </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+        )}
+      </div>
+    </LearnerPage>
   );
 }

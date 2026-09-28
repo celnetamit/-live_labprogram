@@ -6,6 +6,7 @@ import { ownedLabIds, ownsLab, parseList } from "@/lib/access";
 import { getLabPreview } from "@/lib/labPreview";
 import { CATALOG_STATUSES, formatLaunchDate } from "@/lib/labStatus";
 import { buildLearnerLab } from "@/lib/learnerLabs";
+import { LearnerPage } from "@/components/learner-page";
 import LabCatalogClient, { type CatalogLab } from "./LabCatalogClient";
 import { type MyLabRequest } from "./CustomLabRequestPanel";
 
@@ -81,17 +82,12 @@ export default async function LabsCatalog() {
   }));
 
   return (
-    /* Bleeds to the edges of the shell's padded <main> (p-4 / p-6 / p-8), so
-       the backdrop spans the content area rather than stopping in a box. */
-    <div className="relative isolate -m-4 overflow-x-clip p-4 sm:-m-6 sm:p-6 lg:-m-8 lg:p-8">
-      <div aria-hidden className="labs-backdrop">
-        <span className="labs-backdrop-grain" />
-      </div>
+    <LearnerPage>
       <LabCatalogClient
         labs={catalog}
         isAdmin={user.role === "SUPER_ADMIN"}
         myRequests={myRequests}
       />
-    </div>
+    </LearnerPage>
   );
 }

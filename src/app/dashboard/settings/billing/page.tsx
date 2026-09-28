@@ -9,7 +9,7 @@ import { CreditCard, Receipt, FlaskConical, ArrowRight, Infinity as InfinityIcon
 export const dynamic = "force-dynamic";
 
 const STATUS_TONE: Record<string, string> = {
-  PAID: "text-emerald-400",
+  PAID: "text-[color:var(--color-success-ink)]",
   PENDING: "text-amber-400",
   FAILED: "text-rose-400",
 };
@@ -38,13 +38,13 @@ export default async function BillingSettingsPage() {
   return (
     <>
       {/* Summary */}
-      <div className="bg-card border border-border rounded-xl p-6">
+      <div className="ui-card p-6">
         <div className="flex gap-3">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+          <div className="ui-icon-tile ui-tone-primary">
             <CreditCard className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold">Billing &amp; subscriptions</h2>
+            <h2 className="ui-h2 text-lg">Billing &amp; subscriptions</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Labs are bought individually — a one-time payment gives you lifetime access to
               that lab. There is no recurring subscription to cancel.
@@ -53,23 +53,23 @@ export default async function BillingSettingsPage() {
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-border bg-background/40 p-4">
+          <div className="ui-subtile">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Labs owned
             </p>
-            <p className="mt-1 text-2xl font-extrabold">{access.length}</p>
+            <p className="ui-stat-value mt-2">{access.length}</p>
           </div>
-          <div className="rounded-lg border border-border bg-background/40 p-4">
+          <div className="ui-subtile">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Total paid
             </p>
-            <p className="mt-1 text-2xl font-extrabold">{formatPrice(totalSpent)}</p>
+            <p className="ui-stat-value mt-2">{formatPrice(totalSpent)}</p>
           </div>
-          <div className="rounded-lg border border-border bg-background/40 p-4">
+          <div className="ui-subtile">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Plan
             </p>
-            <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400">
+            <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--color-success-ink)]">
               <InfinityIcon className="h-4 w-4" /> Lifetime per lab
             </p>
           </div>
@@ -77,10 +77,10 @@ export default async function BillingSettingsPage() {
       </div>
 
       {/* What the money bought */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="flex items-center gap-2 border-b border-border p-6">
-          <FlaskConical className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-bold">Your labs</h2>
+      <div className="ui-card overflow-hidden">
+        <div className="flex items-center gap-3 border-b border-border p-6">
+          <span aria-hidden className="ui-icon-tile ui-icon-tile-sm ui-tone-primary"><FlaskConical className="h-4 w-4" /></span>
+          <h2 className="ui-h2 text-lg">Your labs</h2>
         </div>
         {access.length === 0 ? (
           <div className="p-6 text-sm text-muted-foreground">
@@ -119,10 +119,10 @@ export default async function BillingSettingsPage() {
       </div>
 
       {/* Receipts */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="flex items-center gap-2 border-b border-border p-6">
-          <Receipt className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-bold">Payment history</h2>
+      <div className="ui-card overflow-hidden">
+        <div className="flex items-center gap-3 border-b border-border p-6">
+          <span aria-hidden className="ui-icon-tile ui-icon-tile-sm ui-tone-primary"><Receipt className="h-4 w-4" /></span>
+          <h2 className="ui-h2 text-lg">Payment history</h2>
         </div>
         {orders.length === 0 ? (
           <div className="p-6 text-sm text-muted-foreground">No payments yet.</div>
