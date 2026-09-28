@@ -133,7 +133,11 @@ export default function LearnerLabCard({
       entirely for anyone who has asked for reduced motion.
     */
     <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:border-foreground/25 hover:shadow-lg motion-safe:hover:scale-[1.025]">
-      <Link href={href} className="relative block aspect-[16/9] overflow-hidden bg-muted">
+      {/* 2:1 rather than 16:9: a row of cards was taller than it needed to
+          be, and the screenshots lose only a sliver top and bottom. The
+          showcase card (`.sc-card-photo`) uses the same ratio so a row stays
+          level. */}
+      <Link href={href} className="relative block aspect-[2/1] overflow-hidden bg-muted">
         {lab.image ? (
           /*
             `next/image`, not a plain <img>. The posters are 1280x720 and this
@@ -231,7 +235,7 @@ export default function LearnerLabCard({
           </>
         )}
         {/* Above the blend layer, so the copy keeps the card's own ink. */}
-        <div className="relative z-10 flex flex-1 flex-col px-4 pb-4 pt-4">
+        <div className="relative z-10 flex flex-1 flex-col px-4 pb-3.5 pt-3.5">
         <div className="mb-1.5 flex items-center justify-between gap-2">
           <span className="truncate text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {lab.subject}

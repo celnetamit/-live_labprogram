@@ -2,9 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Dna, Lock } from "lucide-react";
+import type { CSSProperties } from "react";
+import { CheckCircle2, Lock } from "lucide-react";
 import type { CardShowcase } from "@/lib/learnerLabs";
 import { showcaseFontClass, showcaseVars } from "@/lib/showcase";
+import { ArrowGlyph, SHOWCASE_ICONS } from "./showcase-icons";
+import { wordmark } from "./showcase-wordmark";
 import type { LearnerCardLab } from "./learner-lab-card";
 
 /** "1h 18m" — the lab page's hero writes the hands-on time the same way. */
@@ -47,6 +50,18 @@ export default function ShowcaseLabCard({
   locked: boolean;
 }) {
   const href = `/dashboard/labs/${lab.slug}`;
+  const Icon = SHOWCASE_ICONS[showcase.icon];
+  /*
+    Every title on one line, so every card has the same two lines of
+    description beneath it and a row stays level. A long name ("AI For 6G
+    Experimental Learning") is set smaller to fit, from its length in
+    characters — a subtitle counted at its smaller size — and the card's own
+    width (`.sc-card-title`, in container units).
+  */
+  const titleChars = showcase.title.reduce((n, s) => n + s.text.length * (s.subtitle ? 0.62 : 1), 0);
+  /* The longest names ("Live-Lab Learning: AI Program Navigator") give up the
+     icon tile for its width rather than be cut off. */
+  const bareTitle = titleChars > 34;
   const primaryLabel =
     lab.status === "completed" ? "Review lab" : lab.status === "in-progress" ? "Resume lab" : "Start lab";
   const total = duration(lab.minutesTotal ?? 0);
@@ -62,8 +77,15 @@ export default function ShowcaseLabCard({
 
   return (
     <article
-      className={`sc-card ${showcaseFontClass} flex h-full flex-col`}
-      style={showcaseVars(showcase)}
+      className={`sc-card ${bareTitle ? "sc-card-bare-title" : ""} ${showcaseFontClass} flex h-full flex-col`}
+      style={
+        {
+          ...showcaseVars(showcase),
+          "--sc-chars": titleChars.toFixed(1),
+          /* The credit strip is washed in the colour the photograph ends in. */
+          ...(lab.imageEdge ? { "--sc-edge": lab.imageEdge.color } : {}),
+        } as CSSProperties
+      }
     >
       {/* Not a link of its own: the title's link is stretched over the whole
           card (`.sc-card-title a::after`), so the photograph is still a way
@@ -110,17 +132,11 @@ export default function ShowcaseLabCard({
         <div className="flex items-start justify-between gap-3.5">
           <h3 className="sc-card-title">
             <Link href={href} className="focus-ring rounded-sm">
-              {showcase.title
-                ? showcase.title.map((s, i) => (
-                    <span key={i} className={s.accent ? `sc-card-title-${s.accent}` : undefined}>
-                      {s.text}
-                    </span>
-                  ))
-                : lab.title}
+              {wordmark(showcase, lab.title, "sc-card-title")}
             </Link>
           </h3>
           <span aria-hidden className="sc-card-icon">
-            <Dna />
+            <Icon />
           </span>
         </div>
 
@@ -139,7 +155,7 @@ export default function ShowcaseLabCard({
         <div className="sc-card-actions mt-auto">
           {locked ? (
             <Link href={href} className="sc-card-primary focus-ring">
-              View details <ArrowRight className="h-4 w-4" />
+              View details <ArrowGlyph className="h-4 w-4" />
             </Link>
           ) : (
             <>

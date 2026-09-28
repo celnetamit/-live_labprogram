@@ -34,6 +34,88 @@ const guide: LabGuide = {
   },
 
   /*
+   * No designer's page for this lab: the showcase template, with copy drawn
+   * only from this guide (tagline, "what" and the outcomes below), and a
+   * palette sampled from the cover photograph — the blue of the pattern on
+   * the monitor, the amber glow of the X-ray tube, the sand of the sample
+   * trays and the steel of the goniometer, over a graphite room.
+   *
+   * "XRD Virtual Laboratory" is too long for one line at the hero's size, so
+   * "Laboratory" takes the second, smaller line, as "Drug Discovery Lab" does.
+   */
+  showcase: {
+    overline: "X-ray diffraction",
+    title: [
+      { text: "XRD " },
+      { text: "Virtual", accent: "primary" },
+      { text: "Laboratory", accent: "secondary", subtitle: true },
+    ],
+    headline: "Run a full diffraction experiment, end to end.",
+    intro:
+      "Prepare a specimen, acquire a pattern point by point, analyse it, then defend your conclusion against the hidden truth.",
+    about: [
+      "X-ray diffraction identifies what a powder is, and how big its crystal grains are, without dissolving or destroying it.",
+      "This lab is a complete diffractometer in your browser, run as a project rather than a demonstration: you prepare the specimen, configure the instrument against a finite time budget, acquire and fit the pattern, and commit to a conclusion — and only then does the lab reveal what the specimen actually was.",
+    ],
+    tags: ["Powder diffraction", "Peak fitting", "Phase identification", "Crystallite size"],
+    walkthroughTitle: "From specimen preparation to a defended conclusion",
+    journey: "XRD",
+    card: {
+      badge: "Interactive lab",
+      icon: "simulation",
+      description:
+        "Run a full diffraction experiment end to end: prepare a specimen, acquire a pattern, analyse it, then defend your conclusion against the hidden truth.",
+    },
+    palette: {
+      primary: { onDark: "#8aaede", ink: "#346cb7" },
+      secondary: { onDark: "#e8a25c", ink: "#9f5b16" },
+      action: { onDark: "#e6c79a", ink: "#8e6323" },
+      quiet: { onDark: "#9fb4c8", ink: "#516f8d" },
+      cta: { onDark: "#8aaede", ink: "#346cb7", text: "#081018" },
+      level: "#e8a25c",
+      features: [
+        { onDark: "#8aaede", ink: "#346cb7" },
+        { onDark: "#e8a25c", ink: "#9f5b16" },
+        { onDark: "#e6c79a", ink: "#8e6323" },
+        { onDark: "#9fb4c8", ink: "#516f8d" },
+      ],
+    },
+    ground: {
+      page: "#0c0f13",
+      sidebar: "#0b0e11",
+      surface: ["#171b20", "#0f1216"],
+      hero: "#13171b",
+      scrim: "#0a0d10",
+      text: "#f4f2ee",
+      muted: "#a3abb3",
+      copy: "#b0b7be",
+      soft: "#818b94",
+    },
+    features: [
+      {
+        icon: "simulation",
+        title: "A real instrument workflow",
+        body: "Prepare the specimen, then configure and acquire against a finite instrument-time budget.",
+      },
+      {
+        icon: "analysis",
+        title: "Processing and fitting",
+        body: "Subtract the background, strip Kα2 in the right order, and fit pseudo-Voigt peaks.",
+      },
+      {
+        icon: "graph",
+        title: "Phase and grain size",
+        body: "Assign reflections to a reference phase, and measure crystallite size with the Scherrer equation.",
+      },
+      {
+        icon: "insight",
+        title: "Scored against the truth",
+        body: "Commit to a conclusion, then see the hidden ground truth and how close you came.",
+      },
+    ],
+  },
+
+  /*
    * Recorded from the running lab with scripts/record-demo.mjs — the Basic
    * calcite project, driven end to end through the real interface. Silent
    * screen capture with a caption bar; no narration.

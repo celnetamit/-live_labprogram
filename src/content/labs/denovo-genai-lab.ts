@@ -35,6 +35,85 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * No designer's page for this lab: the showcase template, with copy drawn
+   * only from this guide (tagline, "what" and the outcomes below), and a
+   * palette sampled from the cover photograph — the cyan of the protein
+   * surface, the lime of the docked ligand, the red of the dish and the blue
+   * of the model on the right, over its dark teal room.
+   *
+   * No walkthrough: the video is deliberately null (see `video` below), so
+   * the hero has no card and no demo figure. The guide's "about seventy
+   * minutes" is left out, because the steps below sum to 85 and the hero
+   * shows that sum.
+   */
+  showcase: {
+    overline: "Generative chemistry",
+    title: [{ text: "Denovo" }, { text: " GenAI", accent: "primary" }, { text: " Lab", accent: "secondary" }],
+    headline: "Design a molecule that has never existed.",
+    intro:
+      "Write chemistry as text, explore a map of chemical space and generate molecules to a specification — and find out exactly where the AI stops being trustworthy.",
+    about: [
+      "Every new medicine starts as a molecule somebody had to think of. This lab shows you how AI does that thinking.",
+      "You write a molecule down as a line of text, watch it turn into a 3D structure, explore a map where similar molecules sit near each other, and then ask the computer to invent new ones that match a specification you set — all in the browser.",
+    ],
+    tags: ["Generative chemistry", "SMILES", "Chemical space", "Molecular design"],
+    walkthroughTitle: "From a line of text to a new molecule",
+    journey: "Denovo GenAI",
+    card: {
+      badge: "Interactive lab",
+      icon: "graph",
+      description: "Design a molecule that has never existed — and find out exactly where the AI stops being trustworthy.",
+    },
+    palette: {
+      primary: { onDark: "#6cc9dd", ink: "#1f7487" },
+      secondary: { onDark: "#e67a6e", ink: "#c93323" },
+      action: { onDark: "#a6dc7e", ink: "#467820" },
+      quiet: { onDark: "#7fa6e6", ink: "#2867cf" },
+      cta: { onDark: "#6cc9dd", ink: "#1f7487", text: "#061216" },
+      level: "#a6dc7e",
+      features: [
+        { onDark: "#6cc9dd", ink: "#1f7487" },
+        { onDark: "#a6dc7e", ink: "#467820" },
+        { onDark: "#e67a6e", ink: "#c93323" },
+        { onDark: "#7fa6e6", ink: "#2867cf" },
+      ],
+    },
+    ground: {
+      page: "#081014",
+      sidebar: "#0a1013",
+      surface: ["#141c20", "#0c1316"],
+      hero: "#0f181c",
+      scrim: "#071015",
+      text: "#f2f5f4",
+      muted: "#9fb0b5",
+      copy: "#acbcc1",
+      soft: "#7d9096",
+    },
+    features: [
+      {
+        icon: "graph",
+        title: "Chemistry as text",
+        body: "Write a molecule as a SMILES string, and see why models are given chemistry as text.",
+      },
+      {
+        icon: "simulation",
+        title: "A map of chemical space",
+        body: "Navigate a map where similar molecules sit together, and see what an empty region means.",
+      },
+      {
+        icon: "analysis",
+        title: "Design to a specification",
+        body: "Generate molecules to your constraints, then check — rather than assume — that they were met.",
+      },
+      {
+        icon: "insight",
+        title: "Know where it fails",
+        body: "Tell broken notation from impossible chemistry, and a measured number from a predicted one.",
+      },
+    ],
+  },
+
   video: {
     /**
      * Deliberately null. `public/demos/denovo-genai-lab.mp4` is a 46-second cut

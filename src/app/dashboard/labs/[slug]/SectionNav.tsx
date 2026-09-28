@@ -1,24 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BookOpen, CircleHelp, CirclePlay, FileText, List, Target, Wrench, type LucideIcon } from "lucide-react";
+import { DocGlyph, SECTION_GLYPHS } from "@/components/showcase-icons";
 
 export type Section = { id: string; label: string };
-
-/*
-  Icons for the showcase rail, keyed by section id. Looked up here rather than
-  passed in: a component is not serialisable across the server/client
-  boundary, and the ids are a closed set the page defines.
-*/
-const SECTION_ICONS: Record<string, LucideIcon> = {
-  overview: FileText,
-  demo: CirclePlay,
-  prepare: List,
-  tutorial: BookOpen,
-  outcomes: Target,
-  troubleshooting: Wrench,
-  faq: CircleHelp,
-};
 
 /**
  * In-page navigation with scroll-spy.
@@ -108,7 +93,8 @@ export default function SectionNav({
         <p className="sc-toc-label">On this page</p>
         <ul>
           {sections.map((s) => {
-            const Icon = SECTION_ICONS[s.id] ?? FileText;
+            /* The designer's own glyphs, keyed by section id. */
+            const Icon = SECTION_GLYPHS[s.id] ?? DocGlyph;
             return (
               <li key={s.id}>
                 <a
@@ -116,7 +102,7 @@ export default function SectionNav({
                   aria-current={active === s.id ? "location" : undefined}
                   className="sc-toc-link focus-ring"
                 >
-                  <Icon aria-hidden />
+                  <Icon />
                   {s.label}
                 </a>
               </li>

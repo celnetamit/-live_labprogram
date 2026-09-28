@@ -85,7 +85,13 @@ export default async function PublicLabs({
   return (
     <>
       <Navbar user={user ? { name: user.name, email: user.email } : null} />
-      <main id="main" className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
+      {/* `isolate` so the backdrop's negative z-index stays inside this page
+          rather than slipping behind the body; `overflow-x-clip` so its
+          glows cannot widen the page on a phone. */}
+      <main id="main" className="relative isolate overflow-x-clip pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
+        <div aria-hidden className="labs-backdrop">
+          <span className="labs-backdrop-grain" />
+        </div>
         <LabCatalogClient
           labs={catalog}
           isAdmin={user?.role === "SUPER_ADMIN"}

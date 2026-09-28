@@ -25,6 +25,87 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * No designer's page for this lab: the showcase template, with copy drawn
+   * only from this guide and checked against the app (the IRS, semantic,
+   * autoencoder and JSCC simulators and the capstone all exist). Palette from
+   * the cover: the gold of the "6G" hologram and its network arcs, a warmer
+   * orange from the arcs' ends, the sand of the table light, and a cool steel
+   * to balance them, over charcoal.
+   */
+  showcase: {
+    overline: "Next-generation wireless",
+    title: [
+      { text: "AI For " },
+      { text: "6G", accent: "primary" },
+      { text: "Experimental Learning", accent: "secondary", subtitle: true },
+    ],
+    headline: "The three ideas behind 6G, each with a simulator.",
+    intro:
+      "Smart surfaces, sending meaning instead of bits, and joint source-channel coding — each with a browser simulator you can push until it fails.",
+    about: [
+      "Every generation of mobile network so far has worked the same way: transmit bits faithfully and let the application worry about what they mean. 6G research questions that.",
+      "This lab covers three ideas that break the old assumption — smart surfaces that reflect radio waves where you want them, systems that transmit meaning rather than bits, and codecs that stop treating compression and error protection as separate problems.",
+    ],
+    tags: ["Reflecting surfaces", "Semantic communication", "Autoencoders", "JSCC"],
+    walkthroughTitle: "From a reflecting surface to a codec that degrades gracefully",
+    journey: "AI for 6G",
+    photo: { position: "50% 55%" },
+    card: {
+      badge: "Interactive lab",
+      icon: "simulation",
+      description:
+        "The three ideas behind 6G — smart surfaces, sending meaning instead of bits — each with a simulator you can push until it fails.",
+    },
+    palette: {
+      primary: { onDark: "#f2bd62", ink: "#93610c" },
+      secondary: { onDark: "#f08a4b", ink: "#b24d0f" },
+      action: { onDark: "#ead3a8", ink: "#896521" },
+      quiet: { onDark: "#9fb4c8", ink: "#516f8d" },
+      cta: { onDark: "#f2bd62", ink: "#93610c", text: "#1a1206" },
+      level: "#f08a4b",
+      features: [
+        { onDark: "#f2bd62", ink: "#93610c" },
+        { onDark: "#f08a4b", ink: "#b24d0f" },
+        { onDark: "#ead3a8", ink: "#896521" },
+        { onDark: "#9fb4c8", ink: "#516f8d" },
+      ],
+    },
+    ground: {
+      page: "#0b0b0e",
+      sidebar: "#0c0c0f",
+      surface: ["#18181c", "#101013"],
+      hero: "#121215",
+      scrim: "#0a0a0c",
+      text: "#f5f3ef",
+      muted: "#a9a8ae",
+      copy: "#b6b4bb",
+      soft: "#86858d",
+    },
+    features: [
+      {
+        icon: "simulation",
+        title: "Intelligent reflecting surfaces",
+        body: "See how a smart surface improves a link without amplifying anything, then test the claim.",
+      },
+      {
+        icon: "analysis",
+        title: "Predict, then check",
+        body: "Predict how SNR responds to element count, distance and power, and check yourself against the simulator.",
+      },
+      {
+        icon: "graph",
+        title: "Meaning, not bits",
+        body: "Find out what semantic communication sends instead of bits, and when that is a win.",
+      },
+      {
+        icon: "insight",
+        title: "Find the cliff",
+        body: "Watch joint source-channel coding degrade gracefully where a separated design falls off a cliff.",
+      },
+    ],
+  },
+
   video: {
     url: "/demos/ai-6g.mp4",
     poster: "/demos/ai-6g.jpg",

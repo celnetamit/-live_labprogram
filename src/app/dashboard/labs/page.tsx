@@ -81,10 +81,17 @@ export default async function LabsCatalog() {
   }));
 
   return (
-    <LabCatalogClient
-      labs={catalog}
-      isAdmin={user.role === "SUPER_ADMIN"}
-      myRequests={myRequests}
-    />
+    /* Bleeds to the edges of the shell's padded <main> (p-4 / p-6 / p-8), so
+       the backdrop spans the content area rather than stopping in a box. */
+    <div className="relative isolate -m-4 overflow-x-clip p-4 sm:-m-6 sm:p-6 lg:-m-8 lg:p-8">
+      <div aria-hidden className="labs-backdrop">
+        <span className="labs-backdrop-grain" />
+      </div>
+      <LabCatalogClient
+        labs={catalog}
+        isAdmin={user.role === "SUPER_ADMIN"}
+        myRequests={myRequests}
+      />
+    </div>
   );
 }

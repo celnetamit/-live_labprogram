@@ -25,9 +25,11 @@ export type LearnerLabStatus = "not-started" | "in-progress" | "completed";
 export type CardShowcase = {
   badge: string;
   description: string;
+  icon: LabShowcase["card"]["icon"];
   palette: LabShowcase["palette"];
-  /** Null when the wordmark no longer spells `Lab.name`; the card then shows the plain name. */
-  title: LabShowcase["title"] | null;
+  ground: LabShowcase["ground"];
+  /** Checked against `Lab.name` where it is drawn (`showcase-wordmark.tsx`). */
+  title: LabShowcase["title"];
 };
 
 export type LearnerLab = {
@@ -120,6 +122,16 @@ const COVER_PHOTO: Record<string, CoverPhoto> = {
     credit: "Yong, E. Microbiome sequencing offers hope for diagnostics. Nature (2012)",
   },
   omicslab: { src: "/labs/omicslab.9a645e33.jpg", tint: "#888990", edge: "#8c8a88" },
+  /*
+    FraudShield's picture is an Adobe Stock comp — watermarked, 1000px, and
+    not licensed for publication. It is a placeholder for layout only: swap
+    in the licensed download (drop it in public/labs/, re-run the hash
+    script, update this path) before this ships.
+  */
+  fraudshield: { src: "/labs/fraudshield.8eabd42a.jpg", tint: "#0b1837", edge: "#081230" },
+  logiclab: { src: "/labs/logiclab.32701fc0.jpg", tint: "#b9b9bc", edge: "#c2c4c8", edgeIsLight: true },
+  "ai-6g": { src: "/labs/ai-6g.41186ec2.jpg", tint: "#b7b6b9", edge: "#c9cbcf", edgeIsLight: true },
+  "cognicore-ai": { src: "/labs/cognicore-ai.7abbeb5a.jpg", tint: "#33323e", edge: "#393742" },
   "virtual-ai": { src: "/labs/virtual-ai.82c2a62d.jpg", tint: "#918a8a", edge: "#736e6f" },
 };
 
@@ -201,19 +213,98 @@ export function buildLearnerLab(lab: Lab, progress: LabProgress | undefined): Le
     minutesTotal,
     minutesLeft,
     lastActiveAt: progress?.lastActiveAt?.toISOString() ?? null,
-    showcase: cardShowcase(guide?.showcase, lab.name),
+    showcase:
+      cardShowcase(guide?.showcase) ??
+      defaultCardShowcase(lab.name, lab.subject, guide?.summary.tagline ?? lab.synopsis ?? lab.description ?? "", !!guide),
   };
 }
 
 /** The card's slice of a guide's showcase, or null for a lab without one. */
-export function cardShowcase(showcase: LabShowcase | undefined, name: string): CardShowcase | null {
+export function cardShowcase(showcase: LabShowcase | undefined): CardShowcase | null {
   if (!showcase) return null;
-  const wordmark = showcase.title.map((s) => s.text).join("");
   return {
     badge: showcase.card.badge,
     description: showcase.card.description,
+    icon: showcase.card.icon,
     palette: showcase.palette,
-    title: wordmark === name ? showcase.title : null,
+    ground: showcase.ground,
+    title: showcase.title,
+  };
+}
+
+type Accent = { onDark: string; ink: string };
+const TONE: Record<string, Accent> = {
+  teal: { onDark: "#5cc8c0", ink: "#287771" },
+  amber: { onDark: "#eaa65a", ink: "#9c5c14" },
+  green: { onDark: "#7cc98f", ink: "#327a44" },
+  coral: { onDark: "#ee8a74", ink: "#c53718" },
+  steel: { onDark: "#9fb4c8", ink: "#516f8d" },
+  sky: { onDark: "#6fb0e8", ink: "#1d6fb5" },
+  violet: { onDark: "#a09df7", ink: "#5954f1" },
+  cyan: { onDark: "#4fd0e2", ink: "#167582" },
+  blue: { onDark: "#8aaede", ink: "#346cb7" },
+  rose: { onDark: "#e8a0b4", ink: "#c7305a" },
+};
+
+/* A colour family per subject: the title accent and button, the second
+   accent, the icon tile, and the card's icon. */
+const SUBJECT_TONES: Record<string, { primary: Accent; secondary: Accent; action: Accent; icon: CardShowcase["icon"] }> = {
+  Materials: { primary: TONE.teal, secondary: TONE.violet, action: TONE.violet, icon: "graph" },
+  Engineering: { primary: TONE.amber, secondary: TONE.sky, action: TONE.sky, icon: "simulation" },
+  Electronics: { primary: TONE.sky, secondary: TONE.amber, action: TONE.green, icon: "analysis" },
+  "Computer Science": { primary: TONE.violet, secondary: TONE.sky, action: TONE.rose, icon: "insight" },
+  Security: { primary: TONE.cyan, secondary: TONE.coral, action: TONE.teal, icon: "analysis" },
+  Biology: { primary: TONE.green, secondary: TONE.coral, action: TONE.rose, icon: "sequence" },
+  Physics: { primary: TONE.blue, secondary: TONE.amber, action: TONE.steel, icon: "simulation" },
+};
+
+/**
+ * The showcase card for a lab that has no showcase of its own, so every card
+ * in a catalogue is the same design rather than two designs side by side.
+ *
+ * Nothing here is a claim about the lab: the description is its guide's own
+ * tagline, the colours come from its subject, and the only emphasis is the
+ * last word of its real name. A lab with no guide keeps the plain card — it
+ * has no picture to lead with.
+ */
+function defaultCardShowcase(
+  name: string,
+  subject: string | null,
+  description: string,
+  hasGuide: boolean,
+): CardShowcase | null {
+  if (!hasGuide) return null;
+  const tones = SUBJECT_TONES[subject ?? ""] ?? SUBJECT_TONES["Computer Science"];
+  const cut = name.lastIndexOf(" ");
+  return {
+    badge: "Interactive lab",
+    description,
+    icon: tones.icon,
+    title:
+      cut > 0
+        ? [{ text: name.slice(0, cut + 1) }, { text: name.slice(cut + 1), accent: "primary" }]
+        : [{ text: name, accent: "primary" }],
+    palette: {
+      primary: tones.primary,
+      secondary: tones.secondary,
+      action: tones.action,
+      quiet: TONE.steel,
+      cta: { ...tones.primary, text: "#081018" },
+      level: tones.secondary.onDark,
+      features: [tones.primary, tones.secondary, tones.action, TONE.steel],
+    },
+    /* The hub's own neutral dark, rather than any one photograph's. */
+    ground: {
+      page: "#0b0d12",
+      sidebar: "#0b0e12",
+      surface: ["#161a22", "#0f1218"],
+      hero: "#12151b",
+      scrim: "#080a0f",
+      text: "#f3f4f7",
+      muted: "#a3a9b6",
+      copy: "#b0b6c2",
+      soft: "#808796",
+    },
   };
 }
 

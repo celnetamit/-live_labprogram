@@ -26,6 +26,84 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * No designer's page for this lab: the showcase template, with copy taken
+   * from the lab as it is now (logiclab/README.md) rather than from the
+   * steps below — those describe the earlier AI-generator build, and the
+   * current lab's centre is its own Verilog simulator, checked against Icarus
+   * Verilog, and twenty-four gated experiments. The cover — logic-gate
+   * schematic under DIP packages — is black and white, so the palette is the
+   * colour of a waveform viewer instead: cyan, green and amber traces over a
+   * dark blue ground.
+   */
+  showcase: {
+    overline: "Digital design & verification",
+    title: [{ text: "Logic" }, { text: "Lab", accent: "primary" }, { text: " AI", accent: "secondary" }],
+    headline: "Write Verilog, run it, and prove it works.",
+    intro:
+      "Work through twenty-four experiments — guided, repair and design-and-verify — on a simulator that actually runs your design.",
+    about: [
+      "Chips are not drawn, they are described. Engineers write hardware description languages such as Verilog, and tools turn that description into real gates.",
+      "LogicLab actually runs your design: it contains its own Verilog simulator, checked line for line against Icarus Verilog, plus structural analysis and a model checker — so every claim it makes about a design points at something it measured.",
+    ],
+    tags: ["Verilog", "Simulation", "Testbenches", "Formal checks"],
+    walkthroughTitle: "From a requirement to a verified design",
+    journey: "LogicLab",
+    card: {
+      badge: "Interactive lab",
+      icon: "simulation",
+      description:
+        "Write Verilog, run it on a real simulator and prove it works — twenty-four experiments from guided to design-and-verify.",
+    },
+    palette: {
+      primary: { onDark: "#46c8e0", ink: "#177688" },
+      secondary: { onDark: "#f0a847", ink: "#995d0c" },
+      action: { onDark: "#7fe07a", ink: "#217b1d" },
+      quiet: { onDark: "#86a6ee", ink: "#3065db" },
+      cta: { onDark: "#46c8e0", ink: "#177688", text: "#061318" },
+      level: "#7fe07a",
+      features: [
+        { onDark: "#46c8e0", ink: "#177688" },
+        { onDark: "#7fe07a", ink: "#217b1d" },
+        { onDark: "#f0a847", ink: "#995d0c" },
+        { onDark: "#86a6ee", ink: "#3065db" },
+      ],
+    },
+    ground: {
+      page: "#080e16",
+      sidebar: "#090f16",
+      surface: ["#131b25", "#0b121a"],
+      hero: "#0e1620",
+      scrim: "#070c13",
+      text: "#f1f4f6",
+      muted: "#9eabb8",
+      copy: "#adb9c4",
+      soft: "#7c8a97",
+    },
+    features: [
+      {
+        icon: "simulation",
+        title: "A real simulator",
+        body: "Your design runs on a four-state, event-driven Verilog simulator validated against Icarus Verilog.",
+      },
+      {
+        icon: "analysis",
+        title: "Three kinds of experiment",
+        body: "Guided builds, repairs of broken designs, and design-and-verify — twenty-four in all.",
+      },
+      {
+        icon: "graph",
+        title: "Tested, not trusted",
+        body: "Visible and hidden testbenches check every design against a reference.",
+      },
+      {
+        icon: "insight",
+        title: "Checks you can see",
+        body: "Structural analysis, a model checker and waveforms show why a design passes or fails.",
+      },
+    ],
+  },
+
   video: {
     url: "/demos/logiclab.mp4",
     poster: "/demos/logiclab.jpg",

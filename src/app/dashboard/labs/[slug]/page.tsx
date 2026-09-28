@@ -676,33 +676,55 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
               <div className="sticky top-24 space-y-4">
                 {showcase ? (
                   /*
-                    The design's rail: the contents and the learner's progress
-                    in one panel. Progress is shown to a locked visitor too, at
-                    zero — it tells them the lab tracks their steps — with
-                    wording that does not invite them to begin what they
-                    cannot yet open.
+                    The design's rail: the contents, then — in the same panel —
+                    the learner's progress if they have access, or the price
+                    and the request if they do not (drugdiscovery.html's
+                    "access-card").
                   */
-                  <div className="panel">
+                  <div className={`panel ${showcase.rail?.accent === "secondary" ? "sc-rail-secondary" : ""}`}>
                     <div className="relative z-10 p-4">
                       <SectionNav sections={sections} variant="rail" appearance="showcase" />
-                      {heroSteps > 0 && (
+                      {!owned ? (
+                        <div className="sc-access-card">
+                          <small>Full access</small>
+                          <strong className="tabular-nums">{price}</strong>
+                          <span>Tutorial, troubleshooting and the complete guided lab.</span>
+                          {/* The design's button says "Unlock Lab"; this one
+                              files a request an administrator approves, so it
+                              keeps saying so. */}
+                          <AccessRequestPanel {...requestProps} variant="rail" />
+                        </div>
+                      ) : showcase.rail?.owned === "launch" ? (
+                        /* omicslab_pro_with_new_image.html's card: the lab
+                           runs on its own site, so the rail says so and
+                           opens it. */
+                        <div className="sc-access-card">
+                          <small>External lab</small>
+                          <strong className="sc-access-card-title">Opens in a new tab</strong>
+                          <span>Launch the full {showcase.journey} workflow when you are ready.</span>
+                          {launchUrl && (
+                            <a href={launchUrl} target="_blank" rel="noopener noreferrer" className="sc-access-launch focus-ring">
+                              {startLabel}
+                              <span className="sr-only"> (opens in a new tab)</span>
+                            </a>
+                          )}
+                        </div>
+                      ) : heroSteps > 0 && (
                         <div className="sc-progress-card">
                           <small>Your progress</small>
                           <strong>
-                            {!owned
-                              ? `Request access to begin the ${showcase.journey} journey.`
-                              : heroDone >= heroSteps
+                            {heroDone >= heroSteps
                                 ? "Every step complete."
                                 : heroDone > 0
                                   ? `${heroSteps - heroDone} ${heroSteps - heroDone === 1 ? "step" : "steps"} to go.`
                                   : `Ready to begin the ${showcase.journey} journey.`}
                           </strong>
-                          <ShowcaseProgressBar percent={owned ? heroPercent : 0} />
+                          <ShowcaseProgressBar percent={heroPercent} />
                           <div className="sc-progress-meta">
                             <span>
-                              {owned ? heroDone : 0} of {heroSteps} steps
+                              {heroDone} of {heroSteps} steps
                             </span>
-                            <span className="tabular-nums">{owned ? heroPercent : 0}%</span>
+                            <span className="tabular-nums">{heroPercent}%</span>
                           </div>
                         </div>
                       )}
@@ -715,6 +737,9 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                     </div>
                   </div>
                 )}
+                {/* A showcase page carries the price inside the contents
+                    panel above, so this one is only for launching. */}
+                {(!showcase || (owned && showcase.rail?.owned !== "launch")) && (
                 <div className="panel">
                   <div className="relative z-10 p-4">
                   {owned ? (
@@ -741,6 +766,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                   )}
                   </div>
                 </div>
+                )}
               </div>
             </aside>
           </div>

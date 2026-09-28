@@ -32,6 +32,92 @@ const guide: LabGuide = {
   },
 
   /*
+   * The designer's page (omicslab_pro_with_new_image.html), copy and colours
+   * as supplied; its photograph is the lab's existing cover. Checked against
+   * the guide: 8 steps, 100 minutes (1h 40m), a 173-second walkthrough
+   * (2:53), and "real single-cell and spatial transcriptomics data" is the
+   * guide's own tagline.
+   *
+   * Palette from the mock: blue #5f94bb, amber #d49d52, steel #d9e2e7, green
+   * #72a889. The design is dark only; each `ink` is the hue darkened to at
+   * least 5.2:1 on white for the light theme.
+   */
+  showcase: {
+    overline: "Single-cell & spatial omics",
+    title: [{ text: "Omics" }, { text: "Lab", accent: "primary" }, { text: " Pro", accent: "secondary" }],
+    headline: "Analyse real single-cell and spatial transcriptomics data the way a lab does.",
+    intro:
+      "Work through a versioned analysis pipeline, inspect results, interpret patterns, and produce a reproducible report that clearly shows your scientific reasoning.",
+    about: [
+      "OmicsLab Pro is built around realistic transcriptomics workflows, where good analysis means more than running software — it means understanding the experiment, validating outputs, and documenting decisions clearly.",
+      "You will work with a guided pipeline, explore meaningful biological patterns, and create a report that makes the workflow reproducible and scientifically interpretable.",
+    ],
+    tags: ["Single-cell RNA-seq", "Spatial transcriptomics", "Experimental design", "Reproducible reporting"],
+    walkthroughTitle: "From experimental workflow to interpretable omics insights",
+    journey: "OmicsLab Pro",
+    stats: [
+      { kind: "steps", label: "Guided steps" },
+      { kind: "walkthrough", label: "Walkthrough" },
+      { kind: "handsOn", label: "Hands-on time" },
+    ],
+    rail: { owned: "launch", accent: "secondary" },
+    card: {
+      badge: "Interactive lab",
+      icon: "analysis",
+      description:
+        "Analyse real single-cell and spatial transcriptomics data the way a lab does, and produce a reproducible report that shows your reasoning.",
+    },
+    palette: {
+      primary: { onDark: "#5f94bb", ink: "#3f7094" },
+      secondary: { onDark: "#d49d52", ink: "#906224" },
+      action: { onDark: "#d9e2e7", ink: "#527081" },
+      quiet: { onDark: "#72a889", ink: "#48745b" },
+      cta: { onDark: "#5f94bb", ink: "#3f7094", text: "#071016" },
+      level: "#d49d52",
+      features: [
+        { onDark: "#5f94bb", ink: "#3f7094" },
+        { onDark: "#d49d52", ink: "#906224" },
+        { onDark: "#72a889", ink: "#48745b" },
+        { onDark: "#d9e2e7", ink: "#527081" },
+      ],
+    },
+    ground: {
+      page: "#0d1115",
+      sidebar: "#0b1012",
+      surface: ["#171d22", "#0f1418"],
+      hero: "#12181d",
+      scrim: "#090d10",
+      scrimStops: [97, 90, 46, 16, 84],
+      text: "#f5f5f2",
+      muted: "#a8b1b7",
+      copy: "#adb7bd",
+      soft: "#7f8a91",
+    },
+    features: [
+      {
+        icon: "sequence",
+        title: "Real lab context",
+        body: "Experience a workflow inspired by how omics data is handled in a research setting.",
+      },
+      {
+        icon: "analysis",
+        title: "Quality assessment",
+        body: "Inspect patterns, outputs and signals before moving into downstream interpretation.",
+      },
+      {
+        icon: "insight",
+        title: "Biological interpretation",
+        body: "Connect expression patterns with cell states, tissue structure and research questions.",
+      },
+      {
+        icon: "graph",
+        title: "Reproducible analysis",
+        body: "Produce a clean, report-ready narrative of the pipeline and your analytical choices.",
+      },
+    ],
+  },
+
+  /*
    * Recorded from the lab itself with scripts/record-demo.mjs, against a
    * database holding two genuine Core runs — an original and the alternate its
    * own what-if produced. The dataset on screen is the labelled synthetic

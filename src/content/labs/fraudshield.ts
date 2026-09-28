@@ -26,6 +26,89 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * No designer's page for this lab: the showcase template, with copy drawn
+   * only from this guide and checked against the app (Anomaly Detector,
+   * phishing, identity and voice verification, threshold tuning and
+   * `components/lab/AdversarialLab.tsx` all exist). Palette from the cover:
+   * the cyan glass card, the red laser, the teal-green shield and the blue
+   * circuit traces, over navy.
+   *
+   * The cover is an Adobe Stock comp — watermarked and not licensed for
+   * publication — standing in until the licensed file replaces it
+   * (`COVER_PHOTO` in src/lib/learnerLabs.ts).
+   */
+  showcase: {
+    overline: "Fraud detection & security",
+    title: [
+      { text: "Fraud" },
+      { text: "Shield", accent: "primary" },
+      { text: "AI Lab", accent: "secondary", subtitle: true },
+    ],
+    headline: "Score it, tune it, then attack your own detector.",
+    intro:
+      "Score transactions for fraud, tune the decision threshold, then attack the detector you built to see how easily it breaks.",
+    about: [
+      "Banks and payment networks cannot review every transaction by hand — there are billions of them — so they train models to flag the suspicious ones.",
+      "This lab is a working fraud-detection bench: you score transactions for anomalies, classify phishing emails, verify identity documents, match voices against enrolled samples, tune a model's decision threshold, and then attack your own detector to see how easily it breaks.",
+    ],
+    tags: ["Anomaly detection", "Phishing", "Biometrics", "Adversarial ML"],
+    walkthroughTitle: "From a scored transaction to a hardened detector",
+    journey: "FraudShield",
+    card: {
+      badge: "Interactive lab",
+      icon: "analysis",
+      description: "Score transactions for fraud, tune the threshold, then attack your own detector to see how it breaks.",
+    },
+    palette: {
+      primary: { onDark: "#4fd0e2", ink: "#167582" },
+      secondary: { onDark: "#f06a7e", ink: "#d41532" },
+      action: { onDark: "#5fd6b8", ink: "#1f7862" },
+      quiet: { onDark: "#7aa6e8", ink: "#2469d0" },
+      cta: { onDark: "#4fd0e2", ink: "#167582", text: "#061318" },
+      level: "#f28496",
+      features: [
+        { onDark: "#4fd0e2", ink: "#167582" },
+        { onDark: "#f06a7e", ink: "#d41532" },
+        { onDark: "#5fd6b8", ink: "#1f7862" },
+        { onDark: "#7aa6e8", ink: "#2469d0" },
+      ],
+    },
+    ground: {
+      page: "#060c1c",
+      sidebar: "#070d1c",
+      surface: ["#111a2c", "#0a1222"],
+      hero: "#0a1428",
+      scrim: "#050b1c",
+      text: "#f1f4f8",
+      muted: "#9fabbf",
+      copy: "#aeb9c9",
+      soft: "#7c889c",
+    },
+    features: [
+      {
+        icon: "analysis",
+        title: "Anomaly scoring",
+        body: "Score transactions for anomalies and see which features drove each score.",
+      },
+      {
+        icon: "simulation",
+        title: "A threshold in money",
+        body: "Read a confusion matrix in money, and set a threshold that reflects the real cost of each error.",
+      },
+      {
+        icon: "graph",
+        title: "Identity and voice",
+        body: "Find the manipulations that defeat identity-document and voice verification.",
+      },
+      {
+        icon: "insight",
+        title: "Attack your own detector",
+        body: "Stress the model you built, then harden it against what you find.",
+      },
+    ],
+  },
+
   video: {
     url: "/demos/fraudshield.mp4",
     poster: "/demos/fraudshield.jpg",

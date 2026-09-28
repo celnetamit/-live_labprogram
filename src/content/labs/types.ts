@@ -86,6 +86,9 @@ export type LabSummary = {
  */
 export type ShowcaseAccent = { onDark: string; ink: string };
 
+/** The icons a showcase may use, for its feature cards and its catalogue card. */
+export type ShowcaseIcon = "sequence" | "analysis" | "simulation" | "insight" | "graph";
+
 /**
  * An editorial hero for a lab that has one: the cover photograph full-bleed
  * behind the copy, a split-colour wordmark, and four "what makes this lab
@@ -101,9 +104,14 @@ export type LabShowcase = {
   overline: string;
   /**
    * The title, in coloured segments. Rendered as one heading; the colours are
-   * decoration and the accessible name is the joined text.
+   * decoration and the accessible name is the joined text. A `subtitle`
+   * segment drops to its own, smaller line ("Drug Discovery Lab").
+   *
+   * Compared with `Lab.name` letters-and-digits only, so "RepurposeAI: Drug
+   * Discovery Lab" matches a wordmark that leaves the colon out; if an admin
+   * renames the lab, the page falls back to the plain name.
    */
-  title: { text: string; accent?: "primary" | "secondary" }[];
+  title: { text: string; accent?: "primary" | "secondary"; subtitle?: boolean }[];
   /** One bold line leading the hero copy. */
   headline: string;
   /** The sentence under the headline. Replaces the guide's tagline in the hero. */
@@ -120,27 +128,89 @@ export type LabShowcase = {
   walkthroughTitle: string;
   /** Used in the progress card: "Ready to begin the {journey} journey." */
   journey: string;
+  /** How the cover photograph sits in the hero. */
+  photo?: {
+    /** CSS `object-position`, e.g. "50% 18%" to keep the top of the picture. */
+    position?: string;
+    /** Word before the credit line: "Micrograph", "Photograph". */
+    creditLabel?: string;
+  };
+  /**
+   * The hero's three figures, in order, with their labels. Omitted: steps,
+   * hands-on time and difficulty, as MicrobeAI and RepurposeAI show them.
+   * Every value is computed (step count, summed minutes, video length, the
+   * lab's difficulty); only the labels are authored.
+   */
+  stats?: { kind: "steps" | "handsOn" | "difficulty" | "walkthrough"; label: string }[];
+  /**
+   * The card under the contents rail for a learner who has access: their
+   * progress (default), or a launch card that opens the lab
+   * (omicslab_pro_with_new_image.html). A locked visitor always gets the price.
+   */
+  rail?: {
+    owned?: "progress" | "launch";
+    /** Which accent colours the rail card's label and border. Default `action`. */
+    accent?: "action" | "secondary";
+  };
   /** The catalogue card's own copy. */
   card: {
     /** Pill on the card photograph, e.g. "Interactive lab". */
     badge: string;
-    /** Replaces the database synopsis on the card. Four lines at most. */
+    /** Replaces the database synopsis on the card. Two lines are shown. */
     description: string;
+    /** The tile beside the card's title. */
+    icon: ShowcaseIcon;
   };
   /** Sampled from the cover photograph so the page and the picture agree. */
   palette: {
-    /** Title highlight, links, active states. */
+    /** Title highlight, subject badge, links, active states, the card's button. */
     primary: ShowcaseAccent;
-    /** Second title segment and the progress label. */
+    /** The title's second part and the progress label. */
     secondary: ShowcaseAccent;
-    /** The call to action and the overline. */
-    action: ShowcaseAccent & { text: string };
-    /** Fourth feature card. */
+    /** The page's voice: overline, headline, walkthrough caption. */
+    action: ShowcaseAccent;
+    /** The "Unlocked" badge and the card's third figure. */
     quiet: ShowcaseAccent;
+    /** The hero button, the play button and the walkthrough frame; `text` is the ink on it. */
+    cta: ShowcaseAccent & { text: string };
+    /** The difficulty badge. It only ever sits on the dark hero, so it has no `ink`. */
+    level: string;
+    /** One per feature card, in order. */
+    features: [ShowcaseAccent, ShowcaseAccent, ShowcaseAccent, ShowcaseAccent];
   };
-  /** Exactly four, one per accent, in palette order: primary, secondary, action, quiet. */
+  /**
+   * The dark theme's neutrals, which the design tints to match the picture:
+   * green-black under a micrograph, blue-grey under a pharmacy shelf. Used by
+   * the hero in both themes and by the page and shell in the dark one.
+   */
+  ground: {
+    /** Page background behind the whole dashboard. */
+    page: string;
+    /** The shell's sidebar. */
+    sidebar: string;
+    /** Panel gradient, top-left to bottom-right. */
+    surface: [string, string];
+    /** The hero's own backing colour, under the photograph. */
+    hero: string;
+    /** The scrim laid over the photograph, and the shade of anything on it. */
+    scrim: string;
+    /**
+     * The wide hero's scrim, as opacities: left edge, 45%, 72%, right edge,
+     * then the bottom fade. Omitted, MicrobeAI's [96, 89, 52, 22, 74].
+     */
+    scrimStops?: [number, number, number, number, number];
+    /** Headings and figures. */
+    text: string;
+    /** Secondary text. */
+    muted: string;
+    /** Body copy in the overview. */
+    copy: string;
+    /** Small print: feature-card bodies, rail labels. */
+    soft: string;
+  };
+  /** Exactly four, in the order of `palette.features`. */
   features: {
-    icon: "sequence" | "analysis" | "simulation" | "insight";
+    icon: ShowcaseIcon;
     title: string;
     body: string;
   }[];

@@ -3,7 +3,6 @@ import {
   CheckCircle2,
   CircleHelp,
   ClipboardList,
-  FlaskConical,
   Lightbulb,
   Target,
   Users,
@@ -11,7 +10,7 @@ import {
 } from "lucide-react";
 import type { LabGuide } from "@/content/labs";
 import { RichText } from "@/components/rich-text";
-import { SHOWCASE_ICONS, SHOWCASE_TONES } from "./ShowcaseHero";
+import { FlaskGlyph, SHOWCASE_ICONS } from "@/components/showcase-icons";
 
 /**
  * Shared section chrome: one surface, one heading treatment, one scroll offset.
@@ -29,7 +28,7 @@ function Panel({
   aside,
 }: {
   id: string;
-  icon: typeof BookOpen;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   children: React.ReactNode;
   aside?: React.ReactNode;
@@ -154,7 +153,7 @@ export function LabSummarySection({ guide }: { guide: LabGuide }) {
 
   if (showcase) {
     return (
-      <Panel id="overview" icon={FlaskConical} title="About this lab">
+      <Panel id="overview" icon={FlaskGlyph} title="About this lab">
         <div className="sc-about">
           {showcase.about.map((para) => (
             <p key={para}>{para}</p>
@@ -171,7 +170,7 @@ export function LabSummarySection({ guide }: { guide: LabGuide }) {
             {showcase.features.map((f, i) => {
               const Icon = SHOWCASE_ICONS[f.icon];
               return (
-                <li key={f.title} className={`sc-feature sc-tone-${SHOWCASE_TONES[i % 4]}`}>
+                <li key={f.title} className={`sc-feature sc-tone-${(i % 4) + 1}`}>
                   <span aria-hidden className="sc-feature-icon">
                     <Icon />
                   </span>

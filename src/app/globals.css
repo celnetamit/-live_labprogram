@@ -623,13 +623,17 @@
   --sc-secondary-fg: var(--sc-secondary-ink);
   --sc-action-fg: var(--sc-action-ink);
   --sc-quiet-fg: var(--sc-quiet-ink);
+  --sc-f1-fg: var(--sc-f1-ink);
+  --sc-f2-fg: var(--sc-f2-ink);
+  --sc-f3-fg: var(--sc-f3-ink);
+  --sc-f4-fg: var(--sc-f4-ink);
   --primary: var(--sc-primary-ink);
   --primary-ink: var(--sc-primary-ink);
   --primary-foreground: #ffffff;
   --ring: var(--sc-primary-ink);
   /* Surfaces inside panels: hairline and wash. */
   --sc-line: var(--border);
-  --sc-wash: color-mix(in oklch, var(--foreground) 2.5%, transparent);
+  --sc-wash: color-mix(in srgb, var(--foreground) 2.5%, transparent);
   --sc-about-fg: var(--muted-foreground);
   --sc-quiet-text: var(--muted-foreground);
 }
@@ -638,18 +642,22 @@
   --sc-secondary-fg: var(--sc-secondary);
   --sc-action-fg: var(--sc-action);
   --sc-quiet-fg: var(--sc-quiet);
+  --sc-f1-fg: var(--sc-f1);
+  --sc-f2-fg: var(--sc-f2);
+  --sc-f3-fg: var(--sc-f3);
+  --sc-f4-fg: var(--sc-f4);
   --primary: var(--sc-primary);
   --primary-ink: var(--sc-primary);
   --primary-foreground: #0b1416;
   --ring: var(--sc-primary);
-  /* The design's warm white and green-grey, in place of the hub's blue-grey. */
-  --foreground: #f5f1e9;
-  --muted-foreground: #9ca8a2;
+  /* The design's own neutrals (the lab's `ground`), in place of the hub's. */
+  --foreground: var(--sc-g-text);
+  --muted-foreground: var(--sc-g-muted);
   --border: rgb(255 255 255 / 0.08);
   --sc-line: rgb(255 255 255 / 0.06);
   --sc-wash: rgb(255 255 255 / 0.022);
-  --sc-about-fg: #aeb9b3;
-  --sc-quiet-text: #83918a;
+  --sc-about-fg: var(--sc-g-copy);
+  --sc-quiet-text: var(--sc-g-soft);
 }
 /*
   The design's ground, behind the whole page — shell included — while a
@@ -657,20 +665,13 @@
   emitted by `showcaseChromeCss`.
 */
 .dark body:has(.showcase-scope) {
-  --background: #0a0f0e;
-  --foreground: #f5f1e9;
-  --muted-foreground: #9ca8a2;
+  /* The lab's page, sidebar, text colours and glow come from
+     `showcaseChromeCss`; these are the translucent lines every ground shares. */
   --border: rgb(255 255 255 / 0.08);
   --accent: rgb(255 255 255 / 0.04);
   --accent-foreground: #e7ece9;
-  --sidebar: #0b1012;
-  --sidebar-foreground: #f5f1e9;
   --sidebar-border: rgb(255 255 255 / 0.08);
   color: var(--foreground);
-  background:
-    radial-gradient(circle at 84% 10%, rgb(143 184 199 / 0.06), transparent 28%),
-    radial-gradient(circle at 18% 0%, rgb(215 153 169 / 0.05), transparent 24%),
-    #0a0f0e;
 }
 
 /* ---------- Panels ---------- */
@@ -680,7 +681,11 @@
   box-shadow: 0 18px 50px -28px rgb(15 23 20 / 0.28);
 }
 .dark .showcase-scope .panel {
-  background: linear-gradient(145deg, rgb(22 29 27 / 0.96), rgb(13 19 17 / 0.96));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--sc-g-surface-a) 96%, transparent),
+    color-mix(in srgb, var(--sc-g-surface-b) 96%, transparent)
+  );
   border-color: rgb(255 255 255 / 0.07);
   box-shadow: 0 18px 50px rgb(0 0 0 / 0.2);
 }
@@ -721,8 +726,8 @@
   min-height: 470px;
   border-radius: 28px;
   border: 1px solid rgb(255 255 255 / 0.08);
-  background: #101715;
-  color: #f5f1e9;
+  background: var(--sc-g-hero);
+  color: var(--sc-g-text);
   box-shadow: 0 24px 70px rgb(0 0 0 / 0.32);
 }
 :root:not(.dark) .showcase-hero {
@@ -741,14 +746,24 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(0deg, rgb(8 13 12 / 0.55), transparent 40%),
-    linear-gradient(180deg, rgb(8 13 12 / 0.84), rgb(8 13 12 / 0.93));
+    linear-gradient(0deg, color-mix(in srgb, var(--sc-g-scrim) 55%, transparent), transparent 40%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sc-g-scrim) 84%, transparent),
+      color-mix(in srgb, var(--sc-g-scrim) 93%, transparent)
+    );
 }
 @media (min-width: 80rem) {
   .showcase-hero .sc-scrim {
     background:
-      linear-gradient(90deg, rgb(8 13 12 / 0.96) 0%, rgb(8 13 12 / 0.89) 45%, rgb(8 13 12 / 0.52) 72%, rgb(8 13 12 / 0.22) 100%),
-      linear-gradient(0deg, rgb(8 13 12 / 0.74), transparent 42%);
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--sc-g-scrim) var(--sc-s1, 96%), transparent) 0%,
+        color-mix(in srgb, var(--sc-g-scrim) var(--sc-s2, 89%), transparent) 45%,
+        color-mix(in srgb, var(--sc-g-scrim) var(--sc-s3, 52%), transparent) 72%,
+        color-mix(in srgb, var(--sc-g-scrim) var(--sc-s4, 22%), transparent) 100%
+      ),
+      linear-gradient(0deg, color-mix(in srgb, var(--sc-g-scrim) var(--sc-s5, 74%), transparent), transparent 42%);
   }
 }
 .showcase-hero .sc-rings {
@@ -807,9 +822,9 @@
   background: color-mix(in srgb, var(--sc-primary) 7%, transparent);
 }
 .sc-badge-level {
-  color: #e6c9bc;
-  border-color: rgb(197 163 141 / 0.19);
-  background: rgb(197 163 141 / 0.06);
+  color: var(--sc-level);
+  border-color: color-mix(in srgb, var(--sc-level) 20%, transparent);
+  background: color-mix(in srgb, var(--sc-level) 6%, transparent);
 }
 .sc-badge-lock {
   color: #bbb3b0;
@@ -848,6 +863,46 @@
   line-height: 0.93;
   letter-spacing: -0.065em;
 }
+/*
+  A title with its own second line (drugdiscovery.css) is set smaller and a
+  touch looser, and the copy under it at 16px.
+
+  That second line made the hero 37px taller than a one-line title's —
+  553px against MicrobeAI's 516 at 1440–1600 — so the page no longer read as
+  the same template. The size and the gaps are trimmed until the two heroes
+  measure the same: the title from 72px to 64px with the second line tucked
+  under the first, and the space between the blocks brought in a little. The
+  phone layout is left alone; it was already the shorter of the two.
+*/
+.sc-title:has(.sc-title-sub) {
+  font-size: clamp(44px, 4.4vw, 64px);
+  line-height: 0.94;
+  letter-spacing: -0.055em;
+}
+.sc-title-sub {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.52em;
+  letter-spacing: -0.035em;
+}
+@media (min-width: 40rem) {
+  .sc-title-sub {
+    margin-top: 8px;
+  }
+  .sc-hero-inner:has(.sc-title-sub) .sc-copy {
+    margin-top: 12px;
+  }
+  .sc-hero-inner:has(.sc-title-sub) .sc-cta-row {
+    margin-top: 18px;
+  }
+  .sc-hero-inner:has(.sc-title-sub) .sc-stats {
+    margin-top: 18px;
+    padding-top: 14px;
+  }
+  .sc-hero-inner:has(.sc-title-sub) .sc-tags {
+    margin-top: 16px;
+  }
+}
 .sc-title-primary {
   color: var(--sc-primary);
 }
@@ -870,6 +925,11 @@
   .sc-copy {
     font-size: 17px;
   }
+  .sc-title:has(.sc-title-sub) + .sc-copy {
+    max-width: 680px;
+    font-size: 16px;
+    line-height: 1.62;
+  }
 }
 
 .sc-cta-row {
@@ -891,16 +951,16 @@
   transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
 }
 .sc-btn-primary {
-  color: var(--sc-action-text);
-  background: linear-gradient(90deg, var(--sc-action), color-mix(in srgb, var(--sc-action) 82%, white));
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--sc-action) 16%, transparent);
+  color: var(--sc-cta-text);
+  background: linear-gradient(90deg, var(--sc-cta), color-mix(in srgb, var(--sc-cta) 82%, white));
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--sc-cta) 16%, transparent);
 }
 .sc-btn-primary:hover {
   transform: translateY(-2px);
   filter: brightness(1.04);
 }
 .sc-btn-ghost {
-  color: #f5f1e9;
+  color: var(--sc-g-text);
   border-color: rgb(255 255 255 / 0.1);
   background: rgb(255 255 255 / 0.035);
   backdrop-filter: blur(8px);
@@ -928,7 +988,7 @@
 }
 .sc-stat dd {
   margin: 0;
-  color: #f5f1e9;
+  color: var(--sc-g-text);
   font-size: 18px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -993,7 +1053,7 @@
   min-height: 300px;
   overflow: hidden;
   border-radius: 22px;
-  border: 1px solid rgb(231 183 194 / 0.2);
+  border: 1px solid color-mix(in srgb, var(--sc-cta) 21%, transparent);
   box-shadow: 0 24px 60px rgb(0 0 0 / 0.34);
 }
 /* The same card laid over the demo player until it starts. */
@@ -1014,7 +1074,12 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgb(6 10 9 / 0.04), rgb(6 10 9 / 0.12) 50%, rgb(6 10 9 / 0.9));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--sc-g-scrim) 4%, transparent),
+    color-mix(in srgb, var(--sc-g-scrim) 12%, transparent) 50%,
+    color-mix(in srgb, var(--sc-g-scrim) 90%, transparent)
+  );
 }
 .sc-video::after {
   content: "";
@@ -1035,12 +1100,12 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--sc-action) 55%, transparent);
-  background: color-mix(in srgb, var(--sc-action) 92%, transparent);
-  color: var(--sc-action-text);
+  border: 1px solid color-mix(in srgb, var(--sc-cta) 55%, transparent);
+  background: color-mix(in srgb, var(--sc-cta) 93%, transparent);
+  color: var(--sc-cta-text);
   box-shadow:
-    0 0 0 9px color-mix(in srgb, var(--sc-action) 6%, transparent),
-    0 0 34px color-mix(in srgb, var(--sc-action) 22%, transparent);
+    0 0 0 9px color-mix(in srgb, var(--sc-cta) 6%, transparent),
+    0 0 34px color-mix(in srgb, var(--sc-cta) 23%, transparent);
   transform: translate(-50%, -50%);
   transition: transform 0.2s ease;
 }
@@ -1069,7 +1134,7 @@
 .sc-video-foot strong {
   display: block;
   max-width: 230px;
-  color: #f5f1e9;
+  color: var(--sc-g-text);
   font-size: 14px;
   line-height: 1.35;
 }
@@ -1079,7 +1144,7 @@
   border-radius: 999px;
   border: 1px solid rgb(255 255 255 / 0.1);
   background: rgb(0 0 0 / 0.34);
-  color: #f5f1e9;
+  color: var(--sc-g-text);
   font-size: 10px;
   line-height: 1.2;
 }
@@ -1130,7 +1195,7 @@
   }
 }
 .sc-feature {
-  --tone: var(--sc-primary-fg);
+  --tone: var(--sc-f1-fg);
   position: relative;
   overflow: hidden;
   min-height: 145px;
@@ -1156,14 +1221,14 @@
   background: radial-gradient(circle, color-mix(in srgb, var(--tone) 28%, transparent), transparent 68%);
   pointer-events: none;
 }
-.sc-tone-secondary {
-  --tone: var(--sc-secondary-fg);
+.sc-tone-2 {
+  --tone: var(--sc-f2-fg);
 }
-.sc-tone-action {
-  --tone: var(--sc-action-fg);
+.sc-tone-3 {
+  --tone: var(--sc-f3-fg);
 }
-.sc-tone-quiet {
-  --tone: var(--sc-quiet-fg);
+.sc-tone-4 {
+  --tone: var(--sc-f4-fg);
 }
 .sc-feature-icon {
   display: grid;
@@ -1265,6 +1330,72 @@
   font-size: 13px;
   line-height: 1.4;
 }
+.sc-access-card {
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--sc-action-fg) 12%, transparent);
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--sc-action-fg) 10%, transparent), transparent 45%),
+    var(--sc-wash);
+}
+/* A rail card in the lab's second accent instead of its voice. */
+.sc-rail-secondary .sc-access-card {
+  --sc-action-fg: var(--sc-secondary-fg);
+}
+.sc-access-card .sc-access-card-title {
+  margin: 6px 0;
+  font-size: 16px;
+}
+.sc-access-launch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 42px;
+  border-radius: 11px;
+  background: linear-gradient(90deg, var(--sc-cta-ink), color-mix(in srgb, var(--sc-cta-ink) 85%, black));
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+}
+.dark .sc-access-launch {
+  background: linear-gradient(90deg, var(--sc-cta), color-mix(in srgb, var(--sc-cta) 82%, white));
+  color: var(--sc-cta-text);
+}
+.sc-access-card small {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--sc-action-fg);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.sc-access-card strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 23px;
+}
+.sc-access-card > span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--sc-quiet-text);
+  font-size: 11px;
+  line-height: 1.5;
+}
+/* The request button, drawn as the design's "Unlock Lab". */
+.sc-access-card button {
+  width: 100%;
+  height: 42px;
+  border-radius: 11px;
+  background: linear-gradient(90deg, var(--sc-cta-ink), color-mix(in srgb, var(--sc-cta-ink) 85%, black));
+  color: #ffffff;
+  font-weight: 800;
+}
+.dark .sc-access-card button {
+  background: linear-gradient(90deg, var(--sc-cta), color-mix(in srgb, var(--sc-cta) 82%, white));
+  color: var(--sc-cta-text);
+}
 .sc-progress-meta {
   display: flex;
   justify-content: space-between;
@@ -1276,7 +1407,7 @@
   height: 6px;
   overflow: hidden;
   border-radius: 999px;
-  background: color-mix(in oklch, var(--foreground) 7%, transparent);
+  background: color-mix(in srgb, var(--foreground) 7%, transparent);
 }
 .sc-progress-track-dark {
   background: rgb(255 255 255 / 0.1);
@@ -1321,7 +1452,7 @@
   --sc-action-fg: var(--sc-action-ink);
   --sc-quiet-fg: var(--sc-quiet-ink);
   --sc-line: var(--border);
-  --sc-wash: color-mix(in oklch, var(--foreground) 2.5%, transparent);
+  --sc-wash: color-mix(in srgb, var(--foreground) 2.5%, transparent);
   --sc-text: var(--foreground);
   --sc-copy: var(--muted-foreground);
   --sc-quiet-text: var(--muted-foreground);
@@ -1343,11 +1474,15 @@
   --sc-quiet-fg: var(--sc-quiet);
   --sc-line: rgb(255 255 255 / 0.055);
   --sc-wash: rgb(255 255 255 / 0.025);
-  --sc-text: #f7f3eb;
-  --sc-copy: #aab5b0;
-  --sc-quiet-text: #87958e;
+  --sc-text: var(--sc-g-text);
+  --sc-copy: var(--sc-g-copy);
+  --sc-quiet-text: var(--sc-g-soft);
   border-color: rgb(255 255 255 / 0.08);
-  background: linear-gradient(145deg, rgb(24 31 29 / 0.98), rgb(14 20 18 / 0.98));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--sc-g-surface-a) 98%, transparent),
+    color-mix(in srgb, var(--sc-g-surface-b) 98%, transparent)
+  );
   box-shadow: 0 26px 70px rgb(0 0 0 / 0.38);
 }
 .sc-card:hover {
@@ -1362,12 +1497,21 @@
 
 /* ---- Photograph ---- */
 
+/*
+  Sized to sit in a row of ordinary lab cards without stretching it. The
+  first version followed the card mock (a 230px photograph, four lines of
+  copy, 60px figures) and stood 500–540px tall against their 435, so every
+  row it landed in grew a band of empty card. The photograph now takes the
+  same 16:9 as its neighbours' screenshots, the copy two lines as theirs
+  does, and the figures and buttons are trimmed to match.
+*/
 .sc-card-photo {
   position: relative;
-  height: 230px;
+  /* The ordinary card's ratio (learner-lab-card.tsx), so a row stays level. */
+  aspect-ratio: 2 / 1;
   flex-shrink: 0;
   overflow: hidden;
-  background: #101715;
+  background: var(--sc-g-hero);
 }
 .sc-card-photo img {
   transition: transform 0.5s ease;
@@ -1380,7 +1524,12 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgb(0 0 0 / 0.03) 0%, rgb(0 0 0 / 0.08) 56%, rgb(10 15 14 / 0.82) 100%);
+  background: linear-gradient(
+    180deg,
+    rgb(0 0 0 / 0.03) 0%,
+    rgb(0 0 0 / 0.08) 56%,
+    color-mix(in srgb, var(--sc-g-page) 82%, transparent) 100%
+  );
 }
 .sc-card-badge {
   position: absolute;
@@ -1433,7 +1582,7 @@
   padding: 6px 9px;
   border-radius: 999px;
   border: 1px solid rgb(255 255 255 / 0.12);
-  background: rgb(8 14 13 / 0.64);
+  background: color-mix(in srgb, var(--sc-g-scrim) 64%, transparent);
   color: #c5cfca;
   font-size: 10px;
   line-height: 1.2;
@@ -1448,7 +1597,9 @@
   overflow: hidden;
   padding: 9px 14px;
   border-top: 1px solid rgb(255 255 255 / 0.05);
-  background: rgb(69 53 60 / 0.78);
+  /* The photograph's own last colour, darkened: MicrobeAI's #645157 lands
+     on the design's rgb(69 53 60). */
+  background: color-mix(in srgb, color-mix(in srgb, var(--sc-edge, #645157) 64%, black) 80%, transparent);
   color: #ebe7e4;
   font-size: 9px;
   line-height: 1.3;
@@ -1459,24 +1610,56 @@
 
 /* ---- Body ---- */
 
+/* Measured to land on an ordinary card's 408px at 1440, so a row made only
+   of showcase cards stands as tall as any other row. */
 .sc-card-body {
-  padding: 20px 18px 18px;
+  padding: 16px;
 }
+/*
+  One line, sized to fit: the width left beside the icon tile (the card less
+  32px of padding and 46px of tile and gap), divided by the title's length
+  at 0.52em a character — measured on Manrope Bold across the catalogue
+  (0.42–0.52) and taken at the wide end so it always fits — between 14px and
+  the design's 22px. Ellipsis only as a last resort.
+*/
 .sc-card-title {
+  flex: 1;
+  min-width: 0;
   margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
-  font-size: 22px;
+  font-size: clamp(14px, calc((100cqi - var(--sc-title-inset, 78px)) / (var(--sc-chars, 12) * 0.52)), 22px);
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.035em;
 }
 /* The title's link covers the whole card, so the photograph and the empty
    space are a way in; the actions sit above it. */
+.sc-card-bare-title {
+  --sc-title-inset: 32px;
+}
+.sc-card-bare-title .sc-card-icon {
+  display: none;
+}
+/* The title row keeps the tile's height either way, so a card without one
+   is not shorter than its neighbours. */
+.sc-card-body > :first-child {
+  min-height: 32px;
+  align-items: center;
+}
 .sc-card-title a::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
+}
+/* On the card the second part of a two-line title stays on the first line,
+   smaller, so every card's title is one line tall. */
+.sc-card-title-sub {
+  font-size: 0.62em;
+  letter-spacing: -0.02em;
 }
 .sc-card-title-primary {
   color: var(--sc-primary-fg);
@@ -1488,44 +1671,43 @@
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   border: 1px solid color-mix(in srgb, var(--sc-action-fg) 13%, transparent);
   background: color-mix(in srgb, var(--sc-action-fg) 8%, transparent);
   color: var(--sc-action-fg);
 }
 .sc-card-icon svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 .sc-card-description {
   display: -webkit-box;
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   overflow: hidden;
   color: var(--sc-copy);
   font-size: 13px;
-  line-height: 1.55;
+  line-height: 1.5;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 2;
 }
 
 /* Three figures; two and one on a card too narrow for "Intermediate". */
 .sc-card-figures {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
-  gap: 9px;
-  margin: 18px 0 0;
+  gap: 8px;
+  margin: 13px 0 0;
 }
 .sc-card-figures > div {
-  min-height: 60px;
-  padding: 10px 11px;
-  border-radius: 13px;
+  padding: 8px 10px;
+  border-radius: 11px;
   border: 1px solid var(--sc-line);
   background: var(--sc-wash);
 }
 .sc-card-figures dt {
-  margin-bottom: 5px;
+  margin-bottom: 3px;
   color: var(--sc-quiet-text);
   font-size: 9px;
   letter-spacing: 0.09em;
@@ -1557,7 +1739,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
-  padding-top: 16px;
+  padding-top: 12px;
 }
 .sc-card-actions > :only-child {
   grid-column: 1 / -1;
@@ -1568,8 +1750,8 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 46px;
-  border-radius: 13px;
+  min-height: 40px;
+  border-radius: 11px;
   font-size: 13px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
@@ -1577,7 +1759,7 @@
   padding: 0 18px;
   color: #ffffff;
   font-weight: 800;
-  background: linear-gradient(90deg, var(--sc-primary-ink), color-mix(in srgb, var(--sc-primary-ink) 88%, white));
+  background: linear-gradient(90deg, var(--sc-primary-ink), color-mix(in srgb, var(--sc-primary-ink) 85%, black));
   box-shadow: 0 12px 28px color-mix(in srgb, var(--sc-primary-ink) 18%, transparent);
 }
 .dark .sc-card-primary {
@@ -1600,10 +1782,40 @@
   color: #dce3df;
 }
 .sc-card-secondary:hover {
-  background: color-mix(in oklch, var(--foreground) 6%, transparent);
+  background: color-mix(in srgb, var(--foreground) 6%, transparent);
 }
 
-@container (max-width: 20rem) {
+/*
+  A narrow card — three columns beside the shell's sidebar at 1024px leave
+  it about 220px wide — stacks the three figure tiles and grows ~120px taller
+  than its row. There the figures become one line of text, as an ordinary
+  card's meta line is; the labels stay for screen readers.
+*/
+@container (max-width: 17rem) {
+  .sc-card-title {
+    white-space: normal;
+    font-size: 18px;
+  }
+  .sc-card-figures {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+  }
+  .sc-card-figures > div {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  .sc-card-figures dt {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+@container (max-width: 12rem) {
   .sc-card-actions {
     grid-template-columns: 1fr;
   }
@@ -1611,9 +1823,6 @@
 @media (max-width: 32.5rem) {
   .sc-card {
     border-radius: 22px;
-  }
-  .sc-card-photo {
-    height: 205px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1629,4 +1838,142 @@
   .sc-card:hover .sc-card-photo img {
     transform: none;
   }
+}
+
+/*
+  The lab catalogue's backdrop (Explore Labs and My Labs).
+
+  Four quiet layers behind the header, faded out before the first row of
+  cards so nothing competes with them: an aurora in the hub's indigo and sky
+  (with a violet and a warm coral undertone for depth), a fine engineering
+  grid that dissolves toward the edges, and a film grain so a large dark
+  area does not read as flat. All colour sits behind text at low opacity;
+  every foreground on it keeps its contrast against the page background.
+  The only motion is a slow drift of the aurora, and none at all for anyone
+  who has asked for reduced motion.
+*/
+.labs-backdrop {
+  --lb-a: 99 102 241;
+  --lb-b: 56 189 248;
+  --lb-c: 168 85 247;
+  --lb-d: 236 120 95;
+  --lb-grid: 148 163 184;
+  --lb-a-o: 0.32;
+  --lb-b-o: 0.22;
+  --lb-c-o: 0.15;
+  --lb-d-o: 0.05;
+  --lb-grid-o: 0.09;
+  --lb-grain-o: 0.05;
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: -1;
+  height: 820px;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent);
+  mask-image: linear-gradient(to bottom, #000 45%, transparent);
+}
+:root:not(.dark) .labs-backdrop {
+  --lb-a-o: 0.14;
+  --lb-b-o: 0.12;
+  --lb-c-o: 0.07;
+  --lb-d-o: 0.06;
+  --lb-grid: 15 23 42;
+  --lb-grid-o: 0.055;
+  --lb-grain-o: 0.035;
+}
+.labs-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: -10% -5% 0;
+  background:
+    radial-gradient(52% 58% at 14% 2%, rgb(var(--lb-a) / var(--lb-a-o)), transparent 70%),
+    radial-gradient(44% 52% at 86% 6%, rgb(var(--lb-b) / var(--lb-b-o)), transparent 70%),
+    radial-gradient(34% 40% at 52% 26%, rgb(var(--lb-c) / var(--lb-c-o)), transparent 72%),
+    radial-gradient(28% 34% at 97% 58%, rgb(var(--lb-d) / var(--lb-d-o)), transparent 72%);
+  filter: saturate(1.1);
+}
+.labs-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgb(var(--lb-grid) / var(--lb-grid-o)) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--lb-grid) / var(--lb-grid-o)) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: center -1px;
+  -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 0%, #000 22%, transparent 78%);
+  mask-image: radial-gradient(ellipse 72% 70% at 50% 0%, #000 22%, transparent 78%);
+}
+.labs-backdrop-grain {
+  position: absolute;
+  inset: 0;
+  opacity: var(--lb-grain-o);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+:root:not(.dark) .labs-backdrop-grain {
+  mix-blend-mode: multiply;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .labs-backdrop::before {
+    animation: labs-aurora 28s ease-in-out infinite alternate;
+  }
+}
+@keyframes labs-aurora {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2.5%, 1.5%, 0) scale(1.05);
+  }
+}
+
+/* Header on the backdrop. */
+.labs-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 6px 12px 6px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklch, var(--primary) 28%, var(--border));
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  color: var(--primary-ink, var(--primary));
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(8px);
+}
+.labs-eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgb(34 197 94 / 0.18);
+}
+.labs-title {
+  margin: 0;
+  font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(34px, 4.6vw, 56px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  background: linear-gradient(180deg, var(--foreground) 35%, color-mix(in oklch, var(--foreground) 62%, var(--primary)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.labs-filters {
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+  /* sRGB, not oklch: mixing with `transparent` in oklch leaves the hue as
+     `none`, which Chrome paints as hue 0 — the dark-blue card came out
+     maroon (29, 19, 22). Every transparency mix in these blocks is sRGB for
+     that reason. */
+  background: color-mix(in srgb, var(--card) 86%, transparent);
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, var(--foreground) 6%, transparent) inset,
+    0 18px 50px -30px rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(14px);
 }

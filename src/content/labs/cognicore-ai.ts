@@ -26,6 +26,81 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * No designer's page for this lab: the showcase template, with copy drawn
+   * only from this guide and checked against the app (the legal and finance
+   * domain modules, summarise, compare and meaning-based search all exist).
+   * Palette from the cover: the violet of the neon brain, the sky blue of the
+   * screens and the warm peach of the room, over midnight blue.
+   */
+  showcase: {
+    overline: "Document intelligence",
+    title: [{ text: "Cognicore" }, { text: " AI", accent: "primary" }],
+    headline: "Read a pile of documents by meaning, not keyword.",
+    intro:
+      "Summarise a contract, compare two drafts, and search a whole corpus by meaning rather than keyword — then find where the system fails.",
+    about: [
+      "Contracts, invoices and financial reports are long, repetitive and expensive to read carefully — which is why important details in them get missed.",
+      "This lab is a document-intelligence workbench with two modules, one for legal documents and one for financial ones: summarise a document, surface the differences that matter between two versions, and search a corpus for a clause by meaning.",
+    ],
+    tags: ["Semantic search", "Summarisation", "Document comparison", "Prompting"],
+    walkthroughTitle: "From a long document to a checked answer",
+    journey: "Cognicore",
+    card: {
+      badge: "Interactive lab",
+      icon: "insight",
+      description:
+        "Summarise a contract, compare two drafts, and search a whole pile of documents by meaning rather than keyword.",
+    },
+    palette: {
+      primary: { onDark: "#a09df7", ink: "#5955ec" },
+      secondary: { onDark: "#6fb0e8", ink: "#1d6fb5" },
+      action: { onDark: "#e3b9a3", ink: "#a25831" },
+      quiet: { onDark: "#5fc4c9", ink: "#29767a" },
+      cta: { onDark: "#8f8cf2", ink: "#5955ec", text: "#0b0a1f" },
+      level: "#6fb0e8",
+      features: [
+        { onDark: "#a09df7", ink: "#5955ec" },
+        { onDark: "#6fb0e8", ink: "#1d6fb5" },
+        { onDark: "#e3b9a3", ink: "#a25831" },
+        { onDark: "#5fc4c9", ink: "#29767a" },
+      ],
+    },
+    ground: {
+      page: "#080d18",
+      sidebar: "#090e18",
+      surface: ["#141a2a", "#0c111d"],
+      hero: "#0e1424",
+      scrim: "#070b16",
+      text: "#f2f3f8",
+      muted: "#a1a8bd",
+      copy: "#b0b6c8",
+      soft: "#7e869c",
+    },
+    features: [
+      {
+        icon: "analysis",
+        title: "Summaries you check",
+        body: "Summarise a long document, then check the summary against the source rather than trusting it.",
+      },
+      {
+        icon: "graph",
+        title: "Compare two drafts",
+        body: "Separate the substantive changes between two versions from the cosmetic ones.",
+      },
+      {
+        icon: "simulation",
+        title: "Search by meaning",
+        body: "Find the clause keyword search misses, and see why meaning-based retrieval finds it.",
+      },
+      {
+        icon: "insight",
+        title: "Know the failure modes",
+        body: "Spot hallucinated citations, missed negations and lost context before they cost you.",
+      },
+    ],
+  },
+
   video: {
     url: "/demos/cognicore-ai.mp4",
     poster: "/demos/cognicore-ai.jpg",

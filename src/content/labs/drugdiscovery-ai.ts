@@ -26,6 +26,93 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * The designer's page (drugdiscovery.html / drugdiscovery.css), copy and
+   * colours as supplied. Checked against the lab: the teaching graph in
+   * `data/knowledgeGraph.ts` carries SIDER side-effect edges, so "side
+   * effects" and "adverse effects" hold for the graph the learner works in
+   * (the Hetionet reference graph behind the API drops them under its
+   * commercial-safe licence policy); the embedding is TransE, trained in the
+   * browser (`engine/transe.ts`), and link prediction ranks from it.
+   *
+   * Palette from drugdiscovery.css: blue #74a9cf, rose #e6a1ad, coral
+   * #ec785f, green #6fa58d. The design is dark only; each `ink` is the same
+   * hue darkened to at least 5.3:1 on white for the light theme.
+   */
+  showcase: {
+    overline: "Network pharmacology",
+    title: [
+      { text: "Repurpose" },
+      { text: "AI", accent: "primary" },
+      { text: "Drug Discovery Lab", accent: "secondary", subtitle: true },
+    ],
+    headline: "Map medicines. Connect targets. Surface new therapeutic possibilities.",
+    intro:
+      "Build a drug–gene–disease knowledge graph, learn numerical embeddings, and predict promising links that are not yet recorded.",
+    about: [
+      "Some of the most important medicines in use today were first developed for something else and later found to have a different therapeutic use. Drug repurposing tries to make that process deliberate rather than accidental.",
+      "In this lab, you will represent drugs, genes, diseases and side effects as a connected graph, learn a numerical embedding of that graph and identify links that ought to exist but have not yet been recorded — producing a practical repurposing hypothesis.",
+    ],
+    tags: ["Drug Repurposing", "Knowledge Graphs", "Graph Embeddings", "AI Prediction"],
+    walkthroughTitle: "From known medicines to new treatment hypotheses",
+    journey: "RepurposeAI",
+    card: {
+      badge: "Interactive lab",
+      icon: "graph",
+      description:
+        "Build a drug–gene–disease knowledge graph, learn numerical embeddings, and predict promising links that are not yet recorded.",
+    },
+    photo: { position: "50% 50%" },
+    palette: {
+      primary: { onDark: "#74a9cf", ink: "#35709b" },
+      secondary: { onDark: "#ec785f", ink: "#c63617" },
+      action: { onDark: "#e6a1ad", ink: "#c4344d" },
+      quiet: { onDark: "#6fa58d", ink: "#497461" },
+      cta: { onDark: "#74a9cf", ink: "#35709b", text: "#071016" },
+      level: "#ec785f",
+      features: [
+        { onDark: "#74a9cf", ink: "#35709b" },
+        { onDark: "#e6a1ad", ink: "#c4344d" },
+        { onDark: "#ec785f", ink: "#c63617" },
+        { onDark: "#6fa58d", ink: "#497461" },
+      ],
+    },
+    ground: {
+      page: "#0b1013",
+      sidebar: "#0b1012",
+      surface: ["#171a21", "#0e1116"],
+      hero: "#141a20",
+      scrim: "#090d11",
+      scrimStops: [97, 92, 60, 24, 76],
+      text: "#f5f1eb",
+      muted: "#9fa9b0",
+      copy: "#adb7bd",
+      soft: "#7f8b92",
+    },
+    features: [
+      {
+        icon: "graph",
+        title: "Knowledge graph reasoning",
+        body: "Model relationships between medicines, targets, diseases and adverse effects.",
+      },
+      {
+        icon: "analysis",
+        title: "Graph embeddings",
+        body: "Convert network structure into numerical representations for machine learning.",
+      },
+      {
+        icon: "simulation",
+        title: "Link prediction",
+        body: "Score missing connections and surface plausible therapeutic associations.",
+      },
+      {
+        icon: "insight",
+        title: "Actionable hypothesis",
+        body: "Translate the model output into an interpretable drug-repurposing recommendation.",
+      },
+    ],
+  },
+
   video: {
     url: "/demos/drugdiscovery-ai.mp4",
     poster: "/demos/drugdiscovery-ai.jpg",

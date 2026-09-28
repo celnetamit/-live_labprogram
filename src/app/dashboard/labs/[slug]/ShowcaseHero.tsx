@@ -1,18 +1,9 @@
 import Image from "next/image";
-import { ArrowRight, ChartColumn, CirclePlay, Dna, Lightbulb, Locate, Play } from "lucide-react";
 import type { LabShowcase } from "@/content/labs";
+import { ArrowGlyph, PlayCircleGlyph, PlayGlyph } from "@/components/showcase-icons";
+import { wordmark } from "@/components/showcase-wordmark";
 export { showcaseChromeCss, showcaseRootClass, showcaseVars } from "@/lib/showcase";
 import type { AccessRequestState } from "./AccessRequestPanel";
-
-export const SHOWCASE_ICONS = {
-  sequence: Dna,
-  analysis: ChartColumn,
-  simulation: Locate,
-  insight: Lightbulb,
-} as const;
-
-/** Card order is palette order, so card n always wears accent n. */
-export const SHOWCASE_TONES = ["primary", "secondary", "action", "quiet"] as const;
 
 type Props = {
   name: string;
@@ -49,21 +40,23 @@ export default function ShowcaseHero(props: Props) {
     change. If they no longer spell the same thing, the heading falls back to
     the real name rather than advertising one the rest of the hub does not use.
   */
-  const wordmark = showcase.title.map((s) => s.text).join("");
-  const title =
-    wordmark === props.name
-      ? showcase.title.map((s, i) => (
-          <span key={i} className={s.accent ? `sc-title-${s.accent}` : undefined}>
-            {s.text}
-          </span>
-        ))
-      : props.name;
+  const title = wordmark(showcase, props.name, "sc-title");
 
-  const stats = [
-    { value: String(props.steps), label: "Guided lab steps" },
-    ...(props.handsOn ? [{ value: props.handsOn, label: "Hands-on time" }] : []),
-    ...(props.difficulty ? [{ value: props.difficulty, label: "Difficulty level" }] : []),
-  ];
+  /* Authored labels, computed values; a figure with no value is dropped
+     rather than shown as a dash. */
+  const values = {
+    steps: String(props.steps),
+    handsOn: props.handsOn,
+    difficulty: props.difficulty,
+    walkthrough: props.videoLength,
+  };
+  const stats = (
+    showcase.stats ?? [
+      { kind: "steps", label: "Guided lab steps" },
+      { kind: "handsOn", label: "Hands-on time" },
+      { kind: "difficulty", label: "Difficulty level" },
+    ]
+  ).flatMap((s) => (values[s.kind] ? [{ value: values[s.kind]!, label: s.label }] : []));
 
   /*
     One primary action per state. A locked visitor gets a way forward from the
@@ -80,14 +73,14 @@ export default function ShowcaseHero(props: Props) {
           className="sc-btn sc-btn-primary focus-ring"
         >
           {props.startLabel}
-          <ArrowRight className="h-[17px] w-[17px]" />
+          <ArrowGlyph className="h-[17px] w-[17px]" />
           <span className="sr-only">(opens in a new tab)</span>
         </a>
       )
     : (
         <a href="#access" className="sc-btn sc-btn-primary focus-ring">
           {props.requestState === "pending" ? "View your request" : "Request access"}
-          <ArrowRight className="h-[17px] w-[17px]" />
+          <ArrowGlyph className="h-[17px] w-[17px]" />
         </a>
       );
 
@@ -103,10 +96,11 @@ export default function ShowcaseHero(props: Props) {
         loading="eager"
         fetchPriority="high"
         sizes="(max-width: 1280px) 100vw, 1200px"
-        /* Framed high: the cover is a 16:9 crop, and centred in a hero this
-           wide it cut the pink filament that crosses the top of the
-           micrograph — the strongest line in the picture. */
-        className="sc-photo object-cover object-[50%_18%]"
+        /* Per lab: MicrobeAI frames high, because centred in a hero this
+           wide the 16:9 cover cut the pink filament that crosses the top of
+           the micrograph — the strongest line in the picture. */
+        className="sc-photo object-cover"
+        style={{ objectPosition: showcase.photo?.position ?? "50% 50%" }}
       />
       <div aria-hidden className="sc-scrim" />
       <div aria-hidden className="sc-rings" />
@@ -137,7 +131,7 @@ export default function ShowcaseHero(props: Props) {
             {primary}
             {props.videoLength && (
               <a href="#demo" className="sc-btn sc-btn-ghost focus-ring">
-                <CirclePlay className="h-[17px] w-[17px]" />
+                <PlayCircleGlyph className="h-[17px] w-[17px]" />
                 Watch {props.videoLength} Demo
               </a>
             )}
@@ -196,7 +190,7 @@ export default function ShowcaseHero(props: Props) {
                 className="object-cover"
               />
               <span aria-hidden className="sc-play">
-                <Play className="h-6 w-6 translate-x-0.5" fill="currentColor" strokeWidth={0} />
+                <PlayGlyph className="h-6 w-6" />
               </span>
               <span className="sc-video-foot">
                 <span>
@@ -210,9 +204,13 @@ export default function ShowcaseHero(props: Props) {
         )}
       </div>
 
-      {/* The photograph is a published micrograph, so it is credited where it
-          is shown, as it is on the catalogue card. */}
-      {props.credit && <p className="sc-credit">Micrograph: {props.credit}</p>}
+      {/* A published photograph is credited where it is shown, as it is on
+          the catalogue card. */}
+      {props.credit && (
+        <p className="sc-credit">
+          {showcase.photo?.creditLabel ?? "Photograph"}: {props.credit}
+        </p>
+      )}
     </header>
   );
 }

@@ -84,14 +84,35 @@ const guide: LabGuide = {
     journey: "MicrobeAI",
     card: {
       badge: "Interactive lab",
+      icon: "sequence",
       description:
         "Explore an AI-powered bioinformatics laboratory. Analyze microbial communities, simulate anaerobic bioreactors and connect sequencing data to ecosystem behavior.",
     },
+    photo: { position: "50% 18%", creditLabel: "Micrograph" },
     palette: {
       primary: { onDark: "#8fb8c7", ink: "#2f6477" },
       secondary: { onDark: "#d96058", ink: "#b0372e" },
-      action: { onDark: "#d799a9", ink: "#9c3f58", text: "#241216" },
+      action: { onDark: "#d799a9", ink: "#9c3f58" },
       quiet: { onDark: "#9da68c", ink: "#56603f" },
+      cta: { onDark: "#d799a9", ink: "#9c3f58", text: "#241216" },
+      level: "#e6c9bc",
+      features: [
+        { onDark: "#8fb8c7", ink: "#2f6477" },
+        { onDark: "#d96058", ink: "#b0372e" },
+        { onDark: "#d799a9", ink: "#9c3f58" },
+        { onDark: "#9da68c", ink: "#56603f" },
+      ],
+    },
+    ground: {
+      page: "#0a0f0e",
+      sidebar: "#0b1012",
+      surface: ["#161d1b", "#0d1311"],
+      hero: "#101715",
+      scrim: "#080d0c",
+      text: "#f5f1e9",
+      muted: "#9ca8a2",
+      copy: "#aeb9b3",
+      soft: "#83918a",
     },
     features: [
       {

@@ -7,6 +7,7 @@ import type { LabPreview } from "@/lib/labPreview";
 import LearnerLabCard from "@/components/learner-lab-card";
 import type { CardShowcase, CoverEdge, ImageCredit } from "@/lib/learnerLabs";
 import CustomLabRequestPanel, { type MyLabRequest } from "./CustomLabRequestPanel";
+import { showcaseFontClass } from "@/lib/showcase";
 
 export type CatalogLab = {
   id: string;
@@ -129,17 +130,24 @@ export default function LabCatalogClient({
   );
 
   const activeCount = labs.filter((l) => l.status === "ACTIVE").length;
+  /* Counted, not written: the eyebrow states only what the catalogue holds. */
+  const subjectCount = new Set(labs.filter((l) => l.status === "ACTIVE").map((l) => l.subject)).size;
   const ownedCount = labs.filter((l) => l.owned && l.status === "ACTIVE").length;
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className={`max-w-7xl mx-auto ${showcaseFontClass}`}>
+      {/* Header — set on the page's backdrop (`.labs-backdrop`, drawn by the
+          page that hosts this), in the cards' own display face. */}
+      <div className="mb-7 flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-2 sm:pt-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          <p className="labs-eyebrow">
+            <span aria-hidden className="labs-eyebrow-dot" />
+            {activeCount} live labs · {subjectCount} subjects
+          </p>
+          <h1 className="labs-title">
             {publicMode ? "Explore Labs" : "My Labs"}
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="mt-2 max-w-2xl text-base text-muted-foreground sm:text-lg">
             {publicMode && signedIn ? (
               <>{activeCount} premium workshop labs. You own <span className="text-primary font-medium">{ownedCount}</span> — open {ownedCount === 1 ? 'it' : 'them'} from <Link href="/dashboard/labs" className="text-primary font-medium hover:underline cursor-pointer">My Labs</Link>.</>
             ) : publicMode ? (
@@ -162,7 +170,7 @@ export default function LabCatalogClient({
       </div>
 
       {/* Filters */}
-      <div className="mb-4 flex flex-col gap-3 rounded-xl border border-border bg-card p-3 shadow-sm sm:p-4 md:flex-row">
+      <div className="labs-filters mb-4 flex flex-col gap-3 p-3 sm:p-4 md:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
           <input
