@@ -30,8 +30,9 @@ const guide: LabGuide = {
    * No designer's page for this lab: the showcase template, with copy drawn
    * only from this guide and checked against the app (the legal and finance
    * domain modules, summarise, compare and meaning-based search all exist).
-   * Palette from the cover: the violet of the neon brain, the sky blue of the
-   * screens and the warm peach of the room, over midnight blue.
+   * Palette from the cover (a contract in hand at a desk): the mustard of the
+   * sweater, the terracotta of the chair, the cream of the paper and a cool
+   * blue for balance, over a warm charcoal.
    */
   showcase: {
     overline: "Document intelligence",
@@ -53,29 +54,29 @@ const guide: LabGuide = {
         "Summarise a contract, compare two drafts, and search a whole pile of documents by meaning rather than keyword.",
     },
     palette: {
-      primary: { onDark: "#a09df7", ink: "#5955ec" },
-      secondary: { onDark: "#6fb0e8", ink: "#1d6fb5" },
-      action: { onDark: "#e3b9a3", ink: "#a25831" },
-      quiet: { onDark: "#5fc4c9", ink: "#29767a" },
-      cta: { onDark: "#8f8cf2", ink: "#5955ec", text: "#0b0a1f" },
-      level: "#6fb0e8",
+      primary: { onDark: "#e6a93c", ink: "#906312" },
+      secondary: { onDark: "#ece3d2", ink: "#816736" },
+      action: { onDark: "#e0907a", ink: "#b7492b" },
+      quiet: { onDark: "#a9c4d8", ink: "#427092" },
+      cta: { onDark: "#e6a93c", ink: "#906312", text: "#1a1206" },
+      level: "#e0907a",
       features: [
-        { onDark: "#a09df7", ink: "#5955ec" },
-        { onDark: "#6fb0e8", ink: "#1d6fb5" },
-        { onDark: "#e3b9a3", ink: "#a25831" },
-        { onDark: "#5fc4c9", ink: "#29767a" },
+        { onDark: "#e6a93c", ink: "#906312" },
+        { onDark: "#e0907a", ink: "#b7492b" },
+        { onDark: "#ece3d2", ink: "#816736" },
+        { onDark: "#a9c4d8", ink: "#427092" },
       ],
     },
     ground: {
-      page: "#080d18",
-      sidebar: "#090e18",
-      surface: ["#141a2a", "#0c111d"],
-      hero: "#0e1424",
-      scrim: "#070b16",
-      text: "#f2f3f8",
-      muted: "#a1a8bd",
-      copy: "#b0b6c8",
-      soft: "#7e869c",
+      page: "#0d0b0a",
+      sidebar: "#0e0c0b",
+      surface: ["#1b1715", "#12100e"],
+      hero: "#151210",
+      scrim: "#0c0a09",
+      text: "#f6f2ec",
+      muted: "#aba39a",
+      copy: "#b9b1a7",
+      soft: "#8a837b",
     },
     features: [
       {

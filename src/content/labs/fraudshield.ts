@@ -30,13 +30,9 @@ const guide: LabGuide = {
    * No designer's page for this lab: the showcase template, with copy drawn
    * only from this guide and checked against the app (Anomaly Detector,
    * phishing, identity and voice verification, threshold tuning and
-   * `components/lab/AdversarialLab.tsx` all exist). Palette from the cover:
-   * the cyan glass card, the red laser, the teal-green shield and the blue
-   * circuit traces, over navy.
-   *
-   * The cover is an Adobe Stock comp — watermarked and not licensed for
-   * publication — standing in until the licensed file replaces it
-   * (`COVER_PHOTO` in src/lib/learnerLabs.ts).
+   * `components/lab/AdversarialLab.tsx` all exist). Palette from the cover
+   * of engraved wooden discs: the wood, the blue-grey slate beneath them, a
+   * coral for the warning, and the cream of the grain, over charcoal.
    */
   showcase: {
     overline: "Fraud detection & security",
@@ -61,29 +57,29 @@ const guide: LabGuide = {
       description: "Score transactions for fraud, tune the threshold, then attack your own detector to see how it breaks.",
     },
     palette: {
-      primary: { onDark: "#4fd0e2", ink: "#167582" },
-      secondary: { onDark: "#f06a7e", ink: "#d41532" },
-      action: { onDark: "#5fd6b8", ink: "#1f7862" },
-      quiet: { onDark: "#7aa6e8", ink: "#2469d0" },
-      cta: { onDark: "#4fd0e2", ink: "#167582", text: "#061318" },
-      level: "#f28496",
+      primary: { onDark: "#e6b57f", ink: "#975d1e" },
+      secondary: { onDark: "#9fb6cf", ink: "#4a6e95" },
+      action: { onDark: "#e8876a", ink: "#bd421d" },
+      quiet: { onDark: "#e8dcc8", ink: "#846737" },
+      cta: { onDark: "#e6b57f", ink: "#975d1e", text: "#1a1108" },
+      level: "#e8876a",
       features: [
-        { onDark: "#4fd0e2", ink: "#167582" },
-        { onDark: "#f06a7e", ink: "#d41532" },
-        { onDark: "#5fd6b8", ink: "#1f7862" },
-        { onDark: "#7aa6e8", ink: "#2469d0" },
+        { onDark: "#e6b57f", ink: "#975d1e" },
+        { onDark: "#e8876a", ink: "#bd421d" },
+        { onDark: "#9fb6cf", ink: "#4a6e95" },
+        { onDark: "#e8dcc8", ink: "#846737" },
       ],
     },
     ground: {
-      page: "#060c1c",
-      sidebar: "#070d1c",
-      surface: ["#111a2c", "#0a1222"],
-      hero: "#0a1428",
-      scrim: "#050b1c",
-      text: "#f1f4f8",
-      muted: "#9fabbf",
-      copy: "#aeb9c9",
-      soft: "#7c889c",
+      page: "#0c0e10",
+      sidebar: "#0d0f11",
+      surface: ["#181b1f", "#101215"],
+      hero: "#14171a",
+      scrim: "#0a0c0e",
+      text: "#f4f2ee",
+      muted: "#a5a8ad",
+      copy: "#b4b6ba",
+      soft: "#868a90",
     },
     features: [
       {

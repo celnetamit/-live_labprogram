@@ -25,6 +25,85 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * No designer's page for this lab: the showcase template, with copy drawn
+   * only from this guide and checked against the app (the Lifecycle Tracker,
+   * Second-Life Feasibility Analyzer, the pyrometallurgical, hydrometallurgical
+   * and direct recycling routes, and the Safety Compliance Checker all
+   * exist). Palette from the cover of spent cells: copper tops, the blue of
+   * the labels and sky, and battery yellow, over a blue-slate dark.
+   */
+  showcase: {
+    overline: "Circular energy storage",
+    title: [
+      { text: "Battery " },
+      { text: "Circularity", accent: "primary" },
+      { text: " AI", accent: "secondary" },
+    ],
+    headline: "Second life, or the shredder?",
+    intro:
+      "Assess a retired EV battery, decide whether it can power something else or should go to recovery, simulate the recycling, and check the plan against safety rules.",
+    about: [
+      "An electric-vehicle battery is retired when it can no longer hold about 80% of its original charge — but at that point it is still a large, expensive, perfectly functional energy store.",
+      "This lab is about what happens next: you assess a used pack's health, decide whether it gets a second life in a less demanding application or goes straight to material recovery, simulate the recycling process, and check the whole plan against safety and compliance standards.",
+    ],
+    tags: ["State of health", "Second-life reuse", "Recycling routes", "Safety compliance"],
+    walkthroughTitle: "From a retired pack to a decision you can defend",
+    journey: "Battery Circularity",
+    card: {
+      badge: "Interactive lab",
+      icon: "simulation",
+      description: "Decide what happens to a retired EV battery: a second life powering something else, or the shredder.",
+    },
+    palette: {
+      primary: { onDark: "#e8905a", ink: "#ad5118" },
+      secondary: { onDark: "#74a9d8", ink: "#2f6fa8" },
+      action: { onDark: "#f0c84a", ink: "#84670b" },
+      quiet: { onDark: "#9fb4c8", ink: "#516f8d" },
+      cta: { onDark: "#e8905a", ink: "#ad5118", text: "#1a0e06" },
+      level: "#f0c84a",
+      features: [
+        { onDark: "#e8905a", ink: "#ad5118" },
+        { onDark: "#74a9d8", ink: "#2f6fa8" },
+        { onDark: "#f0c84a", ink: "#84670b" },
+        { onDark: "#9fb4c8", ink: "#516f8d" },
+      ],
+    },
+    ground: {
+      page: "#0b0e12",
+      sidebar: "#0b0e11",
+      surface: ["#161b22", "#0e1217"],
+      hero: "#12161b",
+      scrim: "#090c10",
+      text: "#f3f4f6",
+      muted: "#a3abb5",
+      copy: "#b0b8c2",
+      soft: "#818b96",
+    },
+    features: [
+      {
+        icon: "analysis",
+        title: "Read a pack's health",
+        body: "Judge from a state-of-health report whether a pack is a second-life candidate.",
+      },
+      {
+        icon: "graph",
+        title: "Match it to a job",
+        body: "Pair a retired pack with applications whose duty cycle it can still meet.",
+      },
+      {
+        icon: "simulation",
+        title: "Simulate recycling",
+        body: "Compare recovery routes on yield, environmental impact and economic viability.",
+      },
+      {
+        icon: "insight",
+        title: "Safe and compliant",
+        body: "Check any reuse decision against the safety and compliance rules that constrain it.",
+      },
+    ],
+  },
+
   video: {
     url: "/demos/battery-ai.mp4",
     poster: "/demos/battery-ai.jpg",

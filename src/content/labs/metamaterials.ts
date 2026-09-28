@@ -26,6 +26,90 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * No designer's page for this lab: the showcase template, with copy drawn
+   * only from this guide and checked against the app (the JCA absorption
+   * model, transfer-matrix solver, bandgap analysis, TPMS lattices such as the
+   * gyroid, and the printability check all exist). The cover is acoustic
+   * foam, almost pure grey, so the accents are chosen rather than sampled —
+   * a technical cyan and violet over graphite, a warm sand for the headline,
+   * and a silver and a slate taken from the foam itself.
+   *
+   * "Pioneering Acoustic Metamaterials" is too long for one line at the
+   * hero's size, so "Metamaterials" takes the second, smaller line.
+   */
+  showcase: {
+    overline: "Acoustic metamaterials",
+    title: [
+      { text: "Pioneering " },
+      { text: "Acoustic", accent: "primary" },
+      { text: "Metamaterials", accent: "secondary", subtitle: true },
+    ],
+    headline: "Block sound with shape, not thickness.",
+    intro:
+      "Design a lattice that stops the frequencies you target — and check that a printer could actually make it.",
+    about: [
+      "Ordinary sound absorbers work by being thick: the low notes need a lot of material. Acoustic metamaterials take their properties from geometry instead, so a carefully shaped lattice a few centimetres thick can stop frequencies that would otherwise demand a wall.",
+      "This lab is a design workbench for those structures: you set an acoustic target, choose a lattice topology, and the physics engine returns an absorption spectrum, a bandgap analysis, and a verdict on whether the design could be printed.",
+    ],
+    tags: ["Acoustic absorption", "Bandgaps", "Lattice design", "Additive manufacturing"],
+    walkthroughTitle: "From an acoustic target to a printable lattice",
+    journey: "Acoustic Metamaterials",
+    card: {
+      badge: "Interactive lab",
+      icon: "graph",
+      description:
+        "Design a lattice that blocks sound by its shape rather than its thickness — and check a printer could actually make it.",
+    },
+    palette: {
+      primary: { onDark: "#5ccbd0", ink: "#23767a" },
+      secondary: { onDark: "#a39cf5", ink: "#6054ee" },
+      action: { onDark: "#e5c58f", ink: "#8c6421" },
+      quiet: { onDark: "#8fa6c4", ink: "#4f6e96" },
+      cta: { onDark: "#5ccbd0", ink: "#23767a", text: "#061516" },
+      level: "#a39cf5",
+      features: [
+        { onDark: "#5ccbd0", ink: "#23767a" },
+        { onDark: "#a39cf5", ink: "#6054ee" },
+        { onDark: "#d3d8de", ink: "#5f6d7e" },
+        { onDark: "#8fa6c4", ink: "#4f6e96" },
+      ],
+    },
+    ground: {
+      page: "#0c0c0d",
+      sidebar: "#0d0d0e",
+      surface: ["#18191b", "#101112"],
+      hero: "#141516",
+      scrim: "#0a0a0b",
+      text: "#f4f4f5",
+      muted: "#a6a8ad",
+      copy: "#b4b6bb",
+      soft: "#85878c",
+    },
+    features: [
+      {
+        icon: "analysis",
+        title: "Absorption spectrum",
+        body: "Read where a design absorbs and where it does not, from the lab's own physics engine.",
+      },
+      {
+        icon: "simulation",
+        title: "Bragg or resonance",
+        body: "See how a bandgap arises, and which kind a given lattice produces.",
+      },
+      {
+        icon: "graph",
+        title: "Lattice topologies",
+        body: "Compare lattices at fixed targets, and trade porosity against wall thickness.",
+      },
+      {
+        icon: "insight",
+        title: "Printable, or not",
+        body: "Recognise when a numerically excellent design cannot be manufactured.",
+      },
+    ],
+  },
+
   video: {
     url: "/demos/metamaterials.mp4",
     poster: "/demos/metamaterials.jpg",

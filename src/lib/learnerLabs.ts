@@ -122,16 +122,12 @@ const COVER_PHOTO: Record<string, CoverPhoto> = {
     credit: "Yong, E. Microbiome sequencing offers hope for diagnostics. Nature (2012)",
   },
   omicslab: { src: "/labs/omicslab.9a645e33.jpg", tint: "#888990", edge: "#8c8a88" },
-  /*
-    FraudShield's picture is an Adobe Stock comp — watermarked, 1000px, and
-    not licensed for publication. It is a placeholder for layout only: swap
-    in the licensed download (drop it in public/labs/, re-run the hash
-    script, update this path) before this ships.
-  */
-  fraudshield: { src: "/labs/fraudshield.8eabd42a.jpg", tint: "#0b1837", edge: "#081230" },
+  fraudshield: { src: "/labs/fraudshield.ee467982.jpg", tint: "#3a4045", edge: "#323b43" },
   logiclab: { src: "/labs/logiclab.32701fc0.jpg", tint: "#b9b9bc", edge: "#c2c4c8", edgeIsLight: true },
   "ai-6g": { src: "/labs/ai-6g.41186ec2.jpg", tint: "#b7b6b9", edge: "#c9cbcf", edgeIsLight: true },
-  "cognicore-ai": { src: "/labs/cognicore-ai.7abbeb5a.jpg", tint: "#33323e", edge: "#393742" },
+  "cognicore-ai": { src: "/labs/cognicore-ai.986765af.jpg", tint: "#807462", edge: "#75685a" },
+  "battery-ai": { src: "/labs/battery-ai.1f25baae.jpg", tint: "#1e242c", edge: "#12161a" },
+  metamaterials: { src: "/labs/metamaterials.8c99e225.jpg", tint: "#424548", edge: "#434649" },
   "virtual-ai": { src: "/labs/virtual-ai.82c2a62d.jpg", tint: "#918a8a", edge: "#736e6f" },
 };
 
