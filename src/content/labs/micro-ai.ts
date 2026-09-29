@@ -29,20 +29,20 @@ const guide: LabGuide = {
       "Fewer than one microbe in a hundred will grow in a laboratory dish, so most of what lives in soil, sludge or a human gut has never been cultured. Metagenomics gets around that by skipping cultivation entirely: extract all the DNA in a sample at once and read it. This lab takes you through that workflow end to end — inspect the sequence file, quality-control it, find out which organisms are there and in what proportion, work out what that community could do chemically, and then run an anaerobic digester to see how temperature, pH, feedstock and retention time change how much methane those organisms give you.",
 
     why:
-      "Anaerobic digestion is microbiology doing industrial work. The same four-stage microbial chain runs sewage works, farm digesters and the biogas plants that turn food waste into fuel, and when it fails it fails for microbiological reasons that show up in the data days before the gas output drops. Sequencing is now cheap enough that the bottleneck is no longer generating the data. It is reading it honestly — knowing what a percentage in a community profile actually refers to, and knowing which claims the data will not support.",
+      "Anaerobic digestion depends on different groups of microorganisms working together to break down organic matter and produce biogas. Sequencing helps us study these microbial communities, but the results need to be interpreted carefully. A community profile can show which microbial groups were classified in a sample and their relative abundance. Relative abundance shows the proportion of sequencing data assigned to different groups; it is not a direct measure of cell number, biomass, or microbial activity. Some information, such as functional potential, may be inferred from the microorganisms identified in the sample and available reference information. This can suggest what a microbial community may be capable of doing, but it does not show whether that function is active in the sample. Understanding the difference between detected, inferred, predicted, and unknown information helps users interpret the results more carefully.",
 
     whoFor:
-      "Microbiology, biotechnology, bioinformatics and environmental engineering students, and bioprocess engineers who want to understand what the biology is doing. No coding, no command line. If you know what DNA is and roughly what a species is, you have enough to begin.",
+      "This lab is suitable for students, researchers, and professionals interested in microbiology, biotechnology, bioinformatics, environmental science, anaerobic digestion, and bioprocess engineering.",
 
     outcomes: [
-      "Inspect a sequence file and say what it is from its contents, not its filename",
-      "Read a quality-control report and explain which analyses it does and does not permit",
-      "Interpret a community profile, including the unclassified fraction and what a relative abundance really measures",
-      "Score a profile against a mock community of certified composition, and say why share of DNA and share of cells are different answers",
-      "Tell a detected result from an inferred one, and say why the difference matters",
-      "Name the four stages of anaerobic digestion and the organisms that run each",
-      "Predict how temperature, pH, feedstock and retention time change biogas yield, and explain the mechanism",
-      "Recognise the microbial signature of a souring digester before the gas output falls",
+      "Identify the type of sequencing data from the information available in a file.",
+      "Read a quality-control report and understand whether the data are suitable for further analysis.",
+      "Explore a microbial community profile and interpret relative abundance and unclassified reads.",
+      "Compare an analysed microbial community with a mock community of known composition.",
+      "Distinguish between detected and inferred results.",
+      "Describe the main microbial stages involved in anaerobic digestion.",
+      "Explore how pH, temperature, substrate, and hydraulic retention time affect the digester simulation.",
+      "Compare microbial profiles from normal and stressed digester conditions.",
     ],
   },
 
@@ -50,17 +50,20 @@ const guide: LabGuide = {
    * Rewritten again against the "Live lab Profile content" brief (29 September
    * 2026), which moves the lab's category from the "Living intelligence"
    * framing to the plainer "Metagenomics and anaerobic digestion" and supplies
-   * its own about/feature/tag copy. Every claim carried over was re-checked
-   * against the lab, not just copied:
-   *  - "Digester Simulation" ("change pH, temperature, substrate and retention
-   *    time, and see how the digester responds"): true in the narrow sense
-   *    `engine/adm1Mapping.ts` defines — a detected organism selects an ADM1
-   *    guild and perturbs the biomass in it, and never overwrites a kinetic
-   *    constant.
-   *  - "Real-World Sequencing Data": `engine/realDatasets.ts` ships ENA
-   *    subsamples (SRR2039580 and others), and the curated sets in
+   * its own about/feature/tag copy — the four feature cards below carry the
+   * brief's own full paragraphs verbatim rather than the condensed one-liners
+   * this file used at first. Every claim carried over was re-checked against
+   * the lab, not just copied:
+   *  - "Digester Simulation" ("change parameters such as pH, temperature,
+   *    substrate, and retention time, and see how the simulation changes"):
+   *    true in the narrow sense `engine/adm1Mapping.ts` defines — a detected
+   *    organism selects an ADM1 guild and perturbs the biomass in it, and
+   *    never overwrites a kinetic constant.
+   *  - "Real-World Sequencing Data" ("public microbial sequencing data, along
+   *    with selected reference and mock datasets"): `engine/realDatasets.ts`
+   *    ships ENA subsamples (SRR2039580 and others), and the curated sets in
    *    `datasets.ts` are synthetic mock communities of known composition —
-   *    the two halves of the body line.
+   *    the two halves of the claim.
    *  - The brief's demo-chapter timestamps (0:00 through 2:28) match this
    *    file's `video.chapters` exactly, confirming it describes the same cut
    *    already recorded; its flagged gap — no audio track, no captions — was
@@ -82,7 +85,7 @@ const guide: LabGuide = {
     title: [{ text: "Microbe" }, { text: "AI", accent: "primary" }, { text: " Lab", accent: "secondary" }],
     headline: "Explore microbial communities through metagenomics and anaerobic digestion.",
     intro:
-      "Analyze microbial sequence data, understand how different microorganisms contribute to substrate breakdown and methane production, and link microbial composition to digester performance.",
+      "MicrobeAI Lab supports the study of microbial communities in anaerobic digestion. It enables users to analyze microbial sequence data, understand how different microorganisms contribute to substrate breakdown and methane production, and link microbial composition to digester performance.",
     about: [
       "Many microorganisms found in natural and engineered environments are difficult to grow and study in the laboratory. Metagenomics helps us study these microbial communities by analysing the genetic material present in a sample.",
       "In MicrobeAI Lab you work with microbial sequencing data, check its quality, and explore the microbial groups present in the sample and the patterns within that community. The lab also includes an anaerobic digestion simulation, where you can explore how pH, temperature, substrate and retention time may influence digester behaviour.",
@@ -126,22 +129,22 @@ const guide: LabGuide = {
       {
         icon: "sequence",
         title: "Real-World Sequencing Data",
-        body: "Public microbial sequencing data, alongside curated reference and mock datasets of known composition.",
+        body: "Explore public microbial sequencing data, along with selected reference and mock datasets. Review the data, check its quality, and understand how sequencing information is used before moving to biological interpretation.",
       },
       {
         icon: "analysis",
         title: "Interactive Analysis",
-        body: "Step through sequence details, quality checks, microbial groups and community patterns, one stage at a time.",
+        body: "Explore the sequencing data step by step. Review sequence details, check data quality, explore microbial groups, and compare patterns within the community. Each step helps you understand what the data shows and how the results can be interpreted.",
       },
       {
         icon: "simulation",
         title: "Digester Simulation",
-        body: "Change pH, temperature, substrate and retention time, and see how the digester responds.",
+        body: "Explore how an anaerobic digester responds to different operating conditions. Change parameters such as pH, temperature, substrate, and retention time, and see how the simulation changes. This helps you understand how different process conditions may be related to digester behaviour.",
       },
       {
         icon: "insight",
         title: "Practical Learning",
-        body: "Follow metagenomics, microbial ecology, bioinformatics and anaerobic digestion through one connected workflow.",
+        body: "Explore how metagenomics, microbial ecology, bioinformatics, and anaerobic digestion come together in one workflow. Follow the process step by step, from sequencing data and microbial community analysis to biological interpretation and understanding digester behaviour.",
       },
     ],
   },
@@ -279,12 +282,21 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * The brief asks for "Before you start" to carry something more specific to
+   * MicrobeAI than a generic checklist, and supplies "What's Included in the
+   * Lab" as that content — so this list answers "what's in here" rather than
+   * "what you need before you begin". The heading itself is shared chrome set
+   * in `LabGuideSections.tsx`/`page.tsx` for every lab, not per-guide content,
+   * so it stays "Before you start" while what's under it changes.
+   */
   prerequisites: [
-    "Open the lab in a second tab and put it side by side with this page — every step below names a control you click in the lab",
-    "School-level biology: what DNA is, and roughly what a species is",
-    "A desktop browser. Nothing to install, and no command line at any point",
-    "No data of your own is needed. The lab ships nine curated datasets, including a deliberately failed sequencing run",
-    "Expect about an hour for the full workflow. It saves as you go, so you can stop and come back",
+    "Curated sequencing datasets for exploring microbial communities, including examples with different data-quality conditions.",
+    "Quality-control checks to help you determine whether a dataset is suitable for further analysis.",
+    "Microbial community profiles showing classified groups, relative abundance, and unclassified reads.",
+    "Functional interpretation tools for exploring possible biological roles associated with the identified community.",
+    "An anaerobic digestion simulation where you can adjust pH, temperature, substrate, and retention time.",
+    "A guided tutorial and assessment to help you interpret the results correctly and progress through the lab step by step.",
   ],
 
   steps: [
