@@ -28,8 +28,12 @@ const guide: LabGuide = {
     what:
       "Fewer than one microbe in a hundred will grow in a laboratory dish, so most of what lives in soil, sludge or a human gut has never been cultured. Metagenomics gets around that by skipping cultivation entirely: extract all the DNA in a sample at once and read it. This lab takes you through that workflow end to end — inspect the sequence file, quality-control it, find out which organisms are there and in what proportion, work out what that community could do chemically, and then run an anaerobic digester to see how temperature, pH, feedstock and retention time change how much methane those organisms give you.",
 
-    why:
-      "Anaerobic digestion depends on different groups of microorganisms working together to break down organic matter and produce biogas. Sequencing helps us study these microbial communities, but the results need to be interpreted carefully. A community profile can show which microbial groups were classified in a sample and their relative abundance. Relative abundance shows the proportion of sequencing data assigned to different groups; it is not a direct measure of cell number, biomass, or microbial activity. Some information, such as functional potential, may be inferred from the microorganisms identified in the sample and available reference information. This can suggest what a microbial community may be capable of doing, but it does not show whether that function is active in the sample. Understanding the difference between detected, inferred, predicted, and unknown information helps users interpret the results more carefully.",
+    why: [
+      "Anaerobic digestion depends on different groups of microorganisms working together to break down organic matter and produce biogas.",
+      "Sequencing helps us study these microbial communities, but the results need to be interpreted carefully — a community profile shows which microbial groups were classified and their relative abundance, which is a proportion of sequencing data, not a direct measure of cell number, biomass, or microbial activity.",
+      "Some information, such as functional potential, may be inferred from the organisms identified in the sample and available reference information — it can suggest what a community may be capable of doing, but not whether that function is active in the sample.",
+      "Understanding the difference between detected, inferred, predicted, and unknown information helps users interpret the results more carefully.",
+    ],
 
     whoFor:
       "This lab is suitable for students, researchers, and professionals interested in microbiology, biotechnology, bioinformatics, environmental science, anaerobic digestion, and bioprocess engineering.",
@@ -283,12 +287,11 @@ const guide: LabGuide = {
   },
 
   /*
-   * The brief asks for "Before you start" to carry something more specific to
-   * MicrobeAI than a generic checklist, and supplies "What's Included in the
-   * Lab" as that content — so this list answers "what's in here" rather than
-   * "what you need before you begin". The heading itself is shared chrome set
-   * in `LabGuideSections.tsx`/`page.tsx` for every lab, not per-guide content,
-   * so it stays "Before you start" while what's under it changes.
+   * The brief supplies "What's Included in the Lab" content here rather than
+   * a readiness checklist, so this list answers "what's in here" rather than
+   * "what you need before you begin" — which is now every lab's section
+   * heading (`LabGuideSections.tsx`/`page.tsx`), not just this one's, so no
+   * `prerequisitesLabel` override is needed.
    */
   prerequisites: [
     "Curated sequencing datasets for exploring microbial communities, including examples with different data-quality conditions.",
