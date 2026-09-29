@@ -1,0 +1,55 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.000
+Fewer than one microbe in a hundred will grow in a dish. So we read the DNA of the whole community instead.
+
+00:00:06.000 --> 00:00:13.000
+The goal sets the objective and loads a real dataset. It skips nothing.
+
+00:00:13.000 --> 00:00:20.000
+Before any result, the lab shows what it is about to analyse — including the format read out of the bytes, not the extension.
+
+00:00:20.000 --> 00:00:27.000
+The content is measured. A protein file declared as a genome is caught here, before any nucleotide QC could run on it.
+
+00:00:27.000 --> 00:00:42.000
+Which quality control runs depends on what the file actually contains.
+
+00:00:42.000 --> 00:00:49.000
+Four thousand reads, mean quality Q34, ninety-four percent at Q30. It passes.
+
+00:00:49.000 --> 00:00:55.000
+Every analysis gets its own verdict. "Your data cannot support this" and "this build does not implement it" are different statements.
+
+00:00:55.000 --> 00:01:05.000
+Thirty-seven percent archaea. In a digester the archaea are the methanogens, so this community really is making methane.
+
+00:01:05.000 --> 00:01:14.000
+Click a phylum and you see the species inside it — here, the three methanogens that make up that thirty-seven percent.
+
+00:01:14.000 --> 00:01:25.000
+No gene was detected anywhere in this build. Function is inferred from which organisms were found, and the screen says so.
+
+00:01:25.000 --> 00:01:32.000
+Hydrolysis, acidogenesis, acetogenesis, methanogenesis — and which organisms run each.
+
+00:01:32.000 --> 00:01:46.000
+Now run the digester those microbes live in.
+
+00:01:46.000 --> 00:01:50.000
+About half a cubic metre per kilogram, at fifty-five percent methane.
+
+00:01:50.000 --> 00:02:04.000
+Drop the pH and the methanogens stall. This is how a real digester dies.
+
+00:02:04.000 --> 00:02:09.000
+A tenth of the yield, and less methane in the gas. Note the label: this is a simulation, never a prediction.
+
+00:02:09.000 --> 00:02:22.000
+Finish the Bioreactor step and the lab routes you to the assessment.
+
+00:02:22.000 --> 00:02:28.000
+Completing it offers the unlock. Taking it is your choice.
+
+00:02:28.000 --> 00:02:33.000
+Moderate is yours. Advanced is a separate paid tier, checked with the server.

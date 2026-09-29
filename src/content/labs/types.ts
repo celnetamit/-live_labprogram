@@ -100,7 +100,7 @@ export type ShowcaseIcon = "sequence" | "analysis" | "simulation" | "insight" | 
  * same standard as a tutorial step.
  */
 export type LabShowcase = {
-  /** Small line above the title, e.g. "Living intelligence". */
+  /** Small line above the title, e.g. "Single-cell & spatial omics". */
   overline: string;
   /**
    * The title, in coloured segments. Rendered as one heading; the colours are

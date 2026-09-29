@@ -33,7 +33,7 @@ const guide: LabGuide = {
       "Anaerobic digestion is microbiology doing industrial work. The same four-stage microbial chain runs sewage works, farm digesters and the biogas plants that turn food waste into fuel, and when it fails it fails for microbiological reasons that show up in the data days before the gas output drops. Sequencing is now cheap enough that the bottleneck is no longer generating the data. It is reading it honestly — knowing what a percentage in a community profile actually refers to, and knowing which claims the data will not support.",
 
     whoFor:
-      "Biology, biotechnology and environmental engineering students, and process engineers who want to understand what the biology is doing. No coding, no command line. If you know what DNA is and roughly what a species is, you have enough to begin.",
+      "Microbiology, biotechnology, bioinformatics and environmental engineering students, and bioprocess engineers who want to understand what the biology is doing. No coding, no command line. If you know what DNA is and roughly what a species is, you have enough to begin.",
 
     outcomes: [
       "Inspect a sequence file and say what it is from its contents, not its filename",
@@ -48,21 +48,30 @@ const guide: LabGuide = {
   },
 
   /*
-   * The design's own copy, kept wherever it is true of the lab, and checked
-   * against it:
-   *  - "how community composition affects system performance" and "translate
-   *    biological composition into a working environmental model": true in
-   *    the narrow sense `engine/adm1Mapping.ts` defines — a detected organism
-   *    selects an ADM1 guild and perturbs the biomass in it, and never
-   *    overwrites a kinetic constant.
-   *  - "Real sequencing data": `engine/realDatasets.ts` ships ENA subsamples
-   *    (SRR2039580 and others). The draft went on to say "rather than
-   *    simplified classroom examples", which is not true — the curated sets
-   *    in `datasets.ts` are synthetic mock communities, and they are the
-   *    point, being the only data whose right answer is known. The body line
-   *    says both.
-   *  - "AI-assisted analysis": the Evidence screen's explanation is written by
-   *    the model from pipeline results; every number comes from the engines.
+   * Rewritten again against the "Live lab Profile content" brief (29 September
+   * 2026), which moves the lab's category from the "Living intelligence"
+   * framing to the plainer "Metagenomics and anaerobic digestion" and supplies
+   * its own about/feature/tag copy. Every claim carried over was re-checked
+   * against the lab, not just copied:
+   *  - "Digester Simulation" ("change pH, temperature, substrate and retention
+   *    time, and see how the digester responds"): true in the narrow sense
+   *    `engine/adm1Mapping.ts` defines — a detected organism selects an ADM1
+   *    guild and perturbs the biomass in it, and never overwrites a kinetic
+   *    constant.
+   *  - "Real-World Sequencing Data": `engine/realDatasets.ts` ships ENA
+   *    subsamples (SRR2039580 and others), and the curated sets in
+   *    `datasets.ts` are synthetic mock communities of known composition —
+   *    the two halves of the body line.
+   *  - The brief's demo-chapter timestamps (0:00 through 2:28) match this
+   *    file's `video.chapters` exactly, confirming it describes the same cut
+   *    already recorded; its flagged gap — no audio track, no captions — was
+   *    checked directly against `public/demos/micro-ai.mp4` (no `mp4a`/`soun`
+   *    atoms) and closed here with a `.vtt` built from the existing `say`
+   *    lines, which were already written as narration rather than shot notes.
+   *  - "AI-assisted analysis" is dropped from the tag list: the brief's own
+   *    tags don't carry it, and it was the one claim in the previous copy the
+   *    lab itself couldn't fully back — the Evidence screen's explanation is
+   *    model-written, but nothing else on the page is.
    *
    * The palette is sampled from the cover micrograph (Yong, Nature 2012): the
    * blue rods, the coral clusters, the pink filament and the olive matrix.
@@ -70,23 +79,23 @@ const guide: LabGuide = {
    * the light-theme panel.
    */
   showcase: {
-    overline: "Living intelligence",
+    overline: "Metagenomics and anaerobic digestion",
     title: [{ text: "Microbe" }, { text: "AI", accent: "primary" }, { text: " Lab", accent: "secondary" }],
-    headline: "Decode microbial communities. Model living ecosystems.",
+    headline: "Explore microbial communities through metagenomics and anaerobic digestion.",
     intro:
-      "Read the DNA of a whole microbial population, discover who is there, and simulate how that living system behaves inside a digester.",
+      "Analyze microbial sequence data, understand how different microorganisms contribute to substrate breakdown and methane production, and link microbial composition to digester performance.",
     about: [
-      "Fewer than one microbe in a hundred will grow in a laboratory dish, so most organisms living in soil, sludge or the human gut are never seen through traditional culture methods.",
-      "Metagenomics solves this by reading the DNA of an entire microbial community at once. In this lab, you will inspect sequencing data, perform quality control, identify microbial populations and run a digester simulation to understand how community composition affects system performance.",
+      "Many microorganisms found in natural and engineered environments are difficult to grow and study in the laboratory. Metagenomics helps us study these microbial communities by analysing the genetic material present in a sample.",
+      "In MicrobeAI Lab you work with microbial sequencing data, check its quality, and explore the microbial groups present in the sample and the patterns within that community. The lab also includes an anaerobic digestion simulation, where you can explore how pH, temperature, substrate and retention time may influence digester behaviour.",
     ],
-    tags: ["Metagenomics", "Bioinformatics", "AI-assisted analysis", "Simulation"],
+    tags: ["Metagenomics", "Microbial Ecology", "Bioinformatics", "Anaerobic Digestion", "Simulation"],
     walkthroughTitle: "From microbial community to ecosystem model",
     journey: "MicrobeAI",
     card: {
       badge: "Interactive lab",
       icon: "sequence",
       description:
-        "Explore an AI-powered bioinformatics laboratory. Analyze microbial communities, simulate anaerobic bioreactors and connect sequencing data to ecosystem behavior.",
+        "Explore microbial communities through metagenomics and anaerobic digestion. Analyze sequencing data, identify microbial groups, and simulate how a digester responds to changing conditions.",
     },
     photo: { position: "50% 18%", creditLabel: "Micrograph" },
     palette: {
@@ -117,35 +126,27 @@ const guide: LabGuide = {
     features: [
       {
         icon: "sequence",
-        title: "Real sequencing data",
-        body: "Public ENA sequencing runs, alongside mock communities whose true composition is known.",
+        title: "Real-World Sequencing Data",
+        body: "Public microbial sequencing data, alongside curated reference and mock datasets of known composition.",
       },
       {
         icon: "analysis",
-        title: "Interactive analysis",
-        body: "Inspect patterns, compare signals and interpret community-level results.",
+        title: "Interactive Analysis",
+        body: "Step through sequence details, quality checks, microbial groups and community patterns, one stage at a time.",
       },
       {
         icon: "simulation",
-        title: "System simulation",
-        body: "Translate biological composition into a working environmental model.",
+        title: "Digester Simulation",
+        body: "Change pH, temperature, substrate and retention time, and see how the digester responds.",
       },
       {
         icon: "insight",
-        title: "Practical insight",
-        body: "Connect genomics, data science and ecosystem behavior in one workflow.",
+        title: "Practical Learning",
+        body: "Follow metagenomics, microbial ecology, bioinformatics and anaerobic digestion through one connected workflow.",
       },
     ],
   },
 
-  /*
-   * The recorded walkthrough shows the previous version of the lab — the old
-   * two-experiment layout, with controls that have since been replaced. Rather
-   * than leave a video that contradicts the running application, the section
-   * renders the chapter list for the walkthrough to be recorded against the
-   * final workflow. A learner following a video of a UI that no longer exists
-   * concludes the lab is broken, which is the opposite of what a demo is for.
-   */
   /*
    * Recorded against the running lab with `node scripts/record-demo.mjs
    * micro-ai <launch-url>`, so the walkthrough shows the workflow this page
@@ -154,10 +155,18 @@ const guide: LabGuide = {
    * the frame at that timestamp — an earlier take had 5.5 typed into the
    * temperature field while the caption claimed a pH change, which only the
    * frame check caught.
+   *
+   * The cut itself has no audio track — checked directly against the file
+   * rather than taken on the brief's word, since a video element that fails
+   * to load a missing captions file fails silently. `micro-ai.vtt` below is
+   * built from the `say` line already on each chapter, so a voiceover
+   * recorded to that same script will line up with it; until then it is the
+   * caption track for a demo that plays silently.
    */
   video: {
     url: "/demos/micro-ai.mp4",
     poster: "/demos/micro-ai.jpg",
+    captions: "/demos/micro-ai.vtt",
     durationSec: 153,
     chapters: [
       {
