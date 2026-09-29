@@ -7,9 +7,12 @@
  * reach. These constants exist so those never drift apart across pages — every
  * legal document on the hub reads from here.
  *
- * Transcribed from nanoschool.in, which the same company operates:
- * nanoschool.in/contact-us/ for the registered address and identifiers,
- * nanoschool.in/disclaimer/ for the operational address.
+ * Registered address, statutory identifiers and operational address are
+ * transcribed from nanoschool.in, which the same company operates:
+ * nanoschool.in/contact-us/ for the former, nanoschool.in/disclaimer/ for
+ * the latter. `email` and `phones` are Live Labs' own — given directly by
+ * Amit (29 September 2026) rather than borrowed from the sister site, which
+ * is what they were before.
  */
 export const COMPANY = {
   /** The merchant of record. NSTC is the academic partner, not the merchant. */
@@ -28,10 +31,10 @@ export const COMPANY = {
   gstin: "09AAACI8666D2ZD",
   pan: "AAACI8666D",
 
-  email: "info@nstc.in",
+  email: "livelabs@nstc.in",
   enrolmentEmail: "trainings@nstc.in",
-  phones: ["+91-9958161117", "+91-120-4781217", "+91-120-4781213"],
-  primaryPhone: "+91-9958161117",
+  phones: ["+91 92180 93670"],
+  primaryPhone: "+91 92180 93670",
   /* The operator's Contact Us page states Monday to Saturday for enrolment
    * enquiries; its Disclaimer footer says Mon–Sun. The dedicated contact page
    * is taken as authoritative here. */
