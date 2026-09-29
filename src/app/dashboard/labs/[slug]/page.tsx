@@ -234,7 +234,9 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
     ? [
         { id: "overview", label: "Overview" },
         { id: "demo", label: "Demo" },
-        ...(guide.prerequisites.length ? [{ id: "prepare", label: "Before you start" }] : []),
+        ...(guide.prerequisites.length
+          ? [{ id: "prepare", label: guide.prerequisitesLabel ?? "What's Included in the Lab" }]
+          : []),
         { id: "tutorial", label: "Tutorial" },
         /* A showcase page moves the outcomes out of the overview into a
            panel of their own, after the tutorial. */

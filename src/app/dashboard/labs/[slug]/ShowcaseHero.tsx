@@ -132,7 +132,7 @@ export default function ShowcaseHero(props: Props) {
             {props.videoLength && (
               <a href="#demo" className="sc-btn sc-btn-ghost focus-ring">
                 <PlayCircleGlyph className="h-[17px] w-[17px]" />
-                Watch {props.videoLength} Demo
+                {props.videoLength} Walkthrough
               </a>
             )}
           </div>

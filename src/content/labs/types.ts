@@ -70,8 +70,12 @@ export type LabSummary = {
   tagline?: string;
   /** What the lab *is*, for a reader who does not know the field. No jargon. */
   what: string;
-  /** Why the problem matters outside the classroom. */
-  why: string;
+  /**
+   * Why the problem matters outside the classroom. A string renders as one
+   * paragraph; an array renders as a bulleted list, for a guide whose points
+   * read better broken out than run together.
+   */
+  why: string | string[];
   /** Who should take it, and what background is assumed. */
   whoFor: string;
   /** Concrete capabilities, each starting with a verb. Shown as a checklist. */
@@ -222,8 +226,20 @@ export type LabGuide = {
   summary: LabSummary;
   showcase?: LabShowcase;
   video: LabVideo;
-  /** What to have ready before starting. Empty array renders nothing. */
+  /**
+   * What to have ready before starting — for most labs a readiness
+   * checklist (browser, time needed, prior knowledge), though the section's
+   * default heading, "What's Included in the Lab", reads more naturally for
+   * a guide whose list is scope/contents rather than prerequisites. Empty
+   * array renders nothing.
+   */
   prerequisites: string[];
+  /**
+   * Overrides the section's default heading and nav label, "What's Included
+   * in the Lab", for a guide whose `prerequisites` really is a readiness
+   * checklist and reads oddly under that title — e.g. `"Before you start"`.
+   */
+  prerequisitesLabel?: string;
   steps: TutorialStep[];
   troubleshooting: { problem: string; fix: string }[];
   furtherReading: { label: string; href: string }[];

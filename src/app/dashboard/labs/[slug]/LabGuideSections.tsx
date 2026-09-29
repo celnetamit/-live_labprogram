@@ -105,9 +105,25 @@ function WhyAndWho({ guide }: { guide: LabGuide }) {
         <FieldLabel icon={Lightbulb} tone="text-[color:var(--color-warning-ink)]">
           Why it matters
         </FieldLabel>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          <RichText>{summary.why}</RichText>
-        </p>
+        {Array.isArray(summary.why) ? (
+          <ul className="space-y-1.5">
+            {summary.why.map((point) => (
+              <li key={point} className="flex gap-2 text-sm leading-relaxed text-muted-foreground">
+                <span
+                  aria-hidden
+                  className="mt-[0.5rem] h-1 w-1 shrink-0 rounded-full bg-current opacity-60"
+                />
+                <span>
+                  <RichText>{point}</RichText>
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            <RichText>{summary.why}</RichText>
+          </p>
+        )}
       </div>
       <div className="md:pl-6">
         <FieldLabel icon={Users}>Who it&apos;s for</FieldLabel>
@@ -234,7 +250,7 @@ export function PrerequisitesSection({ guide }: { guide: LabGuide }) {
   if (guide.prerequisites.length === 0) return null;
 
   return (
-    <Panel id="prepare" icon={ClipboardList} title="Before you start">
+    <Panel id="prepare" icon={ClipboardList} title={guide.prerequisitesLabel ?? "What's Included in the Lab"}>
       <ul className="space-y-2">
         {guide.prerequisites.map((item) => (
           <li key={item} className="flex gap-2.5 text-sm text-muted-foreground">
