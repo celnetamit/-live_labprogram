@@ -745,7 +745,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                   {owned ? (
                     <>
                       <p className="mb-3 text-sm text-muted-foreground">
-                        Ready when you are — the tutorial assumes the lab is open alongside it.
+                        Ready to explore
                       </p>
                       {launchButton("full")}
                     </>
