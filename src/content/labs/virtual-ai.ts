@@ -20,7 +20,11 @@ const guide: LabGuide = {
     tagline:
       "Run a full diffraction experiment end to end: prepare a specimen, acquire a pattern point by point, analyse it, then defend your conclusion against the hidden truth.",
     what: "X-ray diffraction identifies what a powder is, and how big its crystal grains are, without dissolving or destroying it. You shine X-rays at the specimen and the regular rows of atoms scatter them into a pattern of sharp peaks — a fingerprint of the material. This lab is a complete diffractometer in your browser, and it is run as a project rather than a demonstration: you read a brief, prepare the specimen, configure the instrument against a finite time budget, acquire the pattern point by point, process and fit it, and commit to a conclusion. Only then does the lab reveal what the specimen actually was, and score how close you came.",
-    why: "Almost every manufactured solid is checked this way — battery cathodes, pharmaceutical tablets, cement, steel, semiconductor films. A real diffractometer costs upwards of a quarter of a million dollars and beam time is rationed, so most learners never get to make the mistakes that teach the technique: scanning too narrow a range, counting for too short a time, processing in the wrong order, or trusting a crystallite size that strain has quietly ruined. Here those mistakes are free, immediately visible in the pattern, and scored against the truth afterwards.",
+    why: [
+      "Almost every manufactured solid is checked this way — battery cathodes, pharmaceutical tablets, cement, steel, semiconductor films.",
+      "A real diffractometer costs upwards of a quarter of a million dollars and beam time is rationed, so most learners never get to make the mistakes that teach the technique: scanning too narrow a range, counting for too short a time, processing in the wrong order, or trusting a crystallite size that strain has quietly ruined.",
+      "Here those mistakes are free, immediately visible in the pattern, and scored against the truth afterwards.",
+    ],
     whoFor: "Materials science, chemistry, physics and engineering students meeting diffraction for the first time, and lab staff rehearsing before they touch the instrument. Start at Basic: it assumes no prior XRD and school-level trigonometry, and explains Bragg's law where you first need it. Moderate and Expert assume you have worked through the level below.",
     outcomes: [
       "Prepare a powder specimen and predict how grinding, packing and height errors will distort the pattern",

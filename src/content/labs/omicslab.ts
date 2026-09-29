@@ -20,7 +20,12 @@ const guide: LabGuide = {
     tagline:
       "Analyse real single-cell and spatial transcriptomics data the way a lab does: a versioned pipeline, your own interpretation, and a report that shows its working.",
     what: "Every cell in your body carries the same genome and uses a different part of it. Single-cell RNA sequencing measures which genes each individual cell is using, and spatial transcriptomics does it without losing track of where the cell sat in the tissue. This lab is the working bench for that data: you pick a dataset, run quality control, clustering, annotation and differential expression through a pipeline whose method versions are locked, write down what you think it means, and produce a report that carries the parameters and the caveats alongside the figures.",
-    why: "This is how tumours, immune responses and developing tissue are studied now — and it is also where the analysis mistakes are. A cluster can be a cell type or a batch effect; a striking marker gene can be an artefact of the filter you chose three steps earlier. The skill the field is short of is not running the tools, which is a few lines of code, but knowing which result to trust and being able to show why. So the pipeline here records the parameters of every step, the interpretation is yours to write, and nothing in the report asserts a result the run did not produce.",
+    why: [
+      "This is how tumours, immune responses and developing tissue are studied now — and it is also where the analysis mistakes are.",
+      "A cluster can be a cell type or a batch effect; a striking marker gene can be an artefact of the filter you chose three steps earlier.",
+      "The skill the field is short of is not running the tools, which is a few lines of code, but knowing which result to trust and being able to show why.",
+      "So the pipeline here records the parameters of every step, the interpretation is yours to write, and nothing in the report asserts a result the run did not produce.",
+    ],
     whoFor: "Life-science students, bioinformatics beginners and wet-lab researchers moving to computational work. No programming is required — the pipeline runs from the interface — but you should be comfortable with genes, cell types and the idea of an experimental control. Biology graduates and medical researchers are the intended audience.",
     outcomes: [
       "Judge whether a single-cell dataset passed quality control, and say what the thresholds excluded",

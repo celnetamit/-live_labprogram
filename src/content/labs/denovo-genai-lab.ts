@@ -21,7 +21,11 @@ const guide: LabGuide = {
 
     what: "Every new medicine starts as a molecule somebody had to think of. This lab shows you how AI does that thinking. You write a molecule down as a line of text, watch it turn into a 3D structure, explore a map where similar molecules sit near each other, and then ask the computer to invent new ones that match a specification you set. It takes about seventy minutes and needs nothing but a browser.",
 
-    why: "Bringing one drug to market takes over a decade and costs billions, and the very first decision — which molecules are even worth making — used to depend on one chemist's intuition. Generative AI widens that search enormously, and it also fails in a new way: it will hand you a confident answer for something that cannot exist. Telling those two apart is now a basic skill in any lab that uses these tools, and it is what this lab is really about.",
+    why: [
+      "Bringing one drug to market takes over a decade and costs billions, and the very first decision — which molecules are even worth making — used to depend on one chemist's intuition.",
+      "Generative AI widens that search enormously, and it also fails in a new way: it will hand you a confident answer for something that cannot exist.",
+      "Telling those two apart is now a basic skill in any lab that uses these tools, and it is what this lab is really about.",
+    ],
 
     whoFor: "Anyone curious about how AI is used in medicine — students of chemistry, pharmacy, biology or computer science, and complete beginners in either half. School-level chemistry is enough and no machine-learning background is assumed. Everything is computed in front of you, so you can check the lab rather than take its word.",
 
