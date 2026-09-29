@@ -69,7 +69,7 @@ export default function ApiKeysClient({ keys, baseUrl }: { keys: AdminApiKey[]; 
               onChange={(e) => setName(e.target.value)}
               maxLength={60}
               placeholder="What is this key for? e.g. Reporting dashboard"
-              className="flex-1 min-w-[240px] px-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="flex-1 min-w-[200px] px-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <button
               onClick={handleCreate}

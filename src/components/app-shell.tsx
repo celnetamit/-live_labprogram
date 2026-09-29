@@ -226,7 +226,7 @@ export default function AppShell({
                 <li className="min-w-0">
                   <Link
                     href={breadcrumbRootHref}
-                    className="block truncate rounded-sm transition-colors hover:text-foreground hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="tap-target block truncate rounded-sm transition-colors hover:text-foreground hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {breadcrumbRoot}
                   </Link>

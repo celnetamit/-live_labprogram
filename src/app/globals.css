@@ -2531,3 +2531,67 @@
   font-family: var(--font-sc-display), ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.025em;
 }
+
+/*
+  Phones and small tablets.
+
+  Measured, not assumed: every public and learner page was audited at 320,
+  375, 414 and 768px. None scrolled sideways; what failed was size — links
+  20px tall in footers, breadcrumbs and contact details, and 9–10px labels
+  from the showcase designs, which were drawn for a desktop monitor.
+*/
+
+/* A horizontally scrolling row (the settings tabs) without a scrollbar. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 40rem) {
+  /*
+    Tap targets. Footer links become 40px rows. Elsewhere `.tap-target` (and
+    the breadcrumb and section links) gets an invisible hit area 10px beyond
+    its edges, so a thumb lands on it without the layout moving.
+  */
+  footer a {
+    display: inline-block;
+    padding-block: 10px;
+  }
+  .tap-target,
+  .blog-crumbs a,
+  .ui-link {
+    position: relative;
+  }
+  .tap-target::after,
+  .blog-crumbs a::after,
+  .ui-link::after {
+    content: "";
+    position: absolute;
+    inset: -10px -6px;
+  }
+
+  /* Small print: nothing under 11px on a phone. */
+  .sc-card-badge,
+  .sc-card-category,
+  .sc-card-status,
+  .sc-card-citation,
+  .sc-card-figures dt,
+  .sc-badge,
+  .sc-tag,
+  .sc-overline,
+  .sc-stat dt,
+  .sc-duration,
+  .sc-video-foot small,
+  .sc-toc-label,
+  .sc-progress-card small,
+  .sc-progress-meta,
+  .sc-access-card small,
+  .sc-access-card > span {
+    font-size: 11px;
+  }
+  .sc-card-figures dd {
+    font-size: 13px;
+  }
+}

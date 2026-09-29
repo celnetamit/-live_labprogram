@@ -58,7 +58,7 @@ export default async function BlogIndex() {
           <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{BLOG_DESCRIPTION}</p>
           <a
             href="/blog/rss.xml"
-            className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="tap-target mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             <Rss className="h-4 w-4" /> RSS feed
           </a>

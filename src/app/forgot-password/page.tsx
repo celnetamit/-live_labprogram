@@ -39,7 +39,7 @@ export default function ForgotPassword() {
       <div className="w-full max-w-md">
         <Link
           href="/login"
-          className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors tap-target"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to sign in

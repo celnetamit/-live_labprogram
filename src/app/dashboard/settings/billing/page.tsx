@@ -107,7 +107,7 @@ export default async function BillingSettingsPage() {
                 {a.lab.status === "ACTIVE" && a.lab.slug && (
                   <Link
                     href={`/dashboard/labs/${a.lab.slug}`}
-                    className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary hover:underline"
+                    className="tap-target inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary hover:underline"
                   >
                     Open <ArrowRight className="h-3.5 w-3.5" />
                   </Link>

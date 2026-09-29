@@ -122,7 +122,7 @@ export default function Login() {
       <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full sm:max-w-md p-5 mx-auto z-10">
-        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
+        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors tap-target">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Ecosystem
         </Link>
@@ -167,7 +167,7 @@ export default function Login() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium leading-none">Password</label>
-                <Link href="/forgot-password" className="text-xs text-primary hover:underline font-medium">Forgot password?</Link>
+                <Link href="/forgot-password" className="text-xs text-primary hover:underline font-medium tap-target">Forgot password?</Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />

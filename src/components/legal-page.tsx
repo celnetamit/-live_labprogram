@@ -83,14 +83,14 @@ export default function LegalPage({
               </p>
               <a
                 href={`mailto:${COMPANY.email}`}
-                className="flex items-center gap-2 hover:text-foreground text-muted-foreground transition-colors"
+                className="tap-target flex items-center gap-2 hover:text-foreground text-muted-foreground transition-colors"
               >
                 <Mail className="w-4 h-4 flex-shrink-0" />
                 {COMPANY.email}
               </a>
               <a
                 href={`tel:${COMPANY.primaryPhone.replace(/[^+\d]/g, "")}`}
-                className="flex items-center gap-2 hover:text-foreground text-muted-foreground transition-colors"
+                className="tap-target flex items-center gap-2 hover:text-foreground text-muted-foreground transition-colors"
               >
                 <Phone className="w-4 h-4 flex-shrink-0" />
                 {COMPANY.primaryPhone}
@@ -103,7 +103,7 @@ export default function LegalPage({
 
           <nav className="mt-10 pt-6 border-t border-border/60 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
             {LEGAL_PAGES.map((page) => (
-              <Link key={page.href} href={page.href} className="hover:text-foreground transition-colors">
+              <Link key={page.href} href={page.href} className="tap-target hover:text-foreground transition-colors">
                 {page.label}
               </Link>
             ))}

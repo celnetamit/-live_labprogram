@@ -88,7 +88,7 @@ export default function ContactPage() {
                 <a
                   key={phone}
                   href={`tel:${phone.replace(/[^+\d]/g, "")}`}
-                  className="flex items-center gap-2.5 text-muted-foreground hover:text-foreground transition-colors"
+                  className="tap-target flex items-center gap-2.5 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <Phone className="w-4 h-4 flex-shrink-0" />
                   {phone}
@@ -114,7 +114,7 @@ export default function ContactPage() {
                   </div>
                   <a
                     href={`mailto:${row.email}`}
-                    className="mt-1.5 sm:mt-0 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="tap-target mt-1.5 sm:mt-0 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <Mail className="w-4 h-4 flex-shrink-0" />
                     {row.email}
@@ -138,7 +138,7 @@ export default function ContactPage() {
 
           <nav className="mt-10 pt-6 border-t border-border/60 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
             {LEGAL_PAGES.map((page) => (
-              <Link key={page.href} href={page.href} className="hover:text-foreground transition-colors">
+              <Link key={page.href} href={page.href} className="tap-target hover:text-foreground transition-colors">
                 {page.label}
               </Link>
             ))}

@@ -170,8 +170,8 @@ export default function LabCatalogClient({
       </div>
 
       {/* Filters */}
-      <div className="labs-filters mb-4 flex flex-col gap-3 p-3 sm:p-4 md:flex-row">
-        <div className="relative flex-1">
+      <div className="labs-filters mb-4 grid grid-cols-2 gap-3 p-3 sm:p-4 md:flex md:flex-row">
+        <div className="relative col-span-2 flex-1">
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
           <input
             value={query}

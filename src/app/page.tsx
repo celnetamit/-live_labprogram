@@ -258,7 +258,9 @@ function ProductPreview() {
             <span className="text-[10px] text-muted-foreground">panoptical.org/admin</span>
           </div>
         </div>
-        <div className="grid grid-cols-[110px_1fr] bg-mesh">
+        {/* The sidebar column only exists from `sm`: below it the sidebar is
+            hidden, and a fixed 110px column squeezed the whole preview into it. */}
+        <div className="grid bg-mesh sm:grid-cols-[110px_1fr]">
           {/* mini sidebar */}
           <div className="border-r border-border p-3 space-y-2 hidden sm:block">
             <div className="h-6 rounded-md bg-gradient-to-r from-primary/25 to-transparent" />
@@ -357,7 +359,7 @@ function DomainLink({ host, name, blurb }: LabDomain) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`${name} — ${host} (opens in a new tab)`}
-        className="text-sm font-mono text-muted-foreground/80 hover:text-foreground focus-visible:text-foreground underline-offset-4 decoration-dotted decoration-muted-foreground/40 hover:underline focus-visible:underline transition-colors rounded outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        className="inline-block py-2 text-xs sm:py-0 sm:text-sm font-mono text-muted-foreground/80 hover:text-foreground focus-visible:text-foreground underline-offset-4 decoration-dotted decoration-muted-foreground/40 hover:underline focus-visible:underline transition-colors rounded outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
       >
         {host}
       </a>
@@ -443,7 +445,9 @@ export default function Home() {
             <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-5">
               Powering labs across the network
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            {/* Tighter on a phone, so short hostnames share a line instead of
+                stacking twelve deep. */}
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-0 sm:gap-x-8 sm:gap-y-3">
               {domains.map((d) => (
                 <DomainLink key={d.host} {...d} />
               ))}

@@ -58,7 +58,7 @@ export default function RegisterForm() {
       <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full sm:max-w-md p-5 mx-auto z-10">
-        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
+        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors tap-target">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Ecosystem
         </Link>
