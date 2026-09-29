@@ -15,14 +15,21 @@ const guide: LabGuide = {
     tagline:
       "Map drugs, genes and diseases as one graph, then predict the connections nobody has recorded yet.",
     what: "Some of the most important drugs in use today were developed for something else entirely and found their real purpose later. Drug repurposing tries to make that happen deliberately instead of by accident. This lab teaches the network approach: represent drugs, genes, diseases and side effects as a connected graph, learn a numerical embedding of that graph, and then predict the connections that ought to exist but have not been recorded yet — each one a repurposing hypothesis.",
-    why: "A repurposed drug has already cleared safety trials in humans, which removes years and a large fraction of the cost from development. The obstacle is that the useful connections are buried in millions of papers and databases that no individual can hold in their head. Graph methods are how that search is made tractable, and they are now standard in pharmaceutical informatics.",
-    whoFor: "Biology, pharmacy, bioinformatics and computer science students. It is an advanced lab, but the difficulty is conceptual rather than mathematical — you need curiosity about how biological knowledge gets represented, not linear algebra.",
+    why: [
+      "Drug repurposing looks at whether an existing medicine may also be useful for another disease.",
+      "An existing drug may already have safety, pharmacology, and clinical information available, which can support research into a new use — though its safety and effectiveness for the new disease still need to be tested.",
+      "Biomedical information is spread across research papers and databases.",
+      "Knowledge graphs bring information about drugs, genes, diseases, and other biological entities together in a structured way.",
+      "Graph-based methods can then help researchers study these relationships and identify possible connections for further investigation.",
+    ],
+    whoFor: "This lab is suitable for **students and researchers in drug discovery, pharmacology, bioinformatics, computational biology, and related life-science fields** who want to understand how graph-based methods can be used to study drug–target–disease relationships. Basic knowledge of **drug targets, genes, and disease biology** is helpful. No previous experience with knowledge graphs, graph embeddings, or TransE is required.",
     outcomes: [
-      "Model biomedical knowledge as a graph of typed entities and typed relationships",
-      "Explain what a graph embedding is and why proximity in that space is meaningful",
-      "Run link prediction and read the confidence score for what it is",
-      "Generate a repurposing hypothesis and articulate what evidence would test it",
-      "Explain why a predicted link is a starting point for experiments, not a conclusion",
+      "Explain how drugs, genes, diseases, and side effects can be represented in a knowledge graph.",
+      "Explain how graph embeddings represent these relationships in numerical form.",
+      "Use link prediction and interpret the model score correctly.",
+      "Develop a drug-repurposing hypothesis from a predicted drug–disease link.",
+      "Identify the evidence needed to test the hypothesis.",
+      "Explain why a predicted link needs further research and validation.",
     ],
   },
 
@@ -35,6 +42,17 @@ const guide: LabGuide = {
    * commercial-safe licence policy); the embedding is TransE, trained in the
    * browser (`engine/transe.ts`), and link prediction ranks from it.
    *
+   * The tutorial steps, outcomes, "why it matters" and "who it's for" were
+   * rewritten again against the second "Live lab Profile content" brief (29
+   * September 2026) — the same document family as MicrobeAI's — carrying its
+   * copy in verbatim where the underlying facts still checked out: four node
+   * types (Drug, Disease, Gene, Side Effect), the three edge types (treats,
+   * targets, associated_with), and the TransE relationship (head + relation ≈
+   * tail) are all real, matching `data/knowledgeGraph.ts` and
+   * `engine/transe.ts`. `intro` stays a single sentence rather than the
+   * brief's two — this lab's hero was the size every other lab's was just
+   * brought in to match, and a longer intro would have pushed it back out.
+   *
    * Palette from drugdiscovery.css: blue #74a9cf, rose #e6a1ad, coral
    * #ec785f, green #6fa58d. The design is dark only; each `ink` is the same
    * hue darkened to at least 5.3:1 on white for the light theme.
@@ -46,12 +64,12 @@ const guide: LabGuide = {
       { text: "AI", accent: "primary" },
       { text: "Drug Discovery Lab", accent: "secondary", subtitle: true },
     ],
-    headline: "Map medicines. Connect targets. Surface new therapeutic possibilities.",
+    headline: "Explore how existing medicines can be studied for new therapeutic uses.",
     intro:
-      "Build a drug–gene–disease knowledge graph, learn numerical embeddings, and predict promising links that are not yet recorded.",
+      "Discover how drugs, genes, diseases and side effects connect through a knowledge graph, and how graph embeddings and link prediction surface possible drug–disease connections for further research.",
     about: [
-      "Some of the most important medicines in use today were first developed for something else and later found to have a different therapeutic use. Drug repurposing tries to make that process deliberate rather than accidental.",
-      "In this lab, you will represent drugs, genes, diseases and side effects as a connected graph, learn a numerical embedding of that graph and identify links that ought to exist but have not yet been recorded — producing a practical repurposing hypothesis.",
+      "Drug repurposing is the study of whether an existing medicine may also be useful for treating another disease. In this lab, you will explore how drugs, genes, diseases, and side effects are connected in a knowledge graph, and how these connections can be represented as numbers and used to identify possible drug–disease links for further study.",
+      "You will also examine the graph information that supports a predicted link and use it to develop a testable drug-repurposing hypothesis. A predicted link is not proof that a drug will work for a disease — it is a starting point for further research and testing.",
     ],
     tags: ["Drug Repurposing", "Knowledge Graphs", "Graph Embeddings", "AI Prediction"],
     walkthroughTitle: "From known medicines to new treatment hypotheses",
@@ -93,22 +111,22 @@ const guide: LabGuide = {
       {
         icon: "graph",
         title: "Knowledge graph reasoning",
-        body: "Model relationships between medicines, targets, diseases and adverse effects.",
+        body: "Explore how medicines, gene targets, diseases, and side effects are connected in a structured network.",
       },
       {
         icon: "analysis",
         title: "Graph embeddings",
-        body: "Convert network structure into numerical representations for machine learning.",
+        body: "Learn how relationships in the graph can be represented as numbers for computational analysis.",
       },
       {
         icon: "simulation",
         title: "Link prediction",
-        body: "Score missing connections and surface plausible therapeutic associations.",
+        body: "Use patterns in the graph to identify and rank possible drug–disease connections for further study.",
       },
       {
         icon: "insight",
-        title: "Actionable hypothesis",
-        body: "Translate the model output into an interpretable drug-repurposing recommendation.",
+        title: "Testable hypothesis",
+        body: "Use the model result and supporting graph information to develop a clear drug-repurposing hypothesis that can be investigated further.",
       },
     ],
   },
@@ -127,110 +145,118 @@ const guide: LabGuide = {
     ],
   },
 
+  /*
+   * The brief's list here is "What's Included in the Lab", not a readiness
+   * checklist — same treatment as MicrobeAI's, and now every lab's section
+   * heading, so no `prerequisitesLabel` override is needed.
+   */
   prerequisites: [
-    "Introductory biology — genes, proteins, what a drug target is",
-    "A desktop browser with WebGL for the interactive graph",
-    "About 75 minutes for the three learning labs plus the experiment",
+    "**Guided learning:** Understand knowledge graphs, graph embeddings, and link prediction step by step.",
+    "**Interactive knowledge graph:** Explore links between drugs, genes, diseases, and side effects.",
+    "**Graph embedding activity:** See how graph relationships are represented as numbers.",
+    "**Link prediction experiment:** Rank possible drug–disease links for further study.",
+    "**Supporting graph paths:** Follow the connections behind a predicted link.",
+    "**Testable hypothesis:** Use the result to develop a clear drug-repurposing research hypothesis.",
   ],
 
   steps: [
     {
-      title: "Take the dashboard tour",
-      goal: "See the structure and how progress is tracked.",
+      title: "Take the Dashboard Tour",
+      goal: "Get familiar with the lab and see how your progress is tracked.",
       actions: [
-        "Sign in and land on **Dashboard**.",
-        "Note the five sections: Dashboard, Learning Lab, Experiment, Knowledge Bank, Assessment.",
-        "Note the XP counter — the app awards points for completing labs and running tools, which is how it tracks what you have done.",
+        "Sign in and open the Dashboard.",
+        "Find the five sections: Dashboard, Learning Lab, Experiment, Knowledge Bank, and Assessment.",
+        "Check the XP counter. You earn points as you complete labs and use the tools.",
       ],
-      expect: "A dashboard with progress indicators and clear entry points.",
+      expect: "A dashboard showing your progress and links to each section.",
       minutes: 4,
     },
     {
-      title: "Learning Lab 1 — knowledge graph integration",
-      goal: "Understand how biomedical knowledge becomes a graph.",
+      title: "Learning Lab 1 — Knowledge Graph Integration",
+      goal: "See how drugs, genes, diseases, and side effects are connected in a knowledge graph.",
       actions: [
-        "Open **Learning Lab** and start **Lab 1: Knowledge Graph Integration**.",
-        "Note the four node types: Drug, Disease, Gene and Side Effect.",
-        "Note that edges are typed too — 'treats', 'targets', 'associated_with' — not just connections.",
-        "Trace one path in your head: a drug targets a gene, that gene is associated with a disease.",
+        "Open Learning Lab and start Lab 1: Knowledge Graph Integration.",
+        "Identify the four node types: Drug, Disease, Gene, and Side Effect.",
+        "Look at the relationship types: treats, targets, and associated_with.",
+        "Follow one path: a drug targets a gene, and the gene is associated with a disease.",
       ],
-      expect: "You can describe a drug-target-disease path and say what each edge type means.",
-      why: "Typed edges are what make this more than a diagram. 'Drug A treats Disease B' and 'Drug A causes Disease B' connect the same two nodes and mean opposite things, so the relation type carries as much information as the link itself.",
+      expect: "A drug–gene–disease path and what each relationship means.",
+      why: "The relationship type tells you how two nodes are connected and gives the link its meaning.",
       minutes: 14,
     },
     {
-      title: "Learning Lab 2 — graph embeddings",
-      goal: "See how a graph becomes numbers a model can work with.",
+      title: "Learning Lab 2 — Graph Embeddings",
+      goal: "See how information in a graph can be represented as numbers.",
       actions: [
-        "Start **Lab 2: Graph Embeddings**.",
-        "Follow how each entity is assigned a position in a vector space.",
-        "Note the property that matters: entities playing similar roles end up close together.",
-        "Look at how a relation becomes a translation between positions rather than a point.",
+        "Start Lab 2: Graph Embeddings.",
+        "See how each entity is represented by a vector.",
+        "Observe how the model learns patterns from the relationships in the graph.",
+        "See how a relation is represented as a change between positions in the embedding space.",
       ],
-      expect: "You can explain why two drugs that treat the same diseases through the same targets end up near each other in the embedding.",
-      why: "The embedding is a lossy compression of the graph that preserves relational structure. That compression is the point — it lets you ask about connections that were never recorded, because the geometry generalises beyond the specific edges it was trained on.",
+      expect: "How graph information is represented in numerical form.",
+      why: "This numerical form allows the model to compare relationships and look for possible missing links.",
       minutes: 14,
     },
     {
-      title: "Learning Lab 3 — link prediction",
-      goal: "Understand the algorithm that turns geometry into a hypothesis.",
+      title: "Learning Lab 3 — Link Prediction",
+      goal: "Learn how the model ranks possible missing links.",
       actions: [
-        "Start **Lab 3: Link Prediction**.",
-        "Read how TransE works: it trains so that the embedding of the head entity plus the embedding of the relation lands near the tail entity.",
-        "Understand the inference step: given a head and a relation, the nearest entities are the most likely tails.",
-        "Note that every prediction comes with a score, and what that score does and does not mean.",
+        "Start Lab 3: Link Prediction.",
+        "See the basic TransE relationship: head + relation ≈ tail.",
+        "See how candidate entities are ranked by how well they fit the learned relationship.",
+        "Check what the model score means and what it does not mean.",
       ],
-      expect: "You can state the TransE relationship — head + relation ≈ tail — and explain how it produces ranked candidates.",
-      why: "The score measures geometric consistency with the training graph, nothing more. It is not a probability that the biology is real, and reading it as one is the central mistake this field makes.",
+      expect: "How TransE produces a ranked list of possible relationships.",
+      why: "The score shows how well a link fits the patterns learned from the graph. It does not prove that the biological relationship is real.",
       minutes: 14,
     },
     {
-      title: "Open the Experiment and take the guided tour",
-      goal: "Get oriented on the interactive graph before manipulating it.",
+      title: "Open the Experiment and Take the Guided Tour",
+      goal: "Get familiar with the interactive graph before starting the experiment.",
       actions: [
-        "Open **Experiment** in the sidebar.",
-        "Start the guided tour and follow all four steps: Welcome to the Lab, Drug-Target Interaction, Target-Disease Association, and Repurposing Hypothesis.",
-        "Then explore freely — drag nodes, click them for details, and see how the graph responds.",
+        "Open Experiment from the sidebar.",
+        "Follow the four tour steps: Welcome to the Lab, Drug–Target Interaction, Target–Disease Association, and Repurposing Hypothesis.",
+        "Move the nodes and click on them to explore their details and connections.",
       ],
-      expect: "An interactive graph, colour-coded by node type, with a four-step tour that walks a complete repurposing argument.",
-      why: "The tour is the argument in miniature: drug to target, target to disease, therefore drug to disease as a hypothesis. Everything you do afterwards is a variation on that chain.",
+      expect: "An interactive graph showing different node types and their connections.",
+      why: "The tour shows how drug–target and target–disease relationships can be used to form a possible drug–disease hypothesis.",
       minutes: 12,
     },
     {
-      title: "Add your own drug candidate",
-      goal: "Extend the graph and see how new knowledge propagates.",
+      title: "Add Your Own Drug Candidate",
+      goal: "Add a drug and explore how it connects to the graph.",
       actions: [
-        "Click **Add Drug**.",
-        "Give it a name, list the gene targets you want it to act on, and list its side effects.",
-        "Submit it and find your node in the graph.",
-        "Look at what it is now connected to, and through which paths.",
+        "Click Add Drug.",
+        "Enter the drug name, gene targets, and side effects.",
+        "Add the drug and find its node in the graph.",
+        "Check which nodes it connects to and the relationships behind those connections.",
       ],
-      expect: "Your drug appears as a new node, linked through the targets you specified, and reachable from diseases associated with those genes.",
-      why: "Adding a node with no edges tells you nothing. The value came entirely from the relationships you declared — which is exactly why building these graphs from literature is slow, expensive work, and why the graph's quality caps the quality of every prediction made on it.",
+      expect: "Your drug as a new node linked through the information you entered.",
+      why: "The results depend on the information and relationships in the graph. Reliable input is important for meaningful results.",
       minutes: 12,
     },
     {
-      title: "Run link prediction and form a hypothesis",
-      goal: "Generate a candidate and turn it into something testable.",
+      title: "Run Link Prediction and Form a Hypothesis",
+      goal: "Use the prediction to develop a testable research hypothesis.",
       actions: [
-        "Click **AI Link Prediction**.",
-        "Read the result: which drug is predicted to treat which disease, and with what score.",
-        "Trace the path through the graph that supports it — which target, which association.",
-        "Write the hypothesis in one sentence, and then write down the experiment that would falsify it.",
+        "Click AI Link Prediction.",
+        "Check the predicted drug–disease link and its model score.",
+        "Follow the related graph path and note the target and disease association.",
+        "Write a short hypothesis and describe how it could be tested.",
       ],
-      expect: "A predicted drug-disease link with a confidence score, and a traceable path through the graph explaining it.",
-      why: "The traceable path is what makes a prediction usable. A high score with no mechanistic path is unpublishable and unfundable; a moderate score with a clear target-disease mechanism is a research proposal. Always look for the path before looking at the number.",
+      expect: "A predicted drug–disease link, its model score, and the related graph connections.",
+      why: "A model score is not biological proof. The graph provides useful context, but the predicted relationship still needs further evidence and testing.",
       minutes: 14,
     },
     {
-      title: "Consolidate and assess",
-      goal: "Fill gaps and check understanding.",
+      title: "Review and Assess",
+      goal: "Review the main concepts and check your understanding.",
       actions: [
-        "Use the **AI Chat** sidebar for anything unclear.",
-        "Read the Knowledge Bank sections on drug repurposing, network medicine and the TransE algorithm.",
-        "Take the **Assessment**.",
+        "Use the AI Chat if you need help with a concept.",
+        "Review the Knowledge Bank sections on drug repurposing, network medicine, and TransE.",
+        "Complete the Assessment.",
       ],
-      expect: "A completed assessment and a repurposing hypothesis you could defend.",
+      expect: "A completed assessment and a drug-repurposing hypothesis based on the lab results.",
       minutes: 12,
     },
   ],

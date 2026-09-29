@@ -879,16 +879,16 @@
 }
 .sc-title-sub {
   display: block;
-  margin-top: 6px;
+  margin-top: 9px;
   font-size: 0.52em;
   letter-spacing: -0.035em;
 }
 @media (min-width: 40rem) {
   .sc-title-sub {
-    margin-top: 5px;
+    margin-top: 7px;
   }
   .sc-hero-inner:has(.sc-title-sub) .sc-copy {
-    margin-top: 7px;
+    margin-top: 10px;
   }
   .sc-hero-inner:has(.sc-title-sub) .sc-cta-row {
     margin-top: 11px;
@@ -909,7 +909,7 @@
 }
 
 .sc-copy {
-  margin: 10px 0 0;
+  margin: 14px 0 0;
   max-width: 670px;
   color: #d4dbd7;
   font-size: 13px;
