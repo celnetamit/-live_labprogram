@@ -1170,6 +1170,67 @@
   }
 }
 
+/*
+  MicrobeAI-only: Amit asked for a shorter hero so more of the page shows
+  without scrolling. Scoped to `.sc-lab-micro-ai` (set on the page root
+  alongside `showcase-scope`, from `lab.slug`) rather than touching the
+  shared rules above, so every other lab's hero is untouched.
+
+  This knowingly breaks the parity the comment on `.sc-title:has(.sc-title-sub)`
+  describes, where drugdiscovery's title was resized until its hero measured
+  the same height as MicrobeAI's — MicrobeAI was the reference the rest of
+  the catalogue was tuned to match, and after this it no longer is.
+*/
+.sc-lab-micro-ai .showcase-hero {
+  min-height: 340px;
+}
+.sc-lab-micro-ai .sc-hero-inner {
+  padding: 18px 20px;
+  gap: 22px;
+}
+@media (min-width: 40rem) {
+  .sc-lab-micro-ai .sc-hero-inner {
+    padding: 22px 28px;
+  }
+}
+@media (min-width: 80rem) {
+  .sc-lab-micro-ai .sc-hero-inner {
+    min-height: 340px;
+    gap: 30px;
+  }
+}
+.sc-lab-micro-ai .sc-eyebrow {
+  margin-bottom: 9px;
+}
+.sc-lab-micro-ai .sc-overline {
+  margin: 0 0 6px;
+}
+.sc-lab-micro-ai .sc-title {
+  font-size: clamp(34px, 3.6vw, 50px);
+}
+.sc-lab-micro-ai .sc-copy {
+  margin-top: 10px;
+  font-size: 13px;
+}
+@media (min-width: 40rem) {
+  .sc-lab-micro-ai .sc-copy {
+    font-size: 14px;
+  }
+}
+.sc-lab-micro-ai .sc-cta-row {
+  margin-top: 14px;
+}
+.sc-lab-micro-ai .sc-stats {
+  margin-top: 14px;
+  padding-top: 11px;
+}
+.sc-lab-micro-ai .sc-tags {
+  margin-top: 11px;
+}
+.sc-lab-micro-ai .sc-video {
+  min-height: 200px;
+}
+
 /* ---------- About ---------- */
 
 .sc-about p {

@@ -349,7 +349,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
     <div
       /* The bar is ~98px with the safe-area inset and ~130px once a failed
          request adds its error line; a flat `pb-24` was 96. */
-      className={`mx-auto max-w-7xl pb-[calc(8rem+env(safe-area-inset-bottom))] xl:pb-0 ${showcase ? showcaseRootClass : ""}`}
+      className={`mx-auto max-w-7xl pb-[calc(8rem+env(safe-area-inset-bottom))] xl:pb-0 ${showcase ? `${showcaseRootClass} sc-lab-${lab.slug}` : ""}`}
       /*
         The lab's own colour, published once for the whole page.
 
