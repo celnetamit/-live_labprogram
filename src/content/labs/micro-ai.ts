@@ -85,7 +85,7 @@ const guide: LabGuide = {
     title: [{ text: "Microbe" }, { text: "AI", accent: "primary" }, { text: " Lab", accent: "secondary" }],
     headline: "Explore microbial communities through metagenomics and anaerobic digestion.",
     intro:
-      "MicrobeAI Lab supports the study of microbial communities in anaerobic digestion. It enables users to analyze microbial sequence data, understand how different microorganisms contribute to substrate breakdown and methane production, and link microbial composition to digester performance.",
+      "Analyze microbial sequence data, understand how different microorganisms contribute to substrate breakdown and methane production, and link microbial composition to digester performance.",
     about: [
       "Many microorganisms found in natural and engineered environments are difficult to grow and study in the laboratory. Metagenomics helps us study these microbial communities by analysing the genetic material present in a sample.",
       "In MicrobeAI Lab you work with microbial sequencing data, check its quality, and explore the microbial groups present in the sample and the patterns within that community. The lab also includes an anaerobic digestion simulation, where you can explore how pH, temperature, substrate and retention time may influence digester behaviour.",
