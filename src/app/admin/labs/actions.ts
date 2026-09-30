@@ -25,6 +25,7 @@ async function requireAdmin() {
 
 function fields(formData: FormData) {
   const priceMajor = parseFloat((formData.get("price") as string) || "0");
+  const currency = ((formData.get("currency") as string) || "USD").trim().toUpperCase();
   const status = (formData.get("status") as string) || "ACTIVE";
   const launchRaw = ((formData.get("launchAt") as string) || "").trim();
   const launchAt = launchRaw ? new Date(`${launchRaw}T00:00:00`) : null;
@@ -41,6 +42,7 @@ function fields(formData: FormData) {
     // Only upcoming labs advertise a date; clearing the status clears the date.
     launchAt: status === "UPCOMING" && launchAt && !Number.isNaN(launchAt.getTime()) ? launchAt : null,
     priceMinor: Number.isFinite(priceMajor) ? Math.round(priceMajor * 100) : 0,
+    currency: currency === "INR" ? "INR" : "USD",
     enabled: formData.get("enabled") === "on" || formData.get("enabled") === "true",
   };
 }
@@ -64,6 +66,7 @@ export async function createLab(formData: FormData) {
       status: data.status,
       launchAt: data.launchAt,
       priceMinor: data.priceMinor,
+      currency: data.currency,
       enabled: data.enabled,
       ownerId: (session.user as { id?: string }).id ?? null,
     },
@@ -94,6 +97,7 @@ export async function updateLab(id: string, formData: FormData) {
       status: data.status,
       launchAt: data.launchAt,
       priceMinor: data.priceMinor,
+      currency: data.currency,
       enabled: data.enabled,
     },
   });

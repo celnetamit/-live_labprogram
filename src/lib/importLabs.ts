@@ -11,6 +11,20 @@ const PRICE_BY_DIFFICULTY: Record<string, number> = {
   Advanced: 149900,
 };
 
+const DOCUMENT_PRICING_BY_SLUG: Record<string, { priceMinor: number; currency: string }> = {
+  "ai-6g": { priceMinor: 14900, currency: "USD" },
+  logiclab: { priceMinor: 9900, currency: "USD" },
+  "cognicore-ai": { priceMinor: 9900, currency: "USD" },
+  "micro-ai": { priceMinor: 29900, currency: "USD" },
+  "denovo-genai-lab": { priceMinor: 39900, currency: "USD" },
+  "drugdiscovery-ai": { priceMinor: 49900, currency: "USD" },
+  "battery-ai": { priceMinor: 29900, currency: "USD" },
+  "virtual-ai": { priceMinor: 29900, currency: "USD" },
+  omicslab: { priceMinor: 49900, currency: "USD" },
+  metamaterials: { priceMinor: 39900, currency: "USD" },
+  fraudshield: { priceMinor: 19900, currency: "USD" },
+};
+
 type SourceLab = {
   id: string;
   title?: string;
@@ -21,6 +35,8 @@ type SourceLab = {
   instructions?: string;
   starterCode?: string;
   sourceUrl?: string;
+  priceMinor?: number;
+  currency?: string;
   tags?: string[];
   keySkills?: string[];
 };
@@ -54,7 +70,11 @@ export async function importLabs(): Promise<{ created: number; updated: number; 
 
   for (const w of labs) {
     const slug = String(w.id);
-    const priceMinor = PRICE_BY_DIFFICULTY[w.difficulty ?? ""] ?? 49900;
+    const documentPricing = DOCUMENT_PRICING_BY_SLUG[slug];
+    const priceMinor =
+      documentPricing?.priceMinor ??
+      (Number.isFinite(w.priceMinor) ? (w.priceMinor as number) : PRICE_BY_DIFFICULTY[w.difficulty ?? ""] ?? 49900);
+    const currency = documentPricing?.currency ?? w.currency ?? "INR";
     const syncable = {
       slug,
       name: w.title ?? slug,
@@ -79,7 +99,7 @@ export async function importLabs(): Promise<{ created: number; updated: number; 
       updated++;
     } else {
       await prisma.lab.create({
-        data: { ...syncable, priceMinor, accessType: "PRIVATE", status: "ACTIVE", enabled: true },
+        data: { ...syncable, priceMinor, currency, accessType: "PRIVATE", status: "ACTIVE", enabled: true },
       });
       created++;
     }
