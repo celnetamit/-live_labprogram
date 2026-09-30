@@ -86,7 +86,7 @@ export default function WebhooksClient({
               type="url"
               name="url"
               required
-              placeholder="https://example.com/hooks/live-labs"
+              placeholder="https://example.com/hooks/panoptical"
               className="w-full px-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>

@@ -138,7 +138,7 @@ export default function LabCatalogClient({
     <div className={`max-w-7xl mx-auto ${showcaseFontClass}`}>
       {/* Header — set on the page's backdrop (`.labs-backdrop`, drawn by the
           page that hosts this), in the cards' own display face. */}
-      <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-2 sm:pt-6">
+      <div className="mb-7 flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-2 sm:pt-4">
         <div>
           <p className="labs-eyebrow">
             <span aria-hidden className="labs-eyebrow-dot" />
@@ -170,7 +170,7 @@ export default function LabCatalogClient({
       </div>
 
       {/* Filters */}
-      <div className="labs-filters mb-8 grid grid-cols-2 gap-3 p-3 sm:p-4 md:flex md:flex-row">
+      <div className="labs-filters mb-4 grid grid-cols-2 gap-3 p-3 sm:p-4 md:flex md:flex-row">
         <div className="relative col-span-2 flex-1">
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
           <input

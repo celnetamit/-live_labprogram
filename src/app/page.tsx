@@ -255,7 +255,7 @@ function ProductPreview() {
           <span className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
           <div className="ml-3 flex-1 h-5 rounded-md bg-background/60 border border-border max-w-[240px] flex items-center px-2">
-            <span className="text-[10px] text-muted-foreground">live-labs.org/admin</span>
+            <span className="text-[10px] text-muted-foreground">panoptical.org/admin</span>
           </div>
         </div>
         {/* The sidebar column only exists from `sm`: below it the sidebar is
@@ -659,8 +659,8 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg btn-brand flex items-center justify-center text-primary-foreground font-bold text-sm">L</div>
-                <span className="font-bold text-lg">Live Labs</span>
+                <div className="w-8 h-8 rounded-lg btn-brand flex items-center justify-center text-primary-foreground font-bold text-sm">P</div>
+                <span className="font-bold text-lg">Panoptical Labs</span>
               </div>
               <p className="text-muted-foreground text-sm max-w-xs">
                 A unified ecosystem for accessing, managing and discovering advanced research and educational labs.
@@ -697,7 +697,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-10 pt-6 border-t border-border/60 flex flex-col sm:flex-row justify-between gap-3 text-sm text-muted-foreground">
-            <span>© {new Date().getFullYear()} Live Labs. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} Panoptical Labs. All rights reserved.</span>
             <span className="inline-flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Secured with enterprise SSO</span>
           </div>
         </div>

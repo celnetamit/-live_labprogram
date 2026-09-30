@@ -51,9 +51,9 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
             <div className="w-9 h-9 rounded-xl btn-brand flex items-center justify-center text-primary-foreground font-bold text-lg group-hover:scale-105 transition-transform">
-              L
+              P
             </div>
-            <span className="font-bold text-lg tracking-tight">Live Labs</span>
+            <span className="font-bold text-lg tracking-tight">Panoptical Labs</span>
           </Link>
 
           {/* Desktop links */}

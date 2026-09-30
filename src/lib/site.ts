@@ -12,7 +12,7 @@
  */
 export const SITE_URL = (process.env.SITE_URL || "https://live-labs.org").replace(/\/+$/, "");
 
-export const SITE_NAME = "Live Labs";
+export const SITE_NAME = "Panoptical Labs";
 
 /**
  * Google Search Console ownership token for https://live-labs.org/.

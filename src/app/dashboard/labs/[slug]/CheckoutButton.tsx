@@ -78,7 +78,7 @@ export default function CheckoutButton({
         key: data.keyId,
         amount: data.amountMinor,
         currency: data.currency,
-        name: "Live Labs",
+        name: "Panoptical Labs",
         description: data.labTitle,
         order_id: data.razorpayOrderId,
         handler: async (response: {

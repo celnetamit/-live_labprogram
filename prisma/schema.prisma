@@ -89,8 +89,8 @@ model PlatformSetting {
   id                      String   @id @default("singleton")
 
   // --- General ---
-  platformName            String   @default("Live Labs Ecosystem")
-  supportEmail            String   @default("livelabs@nstc.in")
+  platformName            String   @default("Panoptical Labs Ecosystem")
+  supportEmail            String   @default("support@panoptical.ai")
   /// Off closes /register and the registration API to new sign-ups.
   allowPublicRegistration Boolean  @default(true)
   /// On disables self-serve checkout: labs are obtained by request only.
@@ -110,7 +110,7 @@ model PlatformSetting {
   allowBiometrics         Boolean  @default(true)
 
   // --- Email ---
-  mailFromName            String   @default("Live Labs")
+  mailFromName            String   @default("Panoptical Labs")
   mailReplyTo             String?
 
   updatedAt               DateTime @updatedAt

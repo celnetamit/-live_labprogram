@@ -9,7 +9,7 @@ import { getSettings } from "@/lib/platformSettings";
 export const authOptions = {
   /*
     The adapter persists OAuth identities (Account rows) so a Google user is
-    linked to one Live Labs account across sign-ins. Sessions stay JWT-backed —
+    linked to one Panoptical account across sign-ins. Sessions stay JWT-backed —
     required, because credentials sign-ins never touch the adapter.
   */
   adapter: PrismaAdapter(prisma) as never,

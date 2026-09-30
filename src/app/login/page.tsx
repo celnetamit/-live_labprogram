@@ -135,11 +135,11 @@ export default function Login() {
         >
           <div className="flex flex-col items-center mb-8">
             <div className="w-14 h-14 rounded-2xl btn-brand flex items-center justify-center text-primary-foreground font-bold text-2xl mb-4">
-              L
+              P
             </div>
             {/* An <h1>, not an <h2>: this is the page's own heading, and there
                 was no h1 above it for it to sit under. */}
-            <h1 className="text-2xl font-bold text-center tracking-tight">Sign in to Live Labs</h1>
+            <h1 className="text-2xl font-bold text-center tracking-tight">Sign in to Panoptical</h1>
             <p className="text-sm text-muted-foreground mt-2 text-center">
               Enter your credentials to access your labs
             </p>
