@@ -10,7 +10,7 @@ import { buildLearnerLab } from "@/lib/learnerLabs";
 import LabCatalogClient, { type CatalogLab } from "@/app/dashboard/labs/LabCatalogClient";
 
 export const metadata: Metadata = {
-  title: "Explore Labs — Panoptical Labs",
+  title: "Explore Labs — Live Labs",
   description: "Browse all premium workshop labs. Sign in to open a lab and unlock its resources.",
 };
 

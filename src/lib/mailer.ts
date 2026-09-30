@@ -78,7 +78,7 @@ export function passwordResetEmail(link: string, name: string | null) {
   const greeting = name ? `Hi ${name},` : "Hi,";
   const text =
     `${greeting}\n\n` +
-    `Someone asked to reset the password for your Panoptical Labs account.\n` +
+    `Someone asked to reset the password for your Live Labs account.\n` +
     `Open this link to choose a new one — it expires in 60 minutes and can only be used once:\n\n` +
     `${link}\n\n` +
     `If this wasn't you, ignore this email. Your password stays as it is.\n`;
@@ -87,7 +87,7 @@ export function passwordResetEmail(link: string, name: string | null) {
     <div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#111">
       <h2 style="margin:0 0 16px">Reset your password</h2>
       <p style="margin:0 0 12px">${greeting}</p>
-      <p style="margin:0 0 20px">Someone asked to reset the password for your Panoptical Labs account.</p>
+      <p style="margin:0 0 20px">Someone asked to reset the password for your Live Labs account.</p>
       <p style="margin:0 0 24px">
         <a href="${link}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600">
           Choose a new password
@@ -101,5 +101,5 @@ export function passwordResetEmail(link: string, name: string | null) {
       </p>
     </div>`;
 
-  return { subject: "Reset your Panoptical Labs password", html, text };
+  return { subject: "Reset your Live Labs password", html, text };
 }

@@ -50,7 +50,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
               background: "linear-gradient(110deg, #5b45e6, #1a8fe3)",
             }}
           >
-            P
+            L
           </div>
           <div style={{ display: "flex", fontSize: 32, fontWeight: 700 }}>{SITE_NAME}</div>
         </div>

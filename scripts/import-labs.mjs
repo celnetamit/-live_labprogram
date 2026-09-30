@@ -14,6 +14,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SNAPSHOT = path.join(__dirname, "..", "prisma", "labs-snapshot.json");
 const SOURCE_URL = process.env.LAB_SOURCE_URL || "http://localhost:3000/api/labs";
 
+const RECOMMENDED_LAB_PRICING = {
+  "ai-6g": { priceMinor: 14900, currency: "USD" },
+  logiclab: { priceMinor: 9900, currency: "USD" },
+  "cognicore-ai": { priceMinor: 9900, currency: "USD" },
+  "micro-ai": { priceMinor: 29900, currency: "USD" },
+  "denovo-genai-lab": { priceMinor: 39900, currency: "USD" },
+  "drugdiscovery-ai": { priceMinor: 49900, currency: "USD" },
+  "battery-ai": { priceMinor: 29900, currency: "USD" },
+  "virtual-ai": { priceMinor: 29900, currency: "USD" },
+  omicslab: { priceMinor: 49900, currency: "USD" },
+  metamaterials: { priceMinor: 39900, currency: "USD" },
+  fraudshield: { priceMinor: 19900, currency: "USD" },
+};
+
 const PRICE_BY_DIFFICULTY = {
   Beginner: 49900,
   Intermediate: 99900,
@@ -39,7 +53,8 @@ async function main() {
 
   for (const w of labs) {
     const slug = String(w.slug || w.id);
-    const priceMinor = PRICE_BY_DIFFICULTY[w.difficulty] ?? 49900;
+    const recommendedPrice = RECOMMENDED_LAB_PRICING[slug];
+    const price = recommendedPrice ?? { priceMinor: PRICE_BY_DIFFICULTY[w.difficulty] ?? 49900, currency: "INR" };
     
     // Support either stringified tags array or actual array
     let parsedTags = [];
@@ -79,7 +94,7 @@ async function main() {
       await prisma.lab.update({ where: { slug }, data: syncable });
       updated++;
     } else {
-      await prisma.lab.create({ data: { ...data, priceMinor } });
+      await prisma.lab.create({ data: { ...data, ...price } });
       created++;
     }
   }

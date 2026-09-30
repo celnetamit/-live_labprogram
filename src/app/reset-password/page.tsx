@@ -116,7 +116,7 @@ function ResetPasswordForm() {
             <>
               <div className="flex flex-col items-center mb-8">
                 <div className="w-14 h-14 rounded-2xl btn-brand flex items-center justify-center text-primary-foreground font-bold text-2xl mb-4">
-                  P
+                  L
                 </div>
                 <h2 className="text-2xl font-bold text-center tracking-tight">
                   Choose a new password

@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import { formatPrice } from "@/lib/access";
+import { formatCurrencyTotals, formatPrice } from "@/lib/access";
 import { Receipt } from "lucide-react";
 import MarkPaidButton from "./MarkPaidButton";
 
@@ -29,12 +29,11 @@ export default async function OrdersAdmin() {
   });
 
   const paid = orders.filter((o) => o.status === "PAID");
-  const revenueMinor = paid.reduce((sum, o) => sum + o.amountMinor, 0);
 
   const tiles = [
     { label: "Total Orders", value: orders.length.toString(), tint: "from-brand-1/25" },
     { label: "Paid", value: paid.length.toString(), tint: "from-brand-2/25" },
-    { label: "Revenue", value: formatPrice(revenueMinor), tint: "from-emerald-500/25", grad: true },
+    { label: "Revenue", value: formatCurrencyTotals(paid), tint: "from-emerald-500/25", grad: true },
   ];
 
   return (

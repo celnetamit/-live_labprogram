@@ -3,8 +3,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-import { formatPrice } from "@/lib/access";
-import { Users, FlaskConical, Receipt, IndianRupee, ArrowUpRight, Sparkles } from "lucide-react";
+import { formatCurrencyTotals, formatPrice } from "@/lib/access";
+import { Users, FlaskConical, Receipt, Coins, ArrowUpRight, Sparkles } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +19,7 @@ export default async function AdminDashboard() {
     // "Active Labs" now means exactly that — upcoming labs are counted separately
     // in Lab Management rather than inflating this figure.
     prisma.lab.count({ where: { enabled: true, status: "ACTIVE" } }),
-    prisma.order.findMany({ where: { status: "PAID" }, select: { amountMinor: true } }),
+    prisma.order.findMany({ where: { status: "PAID" }, select: { amountMinor: true, currency: true } }),
     prisma.order.count({ where: { status: "PENDING" } }),
     prisma.order.findMany({
       orderBy: { createdAt: "desc" },
@@ -28,13 +28,12 @@ export default async function AdminDashboard() {
     }),
   ]);
 
-  const revenueMinor = paidOrders.reduce((s, o) => s + o.amountMinor, 0);
 
   const stats = [
     { title: "Total Users", value: userCount.toLocaleString("en-IN"), icon: Users, href: "/admin/users", tint: "from-brand-1/25" },
     { title: "Active Labs", value: labCount.toLocaleString("en-IN"), icon: FlaskConical, href: "/admin/labs", tint: "from-brand-2/25" },
     { title: "Paid Orders", value: paidOrders.length.toLocaleString("en-IN"), icon: Receipt, href: "/admin/orders", tint: "from-brand-3/25" },
-    { title: "Revenue", value: formatPrice(revenueMinor), icon: IndianRupee, href: "/admin/orders", tint: "from-emerald-500/25" },
+    { title: "Revenue", value: formatCurrencyTotals(paidOrders), icon: Coins, href: "/admin/orders", tint: "from-emerald-500/25" },
   ];
 
   return (
@@ -50,7 +49,7 @@ export default async function AdminDashboard() {
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
               Master <span className="text-gradient-animated">Control Center</span>
             </h1>
-            <p className="text-muted-foreground mt-1">Live overview of your Panoptical Labs ecosystem.</p>
+            <p className="text-muted-foreground mt-1">Real-time overview of your Live Labs ecosystem.</p>
           </div>
           {pendingOrders > 0 && (
             <Link

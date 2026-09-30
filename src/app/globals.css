@@ -1957,10 +1957,7 @@
   font-weight: 800;
   line-height: 1.02;
   letter-spacing: -0.04em;
-  background: linear-gradient(180deg, var(--foreground) 35%, color-mix(in oklch, var(--foreground) 62%, var(--primary)));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--foreground);
 }
 .labs-filters {
   border-radius: 18px;

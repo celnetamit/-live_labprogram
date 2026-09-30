@@ -3,7 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-import { formatPrice } from "@/lib/access";
+import { formatCurrencyTotals, formatPrice } from "@/lib/access";
 import { CreditCard, Receipt, FlaskConical, ArrowRight, Infinity as InfinityIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +33,6 @@ export default async function BillingSettingsPage() {
   ]);
 
   const paid = orders.filter((o) => o.status === "PAID");
-  const totalSpent = paid.reduce((sum, o) => sum + o.amountMinor, 0);
 
   return (
     <>
@@ -63,7 +62,7 @@ export default async function BillingSettingsPage() {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Total paid
             </p>
-            <p className="ui-stat-value mt-2">{formatPrice(totalSpent)}</p>
+            <p className="ui-stat-value mt-2">{formatCurrencyTotals(paid)}</p>
           </div>
           <div className="ui-subtile">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">

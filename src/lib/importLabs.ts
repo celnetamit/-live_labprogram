@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { DEFAULT_LAB_PRICING, RECOMMENDED_LAB_PRICING } from "@/lib/recommendedLabPricing";
 
 const SNAPSHOT = path.join(process.cwd(), "prisma", "labs-snapshot.json");
 const SOURCE_URL = process.env.LAB_SOURCE_URL || "http://localhost:3000/api/labs";
@@ -13,6 +14,7 @@ const PRICE_BY_DIFFICULTY: Record<string, number> = {
 
 type SourceLab = {
   id: string;
+  slug?: string;
   title?: string;
   synopsis?: string;
   subject?: string;
@@ -53,8 +55,9 @@ export async function importLabs(): Promise<{ created: number; updated: number; 
   let updated = 0;
 
   for (const w of labs) {
-    const slug = String(w.id);
-    const priceMinor = PRICE_BY_DIFFICULTY[w.difficulty ?? ""] ?? 49900;
+    const slug = String(w.slug ?? w.id);
+    const recommendedPrice = RECOMMENDED_LAB_PRICING[slug];
+    const fallbackPrice = PRICE_BY_DIFFICULTY[w.difficulty ?? ""] ?? DEFAULT_LAB_PRICING.priceMinor;
     const syncable = {
       slug,
       name: w.title ?? slug,
@@ -79,7 +82,13 @@ export async function importLabs(): Promise<{ created: number; updated: number; 
       updated++;
     } else {
       await prisma.lab.create({
-        data: { ...syncable, priceMinor, accessType: "PRIVATE", status: "ACTIVE", enabled: true },
+        data: {
+          ...syncable,
+          ...(recommendedPrice ?? { priceMinor: fallbackPrice, currency: DEFAULT_LAB_PRICING.currency }),
+          accessType: "PRIVATE",
+          status: "ACTIVE",
+          enabled: true,
+        },
       });
       created++;
     }

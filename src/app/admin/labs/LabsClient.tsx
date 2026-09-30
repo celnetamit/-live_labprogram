@@ -26,6 +26,12 @@ import {
 
 const PAGE_SIZE = 15;
 
+function formatLabPrice(priceMinor: number, currency: string) {
+  return new Intl.NumberFormat(currency === "USD" ? "en-US" : "en-IN", {
+    style: "currency", currency, maximumFractionDigits: 2,
+  }).format(priceMinor / 100);
+}
+
 const FILTERS = ["ALL", ...LAB_STATUSES] as const;
 type Filter = (typeof FILTERS)[number];
 
@@ -259,7 +265,7 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
                     {lab.difficulty || "—"}
                   </td>
                   <td className="px-4 py-3 font-medium">
-                    ₹{(lab.priceMinor / 100).toLocaleString("en-IN")}
+                    {formatLabPrice(lab.priceMinor, lab.currency)}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`pill ${labStatusTone(lab.enabled ? lab.status : "DISABLED")}`}>
@@ -330,7 +336,7 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
                 </div>
               </div>
               <div className="flex items-center justify-between mt-3">
-                <span className="font-bold">₹{(lab.priceMinor / 100).toLocaleString("en-IN")}</span>
+                <span className="font-bold">{formatLabPrice(lab.priceMinor, lab.currency)}</span>
                 <div className="flex gap-1">
                   <button
                     onClick={() => openEditModal(lab)}
@@ -454,15 +460,26 @@ export default function LabsClient({ initialLabs }: { initialLabs: Lab[] }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Price (₹)</label>
+                  <label className="text-sm font-medium">Price amount</label>
                   <input
                     type="number"
                     name="price"
                     min="0"
-                    step="1"
+                    step="0.01"
                     defaultValue={editingLab ? editingLab.priceMinor / 100 : 499}
                     className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Currency</label>
+                  <select
+                    name="currency"
+                    defaultValue={editingLab?.currency ?? "INR"}
+                    className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="USD">USD ($)</option>
+                    <option value="INR">INR (₹)</option>
+                  </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Status</label>

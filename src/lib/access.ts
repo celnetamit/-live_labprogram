@@ -54,10 +54,23 @@ export function parseList(value: string | null | undefined): string[] {
   }
 }
 
-/** Format a minor-unit price (e.g. 49900) into a display string like "₹499". */
+/** Format a minor-unit price (e.g. 14900 USD) as a locale-aware currency amount. */
 export function formatPrice(minor: number, currency = "INR"): string {
-  const major = minor / 100;
-  const symbol = currency === "INR" ? "₹" : currency === "USD" ? "$" : "";
-  const formatted = major % 1 === 0 ? major.toFixed(0) : major.toFixed(2);
-  return `${symbol}${Number(formatted).toLocaleString("en-IN")}`;
+  return new Intl.NumberFormat(currency === "INR" ? "en-IN" : "en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 2,
+  }).format(minor / 100);
+}
+
+/** Add amounts only within the same currency; totals never imply a conversion rate. */
+export function formatCurrencyTotals(amounts: { amountMinor: number; currency: string }[]): string {
+  const totals = new Map<string, number>();
+  for (const amount of amounts) {
+    totals.set(amount.currency, (totals.get(amount.currency) ?? 0) + amount.amountMinor);
+  }
+  return [...totals.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([currency, amountMinor]) => formatPrice(amountMinor, currency))
+    .join(" · ") || formatPrice(0);
 }

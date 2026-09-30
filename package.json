@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "import:labs": "node scripts/import-labs.mjs",
+    "apply:recommended-pricing": "node scripts/apply-recommended-pricing.mjs",
     "demo:scripts": "rm -rf .demo-build && tsc scripts/generate-demo-scripts.ts --outDir .demo-build --module commonjs --moduleResolution node --target ES2022 --esModuleInterop --skipLibCheck --strict && node .demo-build/scripts/generate-demo-scripts.js && rm -rf .demo-build"
   },
   "dependencies": {

@@ -93,7 +93,7 @@ export async function saveEmailSettings(formData: FormData) {
     return { success: false as const, message: "Enter a valid reply-to address" };
   }
 
-  await saveSettings({ mailFromName: mailFromName || "Panoptical Labs", mailReplyTo: mailReplyTo || null }, admin.email);
+  await saveSettings({ mailFromName: mailFromName || "Live Labs", mailReplyTo: mailReplyTo || null }, admin.email);
 
   revalidateSettings();
   return { success: true as const, message: "Email settings saved." };
@@ -205,7 +205,7 @@ export async function pingWebhook(id: string) {
   const body = JSON.stringify({
     event: "ping",
     createdAt: new Date().toISOString(),
-    data: { message: "Test delivery from Panoptical Labs" },
+    data: { message: "Test delivery from Live Labs" },
   });
 
   let status: number | null = null;
