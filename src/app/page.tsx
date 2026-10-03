@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { MotionConfig, motion } from "framer-motion";
 import {
   ArrowRight,
   Lock,
@@ -10,11 +10,11 @@ import {
   Minus,
   FlaskConical,
   ListChecks,
-  ShieldCheck,
   ExternalLink,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import AbsorptionFigure from "@/components/absorption-figure";
+import EvidencePanels from "@/components/evidence-panels";
 import Link from "next/link";
 
 const fadeUp = {
@@ -123,36 +123,6 @@ const domains: LabDomain[] = [
   },
 ];
 
-const features = [
-  {
-    icon: ListChecks,
-    title: "Every step says what you should see",
-    desc: "All 104 guided steps across the catalogue state their expected result before they explain the reasoning. When your screen disagrees with the guide, you find out at that step instead of three steps later.",
-    span: "lg:col-span-2",
-    accent: "from-brand-1/20",
-  },
-  {
-    icon: FlaskConical,
-    title: "The numbers come from solvers",
-    desc: "Diffraction patterns, absorption spectra, digester yields and circuit waveforms are computed by each lab's own engine. Where a language model writes, it writes prose.",
-    span: "",
-    accent: "from-brand-2/20",
-  },
-  {
-    icon: ExternalLink,
-    title: "Sources you can follow",
-    desc: "46 references across the guides, cited to the paper, standard or database they came from.",
-    span: "",
-    accent: "from-brand-3/20",
-  },
-  {
-    icon: Lock,
-    title: "Access stated up front",
-    desc: "Every lab's objective, full step list, expected results and reading list are readable without an account. Signing in is what opens the lab environment itself, and each lab is granted or bought on its own — there is no bundle to decode.",
-    span: "lg:col-span-2",
-    accent: "from-emerald-500/20",
-  },
-];
 
 const steps = [
   { icon: FlaskConical, title: "Read the whole guide first", desc: "Objective, every step, the result each one should produce, the known failure modes and the sources — all of it public, before you sign in or pay for anything." },
@@ -183,23 +153,6 @@ const aboutFigures = [
   { v: "46", l: "cited sources" },
 ];
 
-const about = [
-  {
-    icon: ListChecks,
-    title: "Checkable at every step",
-    desc: "All 104 steps in the catalogue state the result you should see before they explain why it happens — so the moment your screen disagrees, you know. 71 troubleshooting entries cover the places people actually get stuck.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Built to be doubted",
-    desc: "FraudShield has you attack the detector you just tuned. The XRD lab keeps the specimen's real identity hidden until you commit to an answer, then scores you. Denovo will hand you a confident structure for a molecule that cannot exist.",
-  },
-  {
-    icon: FlaskConical,
-    title: "Real engines, not a chat box",
-    desc: "Set an acoustic target in the metamaterials lab and its own physics engine returns an absorption spectrum, a bandgap analysis and a verdict on whether the lattice could actually be printed. Where a language model does speak, it is relayed through the hub, so no lab ever ships an API key to your browser.",
-  },
-];
 
 /*
   The testimonial section is gone and its data with it.
@@ -253,83 +206,6 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-
-/*
-  The hero panel.
-
-  This was a drawn browser frame on live-labs.org/admin showing "12 Labs,
-  40k Users, 99.9% Uptime" above a mocked lab table. Two of those three
-  figures were invented, the hostname was not ours, and the whole thing was
-  an illustration of a screen rather than a screen.
-
-  What replaces it is one real step, quoted from
-  `src/content/labs/denovo-genai-lab.ts` — the "Lab 3 — design to a
-  specification" entry, three of its actions and its `expect` line, as
-  written. It does the same job honestly: it shows what working here is
-  actually like, and it shows the mechanism the rest of the page claims for
-  itself — a step that states what you should see, so you can tell when you
-  are off track.
-
-  Quoted rather than imported: pulling the guide modules into this client
-  component would ship the whole catalogue's prose in the entry bundle. If
-  that step is reworded, reword it here; the source is named above.
-*/
-function HeroStepPanel() {
-  const actions = [
-    "Open Lab 3: Design to a spec and click the Oral drug-like preset.",
-    "Press Generate 12 candidates. It takes about a tenth of a second.",
-    "Click a candidate. Its structure appears in 3D, with a tick or a cross against every constraint you set.",
-  ];
-  return (
-    <figure className="relative m-0">
-      <div className="rounded-2xl border border-border bg-card overflow-hidden elev-2">
-        <div className="flex items-center gap-2 px-5 py-3 border-b border-border bg-muted/30">
-          <FlaskConical className="w-4 h-4 text-primary-ink shrink-0" />
-          <span className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
-            Denovo GenAI Lab · one step of nine
-          </span>
-        </div>
-
-        <div className="p-5 sm:p-6">
-          <h3 className="text-lg font-semibold tracking-tight">Lab 3 — design to a specification</h3>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            Ask for a property profile rather than a structure, then check what you actually got.
-          </p>
-
-          <ol className="mt-5 space-y-2.5">
-            {actions.map((a, i) => (
-              <li key={i} className="flex gap-3 text-sm leading-relaxed">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-border text-[11px] font-semibold tabular-nums text-muted-foreground">
-                  {i + 1}
-                </span>
-                <span className="text-foreground/90">{a}</span>
-              </li>
-            ))}
-            <li className="pl-8 text-sm text-muted-foreground">+ three more</li>
-          </ol>
-
-          {/* The part that makes a guide checkable rather than readable. */}
-          <div className="mt-5 rounded-xl border border-[color:var(--color-success-ink)]/25 bg-[color:var(--color-success-ink)]/[0.06] p-4">
-            <div className="flex items-center gap-2 mb-1.5">
-              <Check className="w-3.5 h-3.5 text-[color:var(--color-success-ink)] shrink-0" />
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-success-ink)]">
-                You should see
-              </span>
-            </div>
-            <p className="text-sm leading-relaxed text-foreground/90">
-              In enforced mode every candidate scores 5/5 against your constraints. In
-              encouraged mode some come back with a red cross beside a constraint they failed.
-            </p>
-          </div>
-        </div>
-      </div>
-      <figcaption className="mt-3 text-xs text-muted-foreground">
-        A step from the Denovo GenAI Lab guide, quoted as written. All 104 steps in the
-        catalogue carry a line like that green one.
-      </figcaption>
-    </figure>
-  );
-}
 
 /**
  * One entry in the network strip: a real link to the lab, with a card that
@@ -388,10 +264,15 @@ function DomainLink({ host, name, blurb }: LabDomain) {
 export default function Home() {
   return (
     <>
+      {/* `reducedMotion="user"` makes framer-motion drop transforms and
+          fades for anyone whose OS asks for reduced motion — it does not do
+          this on its own. Every reveal on this page is decorative, so none
+          of them should run for someone who has turned motion off. */}
+      <MotionConfig reducedMotion="user">
       <Navbar />
       <main id="main" className="flex-grow">
         {/* ===== Hero ===== */}
-        <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden">
+        <section className="band-ink relative pt-28 pb-16 md:pt-32 md:pb-24 overflow-hidden">
           {/* Was two animated 40rem colour blobs over a grid. On a light
               surface that is the whole page turning blue behind the words. */}
           <div className="absolute inset-0 bg-grid opacity-60" />
@@ -401,7 +282,7 @@ export default function Home() {
                 of it: at the size it wants to be, a two-column hero broke
                 "Instruments you / drive," across a line. */}
             <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-muted-foreground mb-7">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-white/5 px-3.5 py-1.5 text-sm text-muted-foreground mb-7">
                 <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
                 13 laboratories · 7 subject areas
               </span>
@@ -422,7 +303,7 @@ export default function Home() {
                   <Link href="/labs" className="px-7 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
                     Browse the laboratories <ArrowRight className="w-5 h-5" />
                   </Link>
-                  <Link href="#about" className="px-7 py-3.5 rounded-xl border border-border bg-card font-semibold hover:bg-accent transition-colors text-center">
+                  <Link href="#evidence" className="px-7 py-3.5 rounded-xl border border-border bg-white/5 font-semibold hover:bg-white/10 transition-colors text-center">
                     How a lab works
                   </Link>
                 </div>
@@ -465,43 +346,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== Features bento ===== */}
-        <section id="features" className="py-16 md:py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl mb-12">
+        {/* ===== Evidence ===== */}
+        {/* Four claims, each sitting next to the artefact that backs it —
+            the device the whole page turns on. Replaces a feature grid and
+            a separate "about" row-stack that made the same points twice
+            without showing either of them. */}
+        <section id="evidence" className="scroll-mt-24 py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-2xl mb-10 md:mb-14">
               <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">What you are getting</span>
-              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">Built to be checked, not just followed</h2>
-              <p className="mt-4 text-muted-foreground leading-relaxed">
-                Four things that hold for every laboratory in the catalogue, and that you can
-                confirm from its guide before you open it.
+              <h2 className="text-3xl md:text-[2.75rem] font-bold tracking-[-0.03em] leading-[1.08] mt-3 text-balance">
+                Built to be checked, not just followed
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+                Four things that hold for every laboratory here. Each one is shown next to the
+                thing that proves it, quoted from the guides themselves.
               </p>
             </div>
-            {/* The first claim gets its evidence beside it rather than another
-                card: one real step, so "states what you should see" is shown
-                instead of asserted. The pastel wash each card used to carry
-                is gone — four tints across four cards is noise, not hierarchy. */}
-            <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] gap-10 lg:gap-14 items-start">
-              <div className="grid sm:grid-cols-2 gap-px bg-border rounded-2xl overflow-hidden border border-border elev-1">
-                {features.map((f, i) => (
-                  <motion.div
-                    key={f.title}
-                    variants={fadeUp}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                    transition={{ delay: (i % 2) * 0.06 }}
-                    className="bg-card p-6"
-                  >
-                    <f.icon className="w-5 h-5 text-primary-ink mb-3.5" strokeWidth={1.75} />
-                    <h3 className="font-semibold mb-1.5 tracking-tight">{f.title}</h3>
-                    <p className="text-[15px] text-muted-foreground leading-relaxed">{f.desc}</p>
-                  </motion.div>
-                ))}
-              </div>
-              <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-                <HeroStepPanel />
-              </motion.div>
-            </div>
+            <EvidencePanels />
           </div>
         </section>
 
@@ -536,67 +398,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== About ===== */}
-        {/*
-          Plain background on purpose. "How it works" and Testimonials are both
-          `bg-muted/20 border-y`, so before this they butted together with a
-          doubled hairline; a plain band between them restores the page's
-          tinted → plain → tinted alternation.
-
-          `scroll-mt-24` because the navbar is fixed and 64px tall — without it
-          the heading lands underneath the header when someone follows /#about.
-        */}
-        <section id="about" className="scroll-mt-24 py-16 md:py-24">
+        {/* ===== The counted figures ===== */}
+        {/* The About section that was here made the same three arguments the
+            evidence panels now make, with no artefact beside them. Its one
+            irreplaceable part was this band — every figure counted out of the
+            guide modules, see `aboutFigures`. */}
+        <section id="about" className="scroll-mt-24 pb-16 md:pb-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl mb-12">
-              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">What that means in practice</span>
-              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">
-                What each laboratory refuses to do for you
-              </h2>
-              <p className="mt-4 text-muted-foreground leading-relaxed">
-                A diffractometer you mount a real powder in. A fraud detector you tune and then
-                attack. A physics solver that tells you whether the lattice could actually be
-                printed. Each comes with a guide that says what should happen at every step.
-              </p>
-            </div>
-            {/* Stacked rows, not a third card grid: these are three arguments,
-                and each wants room to be read. */}
-            <div className="border-t border-border">
-              {about.map((a, i) => (
-                <motion.div
-                  key={a.title}
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  className="grid md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] gap-x-10 gap-y-3 border-b border-border py-8"
-                >
-                  <div className="flex items-start gap-3">
-                    <a.icon className="w-5 h-5 mt-0.5 shrink-0 text-primary-ink" strokeWidth={1.75} />
-                    <h3 className="text-lg font-semibold tracking-tight">{a.title}</h3>
-                  </div>
-                  <p className="text-muted-foreground leading-relaxed">{a.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Counted out of the guide modules, not estimated — see `aboutFigures`. */}
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="glass mt-6 grid grid-cols-2 gap-y-6 rounded-2xl px-6 py-7 sm:grid-cols-4"
-            >
+            <dl className="grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden rounded-2xl border border-border bg-border elev-1">
               {aboutFigures.map((f) => (
-                <div key={f.l} className="text-center">
-                  <div className="text-2xl md:text-3xl font-extrabold tabular-nums">{f.v}</div>
-                  <div className="mt-0.5 text-xs md:text-sm text-muted-foreground">{f.l}</div>
+                <div key={f.l} className="bg-card px-6 py-7 text-center">
+                  <dt className="sr-only">{f.l}</dt>
+                  <dd>
+                    <span className="block text-3xl md:text-4xl font-bold tracking-[-0.03em] tabular-nums">{f.v}</span>
+                    <span className="mt-1 block text-sm text-muted-foreground">{f.l}</span>
+                  </dd>
                 </div>
               ))}
-            </motion.div>
+            </dl>
           </div>
         </section>
 
@@ -715,6 +534,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+    </MotionConfig>
     </>
   );
 }

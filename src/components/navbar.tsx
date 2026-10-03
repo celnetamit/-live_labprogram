@@ -40,10 +40,16 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-background/95 backdrop-blur-md border-b border-border"
-          : "bg-background/80 backdrop-blur-sm border-b border-transparent"
+      /*
+        Opaque, not translucent.
+
+        At 80% over a dark hero band the bar turned a washed grey and the
+        logo lost its edge. A solid header above a deep hero is the shape
+        this kind of site wants anyway; the only thing scrolling changes is
+        whether it carries a hairline and a shadow.
+      */
+      className={`fixed top-0 left-0 right-0 z-50 bg-background transition-shadow duration-300 ${
+        scrolled ? "border-b border-border elev-1" : "border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
