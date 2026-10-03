@@ -14,6 +14,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
+import AbsorptionFigure from "@/components/absorption-figure";
 import Link from "next/link";
 
 const fadeUp = {
@@ -353,9 +354,10 @@ function DomainLink({ host, name, blurb }: LabDomain) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`${name} — ${host} (opens in a new tab)`}
-        className="inline-block py-2 text-xs sm:py-0 sm:text-sm font-mono text-muted-foreground/80 hover:text-foreground focus-visible:text-foreground underline-offset-4 decoration-dotted decoration-muted-foreground/40 hover:underline focus-visible:underline transition-colors rounded outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        className="group/host inline-flex flex-col gap-0.5 rounded px-1 py-1.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/50"
       >
-        {host}
+        <span className="text-sm font-medium text-foreground/85 transition-colors group-hover/host:text-primary-ink">{name}</span>
+        <span className="text-[11px] text-muted-foreground/70">{host}</span>
       </a>
 
       <div
@@ -389,48 +391,55 @@ export default function Home() {
       <Navbar />
       <main id="main" className="flex-grow">
         {/* ===== Hero ===== */}
-        <section className="relative pt-32 pb-20 md:pt-40 overflow-hidden">
+        <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden">
           {/* Was two animated 40rem colour blobs over a grid. On a light
               surface that is the whole page turning blue behind the words. */}
           <div className="absolute inset-0 bg-grid opacity-60" />
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* The headline gets the full measure of the page rather than half
+                of it: at the size it wants to be, a two-column hero broke
+                "Instruments you / drive," across a line. */}
             <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-muted-foreground mb-6">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-muted-foreground mb-7">
                 <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
                 13 laboratories · 7 subject areas
               </span>
-              {/* The old H1 sold the admin console: "Launch premium labs.
-                  Control every access." Whoever is deciding whether to spend
-                  an afternoon here is not buying an access-control system. */}
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.08] mb-6">
-                Instruments you drive,<br />
+              <h1 className="text-[2.6rem] sm:text-6xl lg:text-7xl xl:text-[5.25rem] font-bold tracking-[-0.04em] leading-[0.95] mb-8 max-w-[18ch]">
+                Instruments you drive,{" "}
                 <span className="text-gradient">not courses you watch.</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-xl mb-8">
-                Browser laboratories in biology, materials, physics, electronics and security.
-                Each one computes its results in its own engine, states what you should see at
-                every step, and cites where the science came from.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 mb-8">
-                <Link href="/labs" className="px-7 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
-                  Browse the laboratories <ArrowRight className="w-5 h-5" />
-                </Link>
-                <Link href="#about" className="px-7 py-3.5 rounded-xl border border-border bg-card font-semibold hover:bg-accent transition-colors text-center">
-                  How a lab works
-                </Link>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-[color:var(--color-success-ink)]" /> Full guides readable without an account</span>
-                <span className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-[color:var(--color-success-ink)]" /> Access granted per lab, nothing recurring</span>
-              </div>
             </motion.div>
 
-            <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6, delay: 0.15 }}>
-              <HeroStepPanel />
-            </motion.div>
+            <div className="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] gap-10 lg:gap-16 items-center">
+              <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6, delay: 0.08 }}>
+                <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-[46ch]">
+                  Browser laboratories in biology, materials, physics, electronics and security.
+                  Each one computes its results in its own engine, states what you should see at
+                  every step, and cites where the science came from.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 mb-7">
+                  <Link href="/labs" className="px-7 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
+                    Browse the laboratories <ArrowRight className="w-5 h-5" />
+                  </Link>
+                  <Link href="#about" className="px-7 py-3.5 rounded-xl border border-border bg-card font-semibold hover:bg-accent transition-colors text-center">
+                    How a lab works
+                  </Link>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="inline-flex items-center gap-2"><Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" /> Full guides readable without an account</li>
+                  <li className="inline-flex items-center gap-2"><Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" /> Access granted per lab, nothing recurring</li>
+                </ul>
+              </motion.div>
+
+              {/* A real result, computed by one of the labs, rather than a
+                  picture of a dashboard. */}
+              <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6, delay: 0.16 }}>
+                <AbsorptionFigure />
+              </motion.div>
+            </div>
           </div>
-        </section>
+          </section>
 
         {/* ===== Logo / domain cloud ===== */}
         {/* `overflow-x-clip` (not `hidden`) because a hover card centred on the
@@ -441,11 +450,11 @@ export default function Home() {
         <section className="border-y border-border bg-muted/20 overflow-x-clip">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-5">
-              Powering labs across the network
+              Each laboratory runs on its own subdomain
             </p>
             {/* Tighter on a phone, so short hostnames share a line instead of
                 stacking twelve deep. */}
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-0 sm:gap-x-8 sm:gap-y-3">
+            <div className="flex flex-wrap items-start justify-center gap-x-8 gap-y-3 sm:gap-x-11">
               {domains.map((d) => (
                 <DomainLink key={d.host} {...d} />
               ))}
@@ -456,32 +465,39 @@ export default function Home() {
         {/* ===== Features bento ===== */}
         <section id="features" className="py-16 md:py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-14">
-              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">What you are getting</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">Built to be checked, not just followed</h2>
-              <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+            <div className="max-w-2xl mb-12">
+              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">What you are getting</span>
+              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">Built to be checked, not just followed</h2>
+              <p className="mt-4 text-muted-foreground leading-relaxed">
                 Four things that hold for every laboratory in the catalogue, and that you can
                 confirm from its guide before you open it.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {features.map((f, i) => (
-                <motion.div
-                  key={f.title}
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true }}
-                  transition={{ delay: (i % 3) * 0.08 }}
-                  className={`card-glow hairline-top rounded-2xl border border-border bg-gradient-to-br ${f.accent} to-card p-6 ${f.span}`}
-                >
-                  <div className="w-12 h-12 rounded-xl btn-brand flex items-center justify-center text-primary-foreground mb-4">
-                    <f.icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-1.5">{f.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{f.desc}</p>
-                </motion.div>
-              ))}
+            {/* The first claim gets its evidence beside it rather than another
+                card: one real step, so "states what you should see" is shown
+                instead of asserted. The pastel wash each card used to carry
+                is gone — four tints across four cards is noise, not hierarchy. */}
+            <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] gap-10 lg:gap-14 items-start">
+              <div className="grid sm:grid-cols-2 gap-px bg-border rounded-2xl overflow-hidden border border-border">
+                {features.map((f, i) => (
+                  <motion.div
+                    key={f.title}
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    transition={{ delay: (i % 2) * 0.06 }}
+                    className="bg-card p-6"
+                  >
+                    <f.icon className="w-5 h-5 text-primary-ink mb-3.5" strokeWidth={1.75} />
+                    <h3 className="font-semibold mb-1.5 tracking-tight">{f.title}</h3>
+                    <p className="text-[15px] text-muted-foreground leading-relaxed">{f.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
+              <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+                <HeroStepPanel />
+              </motion.div>
             </div>
           </div>
         </section>
@@ -489,22 +505,31 @@ export default function Home() {
         {/* ===== How it works ===== */}
         <section className="py-16 md:py-24 bg-muted/20 border-y border-border">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-14">
-              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">How it works</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">Read it, open it, check yourself against it</h2>
+            <div className="max-w-2xl mb-12">
+              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">How it works</span>
+              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">Read it, open it, check yourself against it</h2>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            {/* Numbered rows on a rule rather than three cards: the three
+                beats are sequential, and cards gave them no order. */}
+            <ol className="border-t border-border">
               {steps.map((s, i) => (
-                <motion.div key={s.title} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="relative glass rounded-2xl p-6">
-                  <div className="absolute -top-3 -left-3 w-9 h-9 rounded-xl btn-brand flex items-center justify-center font-bold text-primary-foreground">
-                    {i + 1}
-                  </div>
-                  <s.icon className="w-8 h-8 text-primary mb-4 mt-2" />
-                  <h3 className="text-lg font-semibold mb-2">{s.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{s.desc}</p>
-                </motion.div>
+                <motion.li
+                  key={s.title}
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07 }}
+                  className="grid sm:grid-cols-[3.5rem_minmax(0,16rem)_minmax(0,1fr)] gap-x-6 gap-y-2 border-b border-border py-7"
+                >
+                  <span className="text-2xl font-semibold tabular-nums text-muted-foreground/70">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="text-lg font-semibold tracking-tight self-start">{s.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed sm:pt-0.5">{s.desc}</p>
+                </motion.li>
               ))}
-            </div>
+            </ol>
           </div>
         </section>
 
@@ -520,16 +545,20 @@ export default function Home() {
         */}
         <section id="about" className="scroll-mt-24 py-16 md:py-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-14">
-              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">What that means in practice</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">What each laboratory refuses to do for you</h2>
-              <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+            <div className="max-w-2xl mb-12">
+              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">What that means in practice</span>
+              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">
+                What each laboratory refuses to do for you
+              </h2>
+              <p className="mt-4 text-muted-foreground leading-relaxed">
                 A diffractometer you mount a real powder in. A fraud detector you tune and then
                 attack. A physics solver that tells you whether the lattice could actually be
                 printed. Each comes with a guide that says what should happen at every step.
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            {/* Stacked rows, not a third card grid: these are three arguments,
+                and each wants room to be read. */}
+            <div className="border-t border-border">
               {about.map((a, i) => (
                 <motion.div
                   key={a.title}
@@ -537,11 +566,13 @@ export default function Home() {
                   initial="hidden"
                   whileInView="show"
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="glass rounded-2xl p-6"
+                  transition={{ delay: i * 0.07 }}
+                  className="grid md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] gap-x-10 gap-y-3 border-b border-border py-8"
                 >
-                  <a.icon className="w-8 h-8 text-primary mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">{a.title}</h3>
+                  <div className="flex items-start gap-3">
+                    <a.icon className="w-5 h-5 mt-0.5 shrink-0 text-primary-ink" strokeWidth={1.75} />
+                    <h3 className="text-lg font-semibold tracking-tight">{a.title}</h3>
+                  </div>
                   <p className="text-muted-foreground leading-relaxed">{a.desc}</p>
                 </motion.div>
               ))}

@@ -12,17 +12,10 @@ const guide: LabGuide = {
   slug: "drugdiscovery-ai",
 
   summary: {
-    tagline:
-      "Map drugs, genes and diseases as one graph, then predict the connections nobody has recorded yet.",
-    what: "Some of the most important drugs in use today were developed for something else entirely and found their real purpose later. Drug repurposing tries to make that happen deliberately instead of by accident. This lab teaches the network approach: represent drugs, genes, diseases and side effects as a connected graph, learn a numerical embedding of that graph, and then predict the connections that ought to exist but have not been recorded yet — each one a repurposing hypothesis.",
-    why: [
-      "Drug repurposing looks at whether an existing medicine may also be useful for another disease.",
-      "An existing drug may already have safety, pharmacology, and clinical information available, which can support research into a new use — though its safety and effectiveness for the new disease still need to be tested.",
-      "Biomedical information is spread across research papers and databases.",
-      "Knowledge graphs bring information about drugs, genes, diseases, and other biological entities together in a structured way.",
-      "Graph-based methods can then help researchers study these relationships and identify possible connections for further investigation.",
-    ],
-    whoFor: "This lab is suitable for **students and researchers in drug discovery, pharmacology, bioinformatics, computational biology, and related life-science fields** who want to understand how graph-based methods can be used to study drug–target–disease relationships. Basic knowledge of **drug targets, genes, and disease biology** is helpful. No previous experience with knowledge graphs, graph embeddings, or TransE is required.",
+    tagline: "Explore how existing medicines can be studied for new therapeutic uses.",
+    what: "Drug repurposing is the study of whether an existing medicine may also be useful for treating another disease. In this lab, you will explore how drugs, genes, diseases, and side effects are connected in a knowledge graph. You will learn how these connections can be represented as numbers and used to identify possible drug–disease links for further study.",
+    why: "Drug repurposing looks at whether an existing medicine may also be useful for another disease. An existing drug may already have safety, pharmacology, and clinical information available, which can support research into a new use. However, its safety and effectiveness for the new disease still need to be tested.\n\nBiomedical information is spread across research papers and databases. Knowledge graphs bring information about drugs, genes, diseases, and other biological entities together in a structured way. Graph-based methods can then help researchers study these relationships and identify possible connections for further investigation.",
+    whoFor: "This lab is suitable for **students and researchers in drug discovery, pharmacology, bioinformatics, computational biology, and related life-science fields** who want to understand how graph-based methods can be used to study drug–target–disease relationships.\n\nBasic knowledge of **drug targets, genes, and disease biology** is helpful. No previous experience with knowledge graphs, graph embeddings, or TransE is required.",
     outcomes: [
       "Explain how drugs, genes, diseases, and side effects can be represented in a knowledge graph.",
       "Explain how graph embeddings represent these relationships in numerical form.",
@@ -42,16 +35,19 @@ const guide: LabGuide = {
    * commercial-safe licence policy); the embedding is TransE, trained in the
    * browser (`engine/transe.ts`), and link prediction ranks from it.
    *
-   * The tutorial steps, outcomes, "why it matters" and "who it's for" were
-   * rewritten again against the second "Live lab Profile content" brief (29
-   * September 2026) — the same document family as MicrobeAI's — carrying its
-   * copy in verbatim where the underlying facts still checked out: four node
-   * types (Drug, Disease, Gene, Side Effect), the three edge types (treats,
-   * targets, associated_with), and the TransE relationship (head + relation ≈
-   * tail) are all real, matching `data/knowledgeGraph.ts` and
-   * `engine/transe.ts`. `intro` stays a single sentence rather than the
-   * brief's two — this lab's hero was the size every other lab's was just
-   * brought in to match, and a longer intro would have pushed it back out.
+   * Every section now carries the "Live labs - Contents" brief for RepurposeAI
+   * (3 October 2026) verbatim — tagline, the two-sentence intro, the four
+   * "About this lab" paragraphs, the feature cards, "What's Included in the
+   * Lab", all eight tutorial steps with the brief's bold, the outcomes, and
+   * "Why It Matters" and "Who It's For" as the brief's two paragraphs each.
+   * An earlier pass had merged, reworded and bulleted some of it; Amit asked
+   * for the document as written.
+   *
+   * The lab app carries the same text in `drugdiscovery-ai/data/labProfile.ts`,
+   * and every control the steps name exists there under that name: the five
+   * sections in a sidebar, the XP counter, "Lab 1: Knowledge Graph
+   * Integration", the four tour steps, Add Drug, AI Link Prediction, the AI
+   * Chat. Change the two together.
    *
    * Palette from drugdiscovery.css: blue #74a9cf, rose #e6a1ad, coral
    * #ec785f, green #6fa58d. The design is dark only; each `ink` is the same
@@ -66,10 +62,12 @@ const guide: LabGuide = {
     ],
     headline: "Explore how existing medicines can be studied for new therapeutic uses.",
     intro:
-      "Discover how drugs, genes, diseases and side effects connect through a knowledge graph, and how graph embeddings and link prediction surface possible drug–disease connections for further research.",
+      "Discover how drugs, genes, diseases, and side effects are connected through a knowledge graph. Learn how graph embeddings and link prediction can help uncover possible drug–disease connections for further research.",
     about: [
-      "Drug repurposing is the study of whether an existing medicine may also be useful for treating another disease. In this lab, you will explore how drugs, genes, diseases, and side effects are connected in a knowledge graph, and how these connections can be represented as numbers and used to identify possible drug–disease links for further study.",
-      "You will also examine the graph information that supports a predicted link and use it to develop a testable drug-repurposing hypothesis. A predicted link is not proof that a drug will work for a disease — it is a starting point for further research and testing.",
+      "Drug repurposing is the study of whether an existing medicine may also be useful for treating another disease.",
+      "In this lab, you will explore how drugs, genes, diseases, and side effects are connected in a knowledge graph. You will learn how these connections can be represented as numbers and used to identify possible drug–disease links for further study.",
+      "You will also examine the graph information that supports a predicted link. Using this information, you will develop a testable drug-repurposing hypothesis.",
+      "A predicted link is not proof that a drug will work for a disease. It is a starting point for further research and testing.",
     ],
     tags: ["Drug Repurposing", "Knowledge Graphs", "Graph Embeddings", "AI Prediction"],
     walkthroughTitle: "From known medicines to new treatment hypotheses",
@@ -175,9 +173,9 @@ const guide: LabGuide = {
       title: "Learning Lab 1 — Knowledge Graph Integration",
       goal: "See how drugs, genes, diseases, and side effects are connected in a knowledge graph.",
       actions: [
-        "Open Learning Lab and start Lab 1: Knowledge Graph Integration.",
+        "Open Learning Lab and start **Lab 1: Knowledge Graph Integration**.",
         "Identify the four node types: Drug, Disease, Gene, and Side Effect.",
-        "Look at the relationship types: treats, targets, and associated_with.",
+        "Look at the relationship types: **treats, targets, and associated_with**.",
         "Follow one path: a drug targets a gene, and the gene is associated with a disease.",
       ],
       expect: "A drug–gene–disease path and what each relationship means.",
@@ -188,7 +186,7 @@ const guide: LabGuide = {
       title: "Learning Lab 2 — Graph Embeddings",
       goal: "See how information in a graph can be represented as numbers.",
       actions: [
-        "Start Lab 2: Graph Embeddings.",
+        "Start **Lab 2: Graph Embeddings**.",
         "See how each entity is represented by a vector.",
         "Observe how the model learns patterns from the relationships in the graph.",
         "See how a relation is represented as a change between positions in the embedding space.",
@@ -201,8 +199,8 @@ const guide: LabGuide = {
       title: "Learning Lab 3 — Link Prediction",
       goal: "Learn how the model ranks possible missing links.",
       actions: [
-        "Start Lab 3: Link Prediction.",
-        "See the basic TransE relationship: head + relation ≈ tail.",
+        "Start **Lab 3: Link Prediction**.",
+        "See the basic TransE relationship: **head + relation ≈ tail**.",
         "See how candidate entities are ranked by how well they fit the learned relationship.",
         "Check what the model score means and what it does not mean.",
       ],
@@ -214,7 +212,7 @@ const guide: LabGuide = {
       title: "Open the Experiment and Take the Guided Tour",
       goal: "Get familiar with the interactive graph before starting the experiment.",
       actions: [
-        "Open Experiment from the sidebar.",
+        "Open **Experiment** from the sidebar.",
         "Follow the four tour steps: Welcome to the Lab, Drug–Target Interaction, Target–Disease Association, and Repurposing Hypothesis.",
         "Move the nodes and click on them to explore their details and connections.",
       ],
@@ -226,7 +224,7 @@ const guide: LabGuide = {
       title: "Add Your Own Drug Candidate",
       goal: "Add a drug and explore how it connects to the graph.",
       actions: [
-        "Click Add Drug.",
+        "Click **Add Drug**.",
         "Enter the drug name, gene targets, and side effects.",
         "Add the drug and find its node in the graph.",
         "Check which nodes it connects to and the relationships behind those connections.",
@@ -239,7 +237,7 @@ const guide: LabGuide = {
       title: "Run Link Prediction and Form a Hypothesis",
       goal: "Use the prediction to develop a testable research hypothesis.",
       actions: [
-        "Click AI Link Prediction.",
+        "Click **AI Link Prediction**.",
         "Check the predicted drug–disease link and its model score.",
         "Follow the related graph path and note the target and disease association.",
         "Write a short hypothesis and describe how it could be tested.",
@@ -267,16 +265,16 @@ const guide: LabGuide = {
       fix: "It needs WebGL. Enable hardware acceleration and use a desktop browser — the graph is also unusable on a small screen even when it renders.",
     },
     {
-      problem: "My added drug sits alone with no connections.",
-      fix: "You submitted it without gene targets. Edit it to include targets that already exist in the graph — a node with no edges cannot participate in any prediction.",
+      problem: "Add Drug says the limit is used.",
+      fix: "Each lab mode caps how many drug candidates you can add, and Beginner allows one. Click your drug, choose **Remove drug** in its panel and add it again, or switch to a higher mode from the header.",
     },
     {
       problem: "Link prediction produces an implausible result.",
-      fix: "That is a genuine and instructive outcome. Trace the supporting path — you will usually find the graph asserts an association more strongly than the underlying biology warrants. Garbage in, confident garbage out.",
+      fix: "That is a genuine and instructive outcome. Follow the related graph path in the Link Prediction panel — you will usually find the graph asserts an association more strongly than the underlying biology warrants. Garbage in, confident garbage out.",
     },
     {
-      problem: "An AI feature returns an error.",
-      fix: "Those call a language model through a gateway. Retry once; if all of them fail, the provider key needs attention from the organiser.",
+      problem: "The AI Chat or an AI hypothesis returns an error.",
+      fix: "Those call a language model through a gateway. Retry once; if they keep failing, the provider key needs attention from the organiser. **AI Link Prediction** does not depend on it — the model runs in your browser.",
     },
   ],
 

@@ -88,6 +88,22 @@ function FieldLabel({
   );
 }
 
+/**
+ * Authored prose that may run to more than one paragraph: a blank line in the
+ * string starts a new one, so a brief written as two paragraphs stays two.
+ */
+function Paragraphs({ text }: { text: string }) {
+  return (
+    <div className="space-y-2">
+      {text.split(/\n\s*\n/).map((paragraph) => (
+        <p key={paragraph} className="text-sm leading-relaxed text-muted-foreground">
+          <RichText>{paragraph.trim()}</RichText>
+        </p>
+      ))}
+    </div>
+  );
+}
+
 /** Why the lab matters and who it is for, as one banded row. */
 function WhyAndWho({ guide }: { guide: LabGuide }) {
   const { summary } = guide;
@@ -103,7 +119,7 @@ function WhyAndWho({ guide }: { guide: LabGuide }) {
     <div className="grid gap-5 border-y border-border py-5 md:grid-cols-2 md:gap-0 md:divide-x md:divide-border">
       <div className="md:pr-6">
         <FieldLabel icon={Lightbulb} tone="text-[color:var(--color-warning-ink)]">
-          Why it matters
+          Why It Matters
         </FieldLabel>
         {Array.isArray(summary.why) ? (
           <ul className="space-y-1.5">
@@ -120,16 +136,12 @@ function WhyAndWho({ guide }: { guide: LabGuide }) {
             ))}
           </ul>
         ) : (
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            <RichText>{summary.why}</RichText>
-          </p>
+          <Paragraphs text={summary.why} />
         )}
       </div>
       <div className="md:pl-6">
-        <FieldLabel icon={Users}>Who it&apos;s for</FieldLabel>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          <RichText>{summary.whoFor}</RichText>
-        </p>
+        <FieldLabel icon={Users}>Who It&apos;s For</FieldLabel>
+        <Paragraphs text={summary.whoFor} />
       </div>
     </div>
   );
@@ -237,9 +249,12 @@ export function LabSummarySection({ guide }: { guide: LabGuide }) {
  */
 export function LearningOutcomesSection({ guide }: { guide: LabGuide }) {
   return (
-    <Panel id="outcomes" icon={Target} title="Learning outcomes">
+    <Panel id="outcomes" icon={Target} title="Learning Outcomes">
       <div className="space-y-5">
-        <OutcomeList guide={guide} />
+        <div>
+          <p className="mb-3 text-sm text-muted-foreground">By the end of this lab, you will be able to:</p>
+          <OutcomeList guide={guide} />
+        </div>
         <WhyAndWho guide={guide} />
       </div>
     </Panel>

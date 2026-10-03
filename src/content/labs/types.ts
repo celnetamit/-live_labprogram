@@ -71,12 +71,13 @@ export type LabSummary = {
   /** What the lab *is*, for a reader who does not know the field. No jargon. */
   what: string;
   /**
-   * Why the problem matters outside the classroom. A string renders as one
-   * paragraph; an array renders as a bulleted list, for a guide whose points
-   * read better broken out than run together.
+   * Why the problem matters outside the classroom. A string renders as prose —
+   * a blank line (`\n\n`) starts a new paragraph; an array renders as a
+   * bulleted list, for a guide whose points read better broken out than run
+   * together.
    */
   why: string | string[];
-  /** Who should take it, and what background is assumed. */
+  /** Who should take it, and what background is assumed. A blank line starts a new paragraph. */
   whoFor: string;
   /** Concrete capabilities, each starting with a verb. Shown as a checklist. */
   outcomes: string[];

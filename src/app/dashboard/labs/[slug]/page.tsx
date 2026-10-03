@@ -240,7 +240,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
         { id: "tutorial", label: "Tutorial" },
         /* A showcase page moves the outcomes out of the overview into a
            panel of their own, after the tutorial. */
-        ...(guide.showcase ? [{ id: "outcomes", label: "Learning outcomes" }] : []),
+        ...(guide.showcase ? [{ id: "outcomes", label: "Learning Outcomes" }] : []),
         ...(owned && guide.troubleshooting.length
           ? [{ id: "troubleshooting", label: "Troubleshooting" }]
           : []),

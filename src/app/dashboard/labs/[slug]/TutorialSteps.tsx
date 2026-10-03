@@ -184,17 +184,17 @@ export default function TutorialSteps({
           <span aria-hidden className="panel-heading-icon">
             <ListChecks className="h-[1.125rem] w-[1.125rem] shrink-0 text-primary" />
           </span>{" "}
-          Step-by-step tutorial
+          Step-by-Step Tutorial
         </h2>
         <span className="text-xs text-muted-foreground">
-          {guide.steps.length} steps
+          {guide.steps.length} Steps
         </span>
       </div>
 
       <p className="mt-1.5 text-sm text-muted-foreground">
         {locked
           ? "Every step gives the exact controls to use, the result you should see, and why the lab behaves that way."
-          : "Work through these in order — later steps build on earlier ones. Each step tells you what you should see, so you can check you are on track before moving on."}
+          : "Follow the steps in order, as each one builds on what you learned in the previous step. Before moving on, check the expected result to make sure you are on track."}
       </p>
 
       {/* Progress. Renders empty on the server and fills in on the first client
