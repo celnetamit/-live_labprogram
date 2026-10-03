@@ -14,7 +14,19 @@ const guide: LabGuide = {
   summary: {
     tagline: "Explore how existing medicines can be studied for new therapeutic uses.",
     what: "Drug repurposing is the study of whether an existing medicine may also be useful for treating another disease. In this lab, you will explore how drugs, genes, diseases, and side effects are connected in a knowledge graph. You will learn how these connections can be represented as numbers and used to identify possible drug–disease links for further study.",
-    why: "Drug repurposing looks at whether an existing medicine may also be useful for another disease. An existing drug may already have safety, pharmacology, and clinical information available, which can support research into a new use. However, its safety and effectiveness for the new disease still need to be tested.\n\nBiomedical information is spread across research papers and databases. Knowledge graphs bring information about drugs, genes, diseases, and other biological entities together in a structured way. Graph-based methods can then help researchers study these relationships and identify possible connections for further investigation.",
+    /*
+     * The brief gives this as two paragraphs; Amit asked for bullets on
+     * 3 October, which is also how the other twelve labs carry the section.
+     * Split at sentence boundaries only — every word is still the brief's.
+     */
+    why: [
+      "Drug repurposing looks at whether an existing medicine may also be useful for another disease.",
+      "An existing drug may already have safety, pharmacology, and clinical information available, which can support research into a new use.",
+      "However, its safety and effectiveness for the new disease still need to be tested.",
+      "Biomedical information is spread across research papers and databases.",
+      "Knowledge graphs bring information about drugs, genes, diseases, and other biological entities together in a structured way.",
+      "Graph-based methods can then help researchers study these relationships and identify possible connections for further investigation.",
+    ],
     whoFor: "This lab is suitable for **students and researchers in drug discovery, pharmacology, bioinformatics, computational biology, and related life-science fields** who want to understand how graph-based methods can be used to study drug–target–disease relationships.\n\nBasic knowledge of **drug targets, genes, and disease biology** is helpful. No previous experience with knowledge graphs, graph embeddings, or TransE is required.",
     outcomes: [
       "Explain how drugs, genes, diseases, and side effects can be represented in a knowledge graph.",
