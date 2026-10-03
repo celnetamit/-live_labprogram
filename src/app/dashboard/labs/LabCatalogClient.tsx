@@ -149,9 +149,9 @@ export default function LabCatalogClient({
           </h1>
           <p className="mt-2 max-w-2xl text-base text-muted-foreground sm:text-lg">
             {publicMode && signedIn ? (
-              <>{activeCount} premium workshop labs. You own <span className="text-primary font-medium">{ownedCount}</span> — open {ownedCount === 1 ? 'it' : 'them'} from <Link href="/dashboard/labs" className="text-primary font-medium hover:underline cursor-pointer">My Labs</Link>.</>
+              <>{activeCount} laboratories across 7 subject areas. You own <span className="text-primary font-medium">{ownedCount}</span> — open {ownedCount === 1 ? 'it' : 'them'} from <Link href="/dashboard/labs" className="text-primary font-medium hover:underline cursor-pointer">My Labs</Link>.</>
             ) : publicMode ? (
-              <>{activeCount} premium workshop labs. Browse everything free — <Link href="/login" className="text-primary font-medium hover:underline cursor-pointer">sign in</Link> to open a lab and unlock its resources.</>
+              <>{activeCount} laboratories across 7 subject areas. Every guide is readable in full before you sign in — <Link href="/login" className="text-primary font-medium hover:underline cursor-pointer">sign in</Link> to open the lab itself.</>
             ) : isAdmin ? (
               <span className="text-primary font-medium">Admin — full access to all {activeCount} labs.</span>
             ) : (

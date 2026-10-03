@@ -4,20 +4,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Globe,
   Lock,
-  Shield,
-  CreditCard,
-  Rocket,
-  Sparkles,
   Check,
-  Star,
   Plus,
   Minus,
   FlaskConical,
-  LayoutDashboard,
   ListChecks,
-  Zap,
   ShieldCheck,
   ExternalLink,
 } from "lucide-react";
@@ -29,12 +21,16 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 };
 
-const stats = [
-  { value: "13", label: "Premium Labs" },
-  { value: "40k", label: "Active Learners" },
-  { value: "99.98%", label: "Uptime SLA" },
-  { value: "13", label: "Domains" },
-];
+/*
+  There is deliberately no stats band here any more.
+
+  It read 13 Premium Labs / 40k Active Learners / 99.98% Uptime SLA / 13
+  Domains. Nothing in this repository counts learners and nothing measures
+  uptime, so two of those four were invented, and a visitor has no way to
+  tell which two. The page now carries one set of figures, `aboutFigures`
+  below, every one of which is counted out of the guide files by a command
+  written next to it.
+*/
 
 /**
  * The lab subdomains shown in the network strip. Each carries the lab's name
@@ -128,39 +124,39 @@ const domains: LabDomain[] = [
 
 const features = [
   {
-    icon: CreditCard,
-    title: "Sell access, your way",
-    desc: "Per-lab checkout with Razorpay or admin-granted access. Users unlock exactly what they buy.",
+    icon: ListChecks,
+    title: "Every step says what you should see",
+    desc: "All 104 guided steps across the catalogue state their expected result before they explain the reasoning. When your screen disagrees with the guide, you find out at that step instead of three steps later.",
     span: "lg:col-span-2",
     accent: "from-brand-1/20",
   },
   {
-    icon: Shield,
-    title: "Role-based control",
-    desc: "Super Admin, managers, and users — granular permissions per lab, per person.",
+    icon: FlaskConical,
+    title: "The numbers come from solvers",
+    desc: "Diffraction patterns, absorption spectra, digester yields and circuit waveforms are computed by each lab's own engine. Where a language model writes, it writes prose.",
     span: "",
     accent: "from-brand-2/20",
   },
   {
-    icon: Globe,
-    title: "Multi-domain SSO",
-    desc: "One login across every subdomain in your ecosystem.",
+    icon: ExternalLink,
+    title: "Sources you can follow",
+    desc: "46 references across the guides, cited to the paper, standard or database they came from.",
     span: "",
     accent: "from-brand-3/20",
   },
   {
-    icon: LayoutDashboard,
-    title: "Master control center",
-    desc: "Manage labs, users, orders and revenue from a single, real-time dashboard.",
+    icon: Lock,
+    title: "Access stated up front",
+    desc: "Every lab's objective, full step list, expected results and reading list are readable without an account. Signing in is what opens the lab environment itself, and each lab is granted or bought on its own — there is no bundle to decode.",
     span: "lg:col-span-2",
     accent: "from-emerald-500/20",
   },
 ];
 
 const steps = [
-  { icon: FlaskConical, title: "Browse the catalog", desc: "Explore 12 labs across AI, robotics, biotech, semiconductors and more — filter by subject and level." },
-  { icon: CreditCard, title: "Unlock access", desc: "Buy a lab in seconds, or get access granted by an admin. Overview is always free to explore." },
-  { icon: Rocket, title: "Launch instantly", desc: "Open the live lab environment with one click, plus step-by-step instructions and starter code." },
+  { icon: FlaskConical, title: "Read the whole guide first", desc: "Objective, every step, the result each one should produce, the known failure modes and the sources — all of it public, before you sign in or pay for anything." },
+  { icon: Lock, title: "Open the lab", desc: "Sign in and open the environment in a new tab. Access is per lab, either granted by an administrator or bought on its own." },
+  { icon: ListChecks, title: "Work it and check yourself", desc: "Follow the steps beside the running lab, compare what you see against what the guide says you should see, and use the troubleshooting entries when the two disagree." },
 ];
 
 /**
@@ -204,17 +200,40 @@ const about = [
   },
 ];
 
-const testimonials = [
-  { quote: "We consolidated a dozen scattered lab deployments into one portal. Onboarding time dropped from days to minutes.", name: "Program Director", role: "Applied AI Institute" },
-  { quote: "Per-lab access plus admin control is exactly the model we needed. Revenue is transparent and access is effortless.", name: "Operations Lead", role: "Nano Research Network" },
-  { quote: "The catalog looks premium and the launch flow just works. Our learners love it.", name: "Faculty Head", role: "Robotics Academy" },
+/*
+  The testimonial section is gone and its data with it.
+
+  It carried three five-star quotes from a "Program Director, Applied AI
+  Institute", an "Operations Lead, Nano Research Network" and a "Faculty
+  Head, Robotics Academy". None of those reviews were collected from anyone.
+  The slot now states how access works, which is the thing a visitor
+  evaluating this platform actually needs and which we can say truthfully.
+*/
+const accessTerms = [
+  {
+    title: "Free to read, in full",
+    desc: "Every lab page lists its objective, all of its steps, the result each step should produce, its troubleshooting entries and its sources. No account, no email, no trial clock.",
+  },
+  {
+    title: "One lab at a time",
+    desc: "Access is granted per lab, by an administrator or by buying that lab. Nothing auto-renews, and buying one lab does not quietly enrol you in the rest.",
+  },
+  {
+    title: "Levels are earned, not sold twice",
+    desc: "Basic and Moderate open as you complete the work inside a lab. Where a lab has an Advanced tier it is stated on the lab page, with what it adds.",
+  },
+  {
+    title: "What a completion is",
+    desc: "Finishing a lab records your own completion against your account. It is a record of work done on this platform — we do not describe it as an accredited qualification, because it is not one.",
+  },
 ];
 
 const faqs = [
-  { q: "Can users browse labs without an account?", a: "Yes. Every lab's overview — subject, difficulty, skills and points — is public. Opening a lab's full resources and launch link requires sign-in and access." },
-  { q: "How does lab access work?", a: "Access is per-lab. Users purchase a lab through self-serve checkout, or an admin grants it. Admins have access to everything by default." },
-  { q: "Do you support real payments?", a: "Yes — Razorpay is built in. Without keys the platform runs a local mock checkout, so you can test the full flow before going live." },
-  { q: "Can I manage everything from one place?", a: "The admin control center manages labs (pricing, availability, sync), users (roles, status, per-lab grants) and orders with live revenue — all in one dashboard." },
+  { q: "What do I actually need to run these?", a: "A desktop browser. Nothing is installed and no data is downloaded. A few labs want WebGL for their 3D views, and one offers an optional microphone step; each lab page says so on its own page before you start." },
+  { q: "Do I need an account to see what a lab contains?", a: "No. The objective, every guided step, the expected result for each one, the troubleshooting list and the sources are all public. Signing in is what opens the lab environment itself." },
+  { q: "Is any of this generated by a language model?", a: "The scientific results are not. Each lab computes them in its own engine — the diffraction simulator, the acoustic solver, the digester model, the Verilog simulator. Where a model does write, it writes explanation, and it is called through the hub so no lab ships an API key to your browser." },
+  { q: "What happens when a lab's answer and mine disagree?", a: "That is the designed case. Steps state the expected result so the disagreement surfaces where it happened, and the guides carry 71 troubleshooting entries written from the places people actually get stuck." },
+  { q: "Where are the labs hosted, and can I use them outside India?", a: "Each lab runs on its own subdomain of live-labs.org and is reachable anywhere. The interface is English; pricing is shown in the currency your account is billed in." },
 ];
 
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -233,106 +252,81 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-/*
-  Level chips in the hero mockup. The rows used to end in a price; the catalog
-  deliberately shows no amounts, so the preview of it must not either — the
-  level is what a visitor is actually scanning that column for.
-*/
-const mockLevelTone: Record<string, string> = {
-  Beginner: "border-emerald-500/30 bg-emerald-400/10 text-emerald-700 dark:text-emerald-300",
-  Intermediate: "border-amber-500/30 bg-amber-400/10 text-amber-700 dark:text-amber-300",
-  Advanced: "border-rose-500/30 bg-rose-400/10 text-rose-700 dark:text-rose-300",
-};
 
-/* Live product-preview mockup shown in the hero */
-function ProductPreview() {
+/*
+  The hero panel.
+
+  This was a drawn browser frame on live-labs.org/admin showing "12 Labs,
+  40k Users, 99.9% Uptime" above a mocked lab table. Two of those three
+  figures were invented, the hostname was not ours, and the whole thing was
+  an illustration of a screen rather than a screen.
+
+  What replaces it is one real step, quoted from
+  `src/content/labs/denovo-genai-lab.ts` — the "Lab 3 — design to a
+  specification" entry, three of its actions and its `expect` line, as
+  written. It does the same job honestly: it shows what working here is
+  actually like, and it shows the mechanism the rest of the page claims for
+  itself — a step that states what you should see, so you can tell when you
+  are off track.
+
+  Quoted rather than imported: pulling the guide modules into this client
+  component would ship the whole catalogue's prose in the entry bundle. If
+  that step is reworded, reword it here; the source is named above.
+*/
+function HeroStepPanel() {
+  const actions = [
+    "Open Lab 3: Design to a spec and click the Oral drug-like preset.",
+    "Press Generate 12 candidates. It takes about a tenth of a second.",
+    "Click a candidate. Its structure appears in 3D, with a tick or a cross against every constraint you set.",
+  ];
   return (
-    <div className="relative">
-      {/* Browser frame */}
-      <div className="rounded-2xl border border-border bg-card shadow-2xl shadow-primary/10 overflow-hidden">
-        <div className="h-9 flex items-center gap-2 px-4 border-b border-border bg-muted/40">
-          <span className="w-2.5 h-2.5 rounded-full bg-rose-400/70" />
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
-          <div className="ml-3 flex-1 h-5 rounded-md bg-background/60 border border-border max-w-[240px] flex items-center px-2">
-            <span className="text-[10px] text-muted-foreground">panoptical.org/admin</span>
-          </div>
+    <figure className="relative m-0">
+      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+        <div className="flex items-center gap-2 px-5 py-3 border-b border-border bg-muted/30">
+          <FlaskConical className="w-4 h-4 text-primary-ink shrink-0" />
+          <span className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
+            Denovo GenAI Lab · one step of nine
+          </span>
         </div>
-        {/* The sidebar column only exists from `sm`: below it the sidebar is
-            hidden, and a fixed 110px column squeezed the whole preview into it. */}
-        <div className="grid bg-mesh sm:grid-cols-[110px_1fr]">
-          {/* mini sidebar */}
-          <div className="border-r border-border p-3 space-y-2 hidden sm:block">
-            <div className="h-6 rounded-md bg-gradient-to-r from-primary/25 to-transparent" />
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="h-4 rounded bg-muted/60" style={{ width: `${80 - i * 10}%` }} />
+
+        <div className="p-5 sm:p-6">
+          <h3 className="text-lg font-semibold tracking-tight">Lab 3 — design to a specification</h3>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Ask for a property profile rather than a structure, then check what you actually got.
+          </p>
+
+          <ol className="mt-5 space-y-2.5">
+            {actions.map((a, i) => (
+              <li key={i} className="flex gap-3 text-sm leading-relaxed">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-border text-[11px] font-semibold tabular-nums text-muted-foreground">
+                  {i + 1}
+                </span>
+                <span className="text-foreground/90">{a}</span>
+              </li>
             ))}
-          </div>
-          {/* content */}
-          <div className="p-4 space-y-3">
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { v: "12", l: "Labs", t: "from-brand-1/30" },
-                { v: "40k", l: "Users", t: "from-brand-3/30" },
-                { v: "99.9%", l: "Uptime", t: "from-emerald-500/30" },
-              ].map((c) => (
-                <div key={c.l} className={`hairline-top rounded-lg border border-border bg-gradient-to-br ${c.t} to-card p-2`}>
-                  <div className="text-sm font-extrabold">{c.v}</div>
-                  <div className="text-[9px] text-muted-foreground">{c.l}</div>
-                </div>
-              ))}
+            <li className="pl-8 text-sm text-muted-foreground">+ three more</li>
+          </ol>
+
+          {/* The part that makes a guide checkable rather than readable. */}
+          <div className="mt-5 rounded-xl border border-[color:var(--color-success-ink)]/25 bg-[color:var(--color-success-ink)]/[0.06] p-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Check className="w-3.5 h-3.5 text-[color:var(--color-success-ink)] shrink-0" />
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-success-ink)]">
+                You should see
+              </span>
             </div>
-            {[
-              { n: "Cognicore AI", s: "Computer Science", d: "Intermediate" },
-              { n: "AI For 6G Experimental Learning", s: "Electronics", d: "Advanced" },
-              { n: "FraudShield AI Lab", s: "Security", d: "Advanced" },
-              { n: "LogicLab AI", s: "Electronics", d: "Beginner" },
-              { n: "MicrobeAI Lab", s: "Biology", d: "Intermediate" },
-              { n: "XRD Virtual Lab", s: "Physics", d: "Beginner" },
-              { n: "RepurposeAI", s: "Biology", d: "Advanced" },
-            ].map((r) => (
-              <div key={r.n} className="flex items-center gap-2 rounded-lg border border-border bg-card p-2">
-                <div className="w-7 h-7 rounded-md avatar-grad flex items-center justify-center shrink-0">
-                  <FlaskConical className="w-3.5 h-3.5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[11px] font-semibold truncate">{r.n}</div>
-                  <div className="text-[9px] text-muted-foreground">{r.s}</div>
-                </div>
-                <span
-                  className={`hidden sm:inline-flex shrink-0 rounded-full border px-1.5 py-px text-[8px] font-semibold ${mockLevelTone[r.d]}`}
-                >
-                  {r.d}
-                </span>
-                <span className="shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden>
-                  <span className="block h-1.5 w-1.5 rounded-full bg-current shadow-[0_0_0_3px_color-mix(in_oklch,currentColor_20%,transparent)]" />
-                </span>
-              </div>
-            ))}
+            <p className="text-sm leading-relaxed text-foreground/90">
+              In enforced mode every candidate scores 5/5 against your constraints. In
+              encouraged mode some come back with a red cross beside a constraint they failed.
+            </p>
           </div>
         </div>
       </div>
-
-      {/* Floating accent chips */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="hidden sm:flex absolute -left-6 top-16 items-center gap-2 glass rounded-xl px-3 py-2 shadow-lg"
-      >
-        <ShieldCheck className="w-4 h-4 text-emerald-400" />
-        <span className="text-xs font-medium">Access granted</span>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
-        className="hidden sm:flex absolute -right-5 bottom-14 items-center gap-2 glass rounded-xl px-3 py-2 shadow-lg"
-      >
-        <Zap className="w-4 h-4 text-primary" />
-        <span className="text-xs font-medium">Lab launched</span>
-      </motion.div>
-    </div>
+      <figcaption className="mt-3 text-xs text-muted-foreground">
+        A step from the Denovo GenAI Lab guide, quoted as written. All 104 steps in the
+        catalogue carry a line like that green one.
+      </figcaption>
+    </figure>
   );
 }
 
@@ -396,40 +390,44 @@ export default function Home() {
       <main id="main" className="flex-grow">
         {/* ===== Hero ===== */}
         <section className="relative pt-32 pb-20 md:pt-40 overflow-hidden">
-          <div className="absolute inset-0 bg-grid" />
-          <div className="aurora-blob animate-aurora bg-brand-1 w-[44rem] h-[44rem] -top-52 -left-40" />
-          <div className="aurora-blob animate-aurora bg-brand-3 w-[36rem] h-[36rem] -top-24 -right-40" style={{ animationDelay: "-6s" }} />
+          {/* Was two animated 40rem colour blobs over a grid. On a light
+              surface that is the whole page turning blue behind the words. */}
+          <div className="absolute inset-0 bg-grid opacity-60" />
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
             <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <span className="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-sm text-muted-foreground mb-6">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.2)]" />
-                Enterprise Lab &amp; Access Management
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-muted-foreground mb-6">
+                <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
+                13 laboratories · 7 subject areas
               </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] mb-6">
-                Launch premium labs.<br />
-                <span className="text-gradient-animated">Control every access.</span>
+              {/* The old H1 sold the admin console: "Launch premium labs.
+                  Control every access." Whoever is deciding whether to spend
+                  an afternoon here is not buying an access-control system. */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.08] mb-6">
+                Instruments you drive,<br />
+                <span className="text-gradient">not courses you watch.</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-xl mb-8">
-                One portal for <strong className="text-foreground font-semibold">12 workshop labs</strong> across AI,
-                robotics, biotech and more. Sell per-lab access, manage users and go live in minutes.
+                Browser laboratories in biology, materials, physics, electronics and security.
+                Each one computes its results in its own engine, states what you should see at
+                every step, and cites where the science came from.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
                 <Link href="/labs" className="px-7 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
-                  Explore Labs <ArrowRight className="w-5 h-5" />
+                  Browse the laboratories <ArrowRight className="w-5 h-5" />
                 </Link>
-                <Link href="/register" className="px-7 py-3.5 glass rounded-xl font-semibold hover:bg-accent transition-colors text-center">
-                  Get started free
+                <Link href="#about" className="px-7 py-3.5 rounded-xl border border-border bg-card font-semibold hover:bg-accent transition-colors text-center">
+                  How a lab works
                 </Link>
               </div>
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-400" /> No credit card to browse</span>
-                <span className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-400" /> Live in minutes</span>
+                <span className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-[color:var(--color-success-ink)]" /> Full guides readable without an account</span>
+                <span className="inline-flex items-center gap-1.5"><Check className="w-4 h-4 text-[color:var(--color-success-ink)]" /> Access granted per lab, nothing recurring</span>
               </div>
             </motion.div>
 
             <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6, delay: 0.15 }}>
-              <ProductPreview />
+              <HeroStepPanel />
             </motion.div>
           </div>
         </section>
@@ -455,28 +453,15 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== Stats ===== */}
-        <section id="stats" className="py-16">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="glass brand-ring rounded-2xl grid grid-cols-2 md:grid-cols-4 divide-y divide-x divide-border/60 overflow-hidden">
-              {stats.map((s, i) => (
-                <motion.div key={s.label} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="p-6 md:p-8 text-center">
-                  <div className="text-3xl md:text-4xl font-extrabold text-gradient">{s.value}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">{s.label}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ===== Features bento ===== */}
         <section id="features" className="py-16 md:py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
-              <span className="text-sm font-semibold text-primary uppercase tracking-wider">Platform</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">Everything to run a lab business</h2>
+              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">What you are getting</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2">Built to be checked, not just followed</h2>
               <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-                From discovery to checkout to launch — a single, cohesive system your team and learners will love.
+                Four things that hold for every laboratory in the catalogue, and that you can
+                confirm from its guide before you open it.
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -505,8 +490,8 @@ export default function Home() {
         <section className="py-16 md:py-24 bg-muted/20 border-y border-border">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
-              <span className="text-sm font-semibold text-primary uppercase tracking-wider">How it works</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">From browse to launch in three steps</h2>
+              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">How it works</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2">Read it, open it, check yourself against it</h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {steps.map((s, i) => (
@@ -536,8 +521,8 @@ export default function Home() {
         <section id="about" className="scroll-mt-24 py-16 md:py-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
-              <span className="text-sm font-semibold text-primary uppercase tracking-wider">About</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">Instruments you drive, not courses you watch</h2>
+              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">What that means in practice</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2">What each laboratory refuses to do for you</h2>
               <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
                 A diffractometer you mount a real powder in. A fraud detector you tune and then
                 attack. A physics solver that tells you whether the lattice could actually be
@@ -581,29 +566,22 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== Testimonials ===== */}
-        <section className="py-16 md:py-24 bg-muted/20 border-y border-border">
+        {/* ===== Access terms ===== */}
+        <section id="access" className="scroll-mt-24 py-16 md:py-24 bg-muted/20 border-y border-border">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-14">
-              <span className="text-sm font-semibold text-primary uppercase tracking-wider">Loved by teams</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">Built for institutions & learners</h2>
+            <div className="max-w-2xl mb-12">
+              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">Access</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2">What you get, and what it costs you</h2>
+              <p className="mt-4 text-muted-foreground leading-relaxed">
+                Written out here rather than left to the checkout page, because deciding
+                whether to trust a platform should not require reaching for a card first.
+              </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {testimonials.map((t, i) => (
-                <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="card-glow hairline-top rounded-2xl border border-border bg-card p-6 flex flex-col">
-                  <div className="flex gap-0.5 mb-4 text-amber-400">
-                    {Array.from({ length: 5 }).map((_, s) => <Star key={s} className="w-4 h-4 fill-current" />)}
-                  </div>
-                  <p className="text-foreground/90 leading-relaxed flex-1">“{t.quote}”</p>
-                  <div className="mt-5 flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full avatar-grad flex items-center justify-center font-bold text-sm">
-                      {t.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold">{t.name}</div>
-                      <div className="text-xs text-muted-foreground">{t.role}</div>
-                    </div>
-                  </div>
+            <div className="grid sm:grid-cols-2 gap-x-10 gap-y-8">
+              {accessTerms.map((t, i) => (
+                <motion.div key={t.title} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: i * 0.06 }}>
+                  <h3 className="font-semibold mb-2">{t.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed text-[15px]">{t.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -614,7 +592,7 @@ export default function Home() {
         <section className="py-16 md:py-24">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <span className="text-sm font-semibold text-primary uppercase tracking-wider">FAQ</span>
+              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">FAQ</span>
               <h2 className="text-3xl md:text-4xl font-bold mt-2">Questions, answered</h2>
             </div>
             <div className="space-y-3">
@@ -629,22 +607,22 @@ export default function Home() {
         <section className="pb-20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="relative overflow-hidden rounded-3xl bg-mesh border border-border p-10 md:p-16 text-center">
-              <div className="aurora-blob animate-aurora bg-brand-1 w-96 h-96 -top-24 -left-10 opacity-40" />
-              <div className="aurora-blob animate-aurora bg-brand-3 w-96 h-96 -bottom-24 -right-10 opacity-40" style={{ animationDelay: "-5s" }} />
               <div className="relative">
-                <Sparkles className="w-8 h-8 text-primary mx-auto mb-4" />
-                <h2 className="text-3xl md:text-5xl font-extrabold mb-4">
-                  Ready to launch your <span className="text-gradient-animated">lab ecosystem?</span>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  Start with the guide, not the sales page
                 </h2>
+                {/* "Join thousands of researchers and students" was here. We
+                    do not publish a user count, so we cannot invoke one. */}
                 <p className="text-muted-foreground max-w-xl mx-auto mb-8">
-                  Join thousands of researchers and students accessing the world&apos;s most advanced labs from a single portal.
+                  Open any laboratory and read it end to end — every step, every expected
+                  result, every source — before you decide whether it is worth your afternoon.
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
-                  <Link href="/register" className="px-8 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
-                    Create your account <ArrowRight className="w-5 h-5" />
+                  <Link href="/labs" className="px-8 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
+                    Browse the laboratories <ArrowRight className="w-5 h-5" />
                   </Link>
-                  <Link href="/labs" className="px-8 py-3.5 glass rounded-xl font-semibold hover:bg-accent transition-colors">
-                    Explore the catalog
+                  <Link href="/register" className="px-8 py-3.5 rounded-xl border border-border bg-card font-semibold hover:bg-accent transition-colors">
+                    Create an account
                   </Link>
                 </div>
               </div>
@@ -659,8 +637,8 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg btn-brand flex items-center justify-center text-primary-foreground font-bold text-sm">P</div>
-                <span className="font-bold text-lg">Panoptical Labs</span>
+                <div className="w-8 h-8 rounded-lg btn-brand flex items-center justify-center text-primary-foreground font-bold text-sm">L</div>
+                <span className="font-bold text-lg">Live Labs</span>
               </div>
               <p className="text-muted-foreground text-sm max-w-xs">
                 A unified ecosystem for accessing, managing and discovering advanced research and educational labs.
@@ -697,7 +675,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-10 pt-6 border-t border-border/60 flex flex-col sm:flex-row justify-between gap-3 text-sm text-muted-foreground">
-            <span>© {new Date().getFullYear()} Panoptical Labs. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} Live Labs. All rights reserved.</span>
             <span className="inline-flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Secured with enterprise SSO</span>
           </div>
         </div>
