@@ -12,18 +12,21 @@ export const THEME_KEY = "panoptical-theme";
  * hydration the page would paint in the default theme first and then snap to
  * the stored one — the flash every theme switcher is judged by.
  *
- * Dark is the default. The product has always been dark, so an existing
- * visitor with no stored preference sees no change; light is opt-in.
+ * Light is the default. A platform people are asked to trust with their
+ * teaching reads as an instrument, not a product launch, and the reference
+ * set for that — Labster, SimScale, Deepnote, Linear — is light. Dark stays
+ * a first-class theme behind the toggle, and a stored preference always
+ * wins, so anyone who already chose dark keeps it.
  */
 export const themeInitScript = `
 (function(){
   try {
     var stored = localStorage.getItem('${THEME_KEY}');
-    var dark = stored ? stored === 'dark' : true;
+    var dark = stored === 'dark';
     document.documentElement.classList.toggle('dark', dark);
     document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
   } catch (e) {
-    document.documentElement.classList.add('dark');
+    document.documentElement.style.colorScheme = 'light';
   }
 })();
 `;

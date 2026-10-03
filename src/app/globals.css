@@ -9,21 +9,32 @@
   --card-foreground: oklch(0.18 0.02 266);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.02 266);
-  --primary: oklch(0.55 0.22 274);
+  /*
+    One accent, not a spectrum.
+
+    The accent was a violet at chroma 0.22 feeding a violet→blue→cyan
+    gradient that ran through buttons, headings and card borders. Three hues
+    competing on one screen is what made the catalogue read as a product
+    launch rather than an instrument. This is a single considered blue, the
+    chroma pulled back to 0.15, and every brand stop below is now the same
+    hue family — so anything still painted with a gradient shifts in tone
+    rather than in colour.
+  */
+  --primary: oklch(0.5 0.15 255);
   --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.965 0.005 264);
   --secondary-foreground: oklch(0.26 0.02 266);
   --muted: oklch(0.965 0.005 264);
   --muted-foreground: oklch(0.52 0.02 266);
-  --accent: oklch(0.95 0.02 274);
-  --accent-foreground: oklch(0.3 0.1 274);
+  --accent: oklch(0.955 0.018 255);
+  --accent-foreground: oklch(0.32 0.1 255);
   --destructive: oklch(0.6 0.23 27);
   --destructive-foreground: oklch(0.99 0 0);
   --success: oklch(0.65 0.16 155);
   --warning: oklch(0.78 0.16 75);
   --border: oklch(0.92 0.006 264);
   --input: oklch(0.92 0.006 264);
-  --ring: oklch(0.55 0.22 274);
+  --ring: oklch(0.5 0.15 255);
 
   /*
     Semantic colours again, at a lightness that survives being used as text.
@@ -43,7 +54,7 @@
   /* The accent is in the family too: `text-primary` over a `bg-primary/10`
      fill — the step-number badge and the rail's current section — measured
      3.94:1 on a tinted panel. */
-  --primary-ink: oklch(0.49 0.22 274);
+  --primary-ink: oklch(0.45 0.15 255);
   --success-ink: oklch(0.49 0.16 155);
   --warning-ink: oklch(0.53 0.16 75);
   --destructive-ink: oklch(0.54 0.23 27);
@@ -64,10 +75,13 @@
   --success-solid-fg: oklch(0.99 0 0);
 
   /* Brand gradient stops */
-  --brand-1: oklch(0.55 0.22 274); /* violet */
-  --brand-2: oklch(0.62 0.19 232); /* blue */
-  --brand-3: oklch(0.68 0.17 200); /* cyan */
-  --brand-glow: oklch(0.6 0.22 285 / 0.35);
+  --brand-1: oklch(0.5 0.15 255);
+  --brand-2: oklch(0.55 0.14 250);
+  --brand-3: oklch(0.6 0.12 243);
+  /* Was 0.35 alpha at chroma 0.22 — a coloured halo under every button and
+     card. Kept only as the faintest lift, so elevation reads as shadow
+     rather than as glow. */
+  --brand-glow: oklch(0.5 0.08 255 / 0.14);
 
   --chart-1: oklch(0.62 0.2 274);
   --chart-2: oklch(0.65 0.17 200);
@@ -78,12 +92,12 @@
 
   --sidebar: oklch(0.985 0.003 264);
   --sidebar-foreground: oklch(0.18 0.02 266);
-  --sidebar-primary: oklch(0.55 0.22 274);
+  --sidebar-primary: oklch(0.5 0.15 255);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.95 0.02 274);
-  --sidebar-accent-foreground: oklch(0.3 0.1 274);
+  --sidebar-accent: oklch(0.955 0.018 255);
+  --sidebar-accent-foreground: oklch(0.32 0.1 255);
   --sidebar-border: oklch(0.92 0.006 264);
-  --sidebar-ring: oklch(0.55 0.22 274);
+  --sidebar-ring: oklch(0.5 0.15 255);
 }
 
 .dark {
@@ -93,7 +107,7 @@
   --card-foreground: oklch(0.97 0.008 260);
   --popover: oklch(0.2 0.018 266);
   --popover-foreground: oklch(0.97 0.008 260);
-  --primary: oklch(0.66 0.2 278);
+  --primary: oklch(0.66 0.14 255);
   --primary-foreground: oklch(0.15 0.02 266);
   --secondary: oklch(0.27 0.02 266);
   --secondary-foreground: oklch(0.97 0.008 260);
@@ -107,7 +121,7 @@
   --warning: oklch(0.8 0.16 78);
   --border: oklch(0.3 0.018 266);
   --input: oklch(0.3 0.018 266);
-  --ring: oklch(0.66 0.2 278);
+  --ring: oklch(0.66 0.14 255);
 
   /* Dark needs almost no correction: on the lightest panel this theme
      produces, success measures 6.67:1 and warning 8.11:1 as they stand. Only
@@ -116,7 +130,7 @@
      `bg-primary/10` over the dark card, and the accent on that measured
      4.39:1. A little lighter clears it at 5.00 and reads better on the card
      too (6.16 against 5.40). */
-  --primary-ink: oklch(0.7 0.2 278);
+  --primary-ink: oklch(0.72 0.14 255);
   --success-ink: var(--success);
   --warning-ink: var(--warning);
   --destructive-ink: oklch(0.68 0.22 25);
@@ -125,10 +139,10 @@
   --success-solid: oklch(0.72 0.16 158);
   --success-solid-fg: oklch(0.16 0.014 266);
 
-  --brand-1: oklch(0.68 0.2 278);
-  --brand-2: oklch(0.68 0.18 232);
-  --brand-3: oklch(0.75 0.16 198);
-  --brand-glow: oklch(0.66 0.24 285 / 0.45);
+  --brand-1: oklch(0.66 0.14 255);
+  --brand-2: oklch(0.7 0.13 250);
+  --brand-3: oklch(0.74 0.11 243);
+  --brand-glow: oklch(0.66 0.1 255 / 0.18);
 
   --chart-1: oklch(0.68 0.2 278);
   --chart-2: oklch(0.72 0.16 200);
@@ -138,12 +152,12 @@
 
   --sidebar: oklch(0.18 0.016 266);
   --sidebar-foreground: oklch(0.97 0.008 260);
-  --sidebar-primary: oklch(0.66 0.2 278);
+  --sidebar-primary: oklch(0.66 0.14 255);
   --sidebar-primary-foreground: oklch(0.15 0.02 266);
-  --sidebar-accent: oklch(0.3 0.06 278);
-  --sidebar-accent-foreground: oklch(0.92 0.03 278);
+  --sidebar-accent: oklch(0.3 0.05 255);
+  --sidebar-accent-foreground: oklch(0.92 0.03 255);
   --sidebar-border: oklch(0.3 0.018 266);
-  --sidebar-ring: oklch(0.66 0.2 278);
+  --sidebar-ring: oklch(0.66 0.14 255);
 }
 
 @theme inline {
@@ -253,17 +267,18 @@
     border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
   }
 
-  /* Gradient text */
+  /*
+    Emphasis inside a heading: one colour, not a sweep.
+
+    This and `.text-gradient-animated` were clip-path gradients across three
+    hues, the animated one cycling on a 6s loop. On a page whose job is to
+    be believed, moving colour on a headline is the single loudest tell that
+    the words are marketing. Both are now the accent, flat — the class names
+    stay so the markup that uses them is untouched, and emphasis still
+    lands, quietly.
+  */
   .text-gradient {
-    background-image: linear-gradient(
-      110deg,
-      var(--brand-1),
-      var(--brand-2) 55%,
-      var(--brand-3)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--primary-ink);
   }
 
   /* Gradient border card */
@@ -292,16 +307,24 @@
     box-shadow: 0 10px 40px -12px var(--brand-glow);
   }
 
+  /*
+    The primary action: one flat colour.
+
+    It was a two-stop gradient on a 30px coloured glow that lifted 1px on
+    hover. Three effects to say "this is the button". A solid fill that
+    darkens slightly on press says it once, holds at any size, and does not
+    compete with the lab cover photographs it sits beside.
+  */
   .btn-brand {
-    background-image: linear-gradient(110deg, var(--brand-1), var(--brand-2));
+    background-color: var(--primary);
     color: var(--primary-foreground);
-    box-shadow: 0 8px 30px -10px var(--brand-glow);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    transition: background-color 0.15s ease;
   }
   .btn-brand:hover {
-    filter: brightness(1.08);
-    box-shadow: 0 12px 40px -8px var(--brand-glow);
-    transform: translateY(-1px);
+    background-color: color-mix(in oklch, var(--primary) 88%, black);
+  }
+  :is(.dark) .btn-brand:hover {
+    background-color: color-mix(in oklch, var(--primary) 88%, white);
   }
 }
 
@@ -383,19 +406,13 @@
   .bg-mesh {
     background-color: var(--background);
     background-image:
-      radial-gradient(at 12% 0%, color-mix(in oklch, var(--brand-1) 26%, transparent) 0px, transparent 45%),
-      radial-gradient(at 88% 8%, color-mix(in oklch, var(--brand-3) 22%, transparent) 0px, transparent 42%),
-      radial-gradient(at 60% 92%, color-mix(in oklch, var(--brand-2) 20%, transparent) 0px, transparent 48%);
+      radial-gradient(at 12% 0%, color-mix(in oklch, var(--brand-1) 7%, transparent) 0px, transparent 45%),
+      radial-gradient(at 88% 8%, color-mix(in oklch, var(--brand-3) 6%, transparent) 0px, transparent 42%);
   }
 
-  /* Animated gradient text (shifts across brand hues) */
+  /* See `.text-gradient`: flat accent, no cycling hue. */
   .text-gradient-animated {
-    background-image: linear-gradient(110deg, var(--brand-1), var(--brand-2) 40%, var(--brand-3) 70%, var(--brand-1));
-    background-size: 220% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: var(--animate-gradient);
+    color: var(--primary-ink);
   }
 
   /* Card that lifts + glows on hover, with a gradient hairline on top */
@@ -1717,14 +1734,14 @@
   font-weight: 700;
   line-height: 1.25;
 }
-.sc-card-figures > div:nth-child(1) dd {
-  color: var(--sc-primary-fg);
-}
-.sc-card-figures > div:nth-child(2) dd {
-  color: var(--sc-action-fg);
-}
-.sc-card-figures > div:nth-child(3) dd {
-  color: var(--sc-quiet-fg);
+/*
+  The three figures were painted in three of the lab's own accents — so a
+  grid of thirteen cards put thirty-nine coloured values on one screen, in
+  thirteen unrelated palettes. Steps, duration and level are data, and data
+  reads better as text; the lab's palette still owns its own page.
+*/
+.sc-card-figures dd {
+  color: var(--foreground);
 }
 
 /* ---- Actions ---- */
@@ -1753,20 +1770,25 @@
   font-size: 13px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
+/*
+  One action colour across the catalogue.
+
+  This was a gradient in each lab's own accent, on a 28px coloured shadow,
+  lifting 2px on hover — thirteen different coloured buttons in one grid,
+  which read as thirteen products rather than one. The card still carries
+  the lab's identity in its photograph, title and page.
+*/
 .sc-card-primary {
   padding: 0 18px;
-  color: #ffffff;
-  font-weight: 800;
-  background: linear-gradient(90deg, var(--sc-primary-ink), color-mix(in srgb, var(--sc-primary-ink) 85%, black));
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--sc-primary-ink) 18%, transparent);
-}
-.dark .sc-card-primary {
-  color: #101717;
-  background: linear-gradient(90deg, var(--sc-primary), color-mix(in srgb, var(--sc-primary) 82%, white));
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--sc-primary) 14%, transparent);
+  color: var(--primary-foreground);
+  font-weight: 700;
+  background: var(--primary);
 }
 .sc-card-primary:hover {
-  transform: translateY(-2px);
+  background: color-mix(in oklch, var(--primary) 88%, black);
+}
+.dark .sc-card-primary:hover {
+  background: color-mix(in oklch, var(--primary) 88%, white);
 }
 .sc-card-secondary {
   padding: 0 16px;
