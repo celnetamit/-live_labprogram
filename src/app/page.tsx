@@ -282,7 +282,7 @@ function HeroStepPanel() {
   ];
   return (
     <figure className="relative m-0">
-      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+      <div className="rounded-2xl border border-border bg-card overflow-hidden elev-2">
         <div className="flex items-center gap-2 px-5 py-3 border-b border-border bg-muted/30">
           <FlaskConical className="w-4 h-4 text-primary-ink shrink-0" />
           <span className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
@@ -426,9 +426,12 @@ export default function Home() {
                     How a lab works
                   </Link>
                 </div>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="inline-flex items-center gap-2"><Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" /> Full guides readable without an account</li>
-                  <li className="inline-flex items-center gap-2"><Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" /> Access granted per lab, nothing recurring</li>
+                {/* `flex`, not `inline-flex`: as inline items these two ran
+                    together on one line at tablet width, with `space-y`
+                    silently doing nothing. */}
+                <ul className="space-y-2.5 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2.5"><Check className="w-4 h-4 mt-0.5 shrink-0 text-[color:var(--color-success-ink)]" /><span>Full guides readable without an account</span></li>
+                  <li className="flex items-start gap-2.5"><Check className="w-4 h-4 mt-0.5 shrink-0 text-[color:var(--color-success-ink)]" /><span>Access granted per lab, nothing recurring</span></li>
                 </ul>
               </motion.div>
 
@@ -478,7 +481,7 @@ export default function Home() {
                 instead of asserted. The pastel wash each card used to carry
                 is gone — four tints across four cards is noise, not hierarchy. */}
             <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] gap-10 lg:gap-14 items-start">
-              <div className="grid sm:grid-cols-2 gap-px bg-border rounded-2xl overflow-hidden border border-border">
+              <div className="grid sm:grid-cols-2 gap-px bg-border rounded-2xl overflow-hidden border border-border elev-1">
                 {features.map((f, i) => (
                   <motion.div
                     key={f.title}
@@ -622,9 +625,9 @@ export default function Home() {
         {/* ===== FAQ ===== */}
         <section className="py-16 md:py-24">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">FAQ</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">Questions, answered</h2>
+            <div className="max-w-2xl mb-10">
+              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">FAQ</span>
+              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">Questions, answered</h2>
             </div>
             <div className="space-y-3">
               {faqs.map((f) => (
@@ -672,7 +675,8 @@ export default function Home() {
                 <span className="font-bold text-lg">Live Labs</span>
               </div>
               <p className="text-muted-foreground text-sm max-w-xs">
-                A unified ecosystem for accessing, managing and discovering advanced research and educational labs.
+                Browser laboratories in biology, materials, physics, electronics and security —
+                each one computing its own results, and saying what you should see at every step.
               </p>
             </div>
             <div>
@@ -707,7 +711,7 @@ export default function Home() {
           </div>
           <div className="mt-10 pt-6 border-t border-border/60 flex flex-col sm:flex-row justify-between gap-3 text-sm text-muted-foreground">
             <span>© {new Date().getFullYear()} Live Labs. All rights reserved.</span>
-            <span className="inline-flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Secured with enterprise SSO</span>
+            <span className="inline-flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Google sign-in supported</span>
           </div>
         </div>
       </footer>

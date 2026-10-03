@@ -339,14 +339,68 @@
 }
 
 /* Subtle dotted grid background */
+/*
+  Hero texture.
+
+  Was a 22px dot field at 22% of the muted foreground, which on a phone is
+  a visible polka pattern behind the headline. Now a hairline rule grid at
+  a quarter of that strength, 64px apart and faded out early — present as
+  paper texture, invisible as a pattern.
+*/
 .bg-grid {
-  background-image: radial-gradient(
-    color-mix(in oklch, var(--muted-foreground) 22%, transparent) 1px,
-    transparent 1px
-  );
-  background-size: 22px 22px;
-  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 55%, transparent 100%);
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 55%, transparent 100%);
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 10%, transparent 72%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 10%, transparent 72%);
+}
+.dark .bg-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--foreground) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 7%, transparent) 1px, transparent 1px);
+}
+
+/*
+  Elevation.
+
+  Three steps, each a two-layer shadow — a tight contact shadow that keeps
+  the edge crisp, and a wider soft one for lift. Tinted with the page ink
+  rather than pure black so cards sit on the surface instead of punching a
+  hole in it.
+*/
+.elev-1 {
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--foreground) 5%, transparent),
+    0 1px 3px -1px color-mix(in oklch, var(--foreground) 6%, transparent);
+}
+.elev-2 {
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--foreground) 5%, transparent),
+    0 8px 20px -8px color-mix(in oklch, var(--foreground) 12%, transparent);
+}
+.dark .elev-1,
+.dark .elev-2 {
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 10px 24px -12px rgb(0 0 0 / 0.55);
+}
+/* Lift on hover, for things that are a link to somewhere. */
+.lift {
+  transition: box-shadow 0.22s cubic-bezier(0.2, 0, 0, 1),
+              transform 0.22s cubic-bezier(0.2, 0, 0, 1),
+              border-color 0.22s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lift:hover {
+    transform: translateY(-2px);
+  }
+}
+.lift:hover {
+  border-color: color-mix(in oklch, var(--primary) 30%, var(--border));
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--foreground) 5%, transparent),
+    0 14px 32px -12px color-mix(in oklch, var(--foreground) 18%, transparent);
 }
 
 @keyframes aurora {
@@ -1479,8 +1533,17 @@
   background: var(--card);
   color: var(--sc-text);
   font-family: var(--font-sc-body), ui-sans-serif, system-ui, sans-serif;
-  box-shadow: 0 18px 44px -28px rgb(15 23 20 / 0.35);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--foreground) 5%, transparent),
+    0 8px 20px -8px color-mix(in oklch, var(--foreground) 10%, transparent);
+  transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1),
+              box-shadow 0.22s cubic-bezier(0.2, 0, 0, 1),
+              border-color 0.22s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-card {
+    transition: box-shadow 0.22s ease, border-color 0.22s ease;
+  }
 }
 .dark .sc-card {
   --sc-primary-fg: var(--sc-primary);
@@ -1500,10 +1563,22 @@
   );
   box-shadow: 0 26px 70px rgb(0 0 0 / 0.38);
 }
+/*
+  A 5px jump on a 26px-radius card reads as a toy. Two is enough to say
+  "this is a link", and the border picks up the product accent rather than
+  the lab's own — the grid stays one palette while the pointer moves.
+*/
 .sc-card:hover {
-  transform: translateY(-5px);
-  border-color: color-mix(in srgb, var(--sc-primary-fg) 28%, transparent);
-  box-shadow: 0 30px 70px -30px rgb(15 23 20 / 0.45);
+  transform: translateY(-2px);
+  border-color: color-mix(in oklch, var(--primary) 32%, var(--border));
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--foreground) 5%, transparent),
+    0 16px 36px -14px color-mix(in oklch, var(--foreground) 18%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-card:hover {
+    transform: none;
+  }
 }
 .dark .sc-card:hover {
   border-color: color-mix(in srgb, var(--sc-primary) 22%, transparent);

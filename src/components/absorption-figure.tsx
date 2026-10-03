@@ -20,10 +20,10 @@
 export default function AbsorptionFigure() {
   return (
     <figure className="m-0">
-      <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-        <div className="flex items-baseline justify-between gap-4 mb-1">
+      <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 elev-2">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
           <h3 className="text-sm font-semibold tracking-tight">Sound absorption of a gyroid lattice</h3>
-          <span className="text-[11px] text-muted-foreground tabular-nums">normal incidence</span>
+          <span className="shrink-0 text-[11px] text-muted-foreground">normal incidence</span>
         </div>
         <p className="text-xs text-muted-foreground mb-4">
           3 mm cell · 60% porosity · 80 mm core · 20 mm air gap · PLA
