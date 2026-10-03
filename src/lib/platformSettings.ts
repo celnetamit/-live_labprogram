@@ -25,8 +25,8 @@ export type PlatformSettings = {
 const SINGLETON_ID = "singleton";
 
 export const SETTING_DEFAULTS: PlatformSettings = {
-  platformName: "Panoptical Labs Ecosystem",
-  supportEmail: "support@panoptical.ai",
+  platformName: "Live Labs Ecosystem",
+  supportEmail: "livelabs@nstc.in",
   allowPublicRegistration: true,
   requireAdminApproval: false,
   maintenanceMode: false,
@@ -34,7 +34,7 @@ export const SETTING_DEFAULTS: PlatformSettings = {
   minPasswordLength: 8,
   sessionDays: 30,
   allowSso: true,
-  mailFromName: "Panoptical Labs",
+  mailFromName: "Live Labs",
   mailReplyTo: null,
 };
 

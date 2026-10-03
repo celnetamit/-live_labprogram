@@ -146,7 +146,7 @@ export default function AppShell({
   const Brand = (
     <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
       <div className="w-8 h-8 rounded-lg btn-brand flex items-center justify-center text-primary-foreground font-bold text-sm mr-2.5">
-        P
+        L
       </div>
       <span className="font-bold text-lg tracking-tight">{brandTitle}</span>
     </div>

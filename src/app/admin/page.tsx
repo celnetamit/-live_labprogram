@@ -50,7 +50,7 @@ export default async function AdminDashboard() {
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
               Master <span className="text-gradient-animated">Control Center</span>
             </h1>
-            <p className="text-muted-foreground mt-1">Live overview of your Panoptical Labs ecosystem.</p>
+            <p className="text-muted-foreground mt-1">Real-time overview of your Live Labs ecosystem.</p>
           </div>
           {pendingOrders > 0 && (
             <Link
