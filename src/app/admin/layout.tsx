@@ -1,5 +1,7 @@
 "use client";
 
+import AdminThemeDefault, { adminThemeInitScript } from "@/components/admin-theme-default";
+
 import {
   LayoutDashboard,
   Users,
@@ -44,14 +46,25 @@ const navGroups: NavGroup[] = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AppShell
-      brandTitle="Admin Center"
-      navGroups={navGroups}
-      breadcrumbRoot="Admin"
-      breadcrumbRootHref="/admin"
-      headerSlot={<NotificationBell />}
-    >
-      {children}
-    </AppShell>
+    <>
+      {/*
+        Blocking, and before the shell renders, so the console never paints
+        light and then snaps to dark — the flash every theme switcher is judged
+        by. The head script on the root layout has already run by now and set
+        the platform default; this is the admin's own default on top of it, and
+        a stored preference beats both.
+      */}
+      <script dangerouslySetInnerHTML={{ __html: adminThemeInitScript }} />
+      <AdminThemeDefault />
+      <AppShell
+        brandTitle="Admin Center"
+        navGroups={navGroups}
+        breadcrumbRoot="Admin"
+        breadcrumbRootHref="/admin"
+        headerSlot={<NotificationBell />}
+      >
+        {children}
+      </AppShell>
+    </>
   );
 }
