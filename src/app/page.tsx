@@ -8,14 +8,13 @@ import {
   Check,
   Plus,
   Minus,
-  FlaskConical,
-  ListChecks,
-  ExternalLink,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
-import AbsorptionFigure from "@/components/absorption-figure";
 import HeroAtmosphere from "@/components/hero-atmosphere";
 import EvidencePanels from "@/components/evidence-panels";
+import ThresholdExample from "@/components/threshold-example";
+import GyroidSpecimen from "@/components/gyroid-specimen";
+import RepurposeGraph from "@/components/repurpose-graph";
 import Link from "next/link";
 
 const fadeUp = {
@@ -34,101 +33,24 @@ const fadeUp = {
   written next to it.
 */
 
-/**
- * The lab subdomains shown in the network strip. Each carries the lab's name
- * and its authored tagline so hovering the host reveals what actually lives
- * there — a bare hostname tells a visitor nothing. Blurbs are copied verbatim
- * from `src/content/labs/<slug>.ts` (`summary.tagline`); if a tagline is
- * rewritten there, update it here too rather than paraphrasing.
- */
-type LabDomain = { host: string; name: string; blurb: string };
 
-const domains: LabDomain[] = [
-  {
-    host: "cognicore.live-labs.org",
-    name: "Cognicore AI",
-    blurb:
-      "Summarise a contract, compare two drafts, and search a whole pile of documents by meaning rather than keyword.",
-  },
-  {
-    host: "denovo.live-labs.org",
-    name: "Denovo GenAI Lab",
-    blurb:
-      "Design a molecule that has never existed — and find out exactly where the AI stops being trustworthy.",
-  },
-  {
-    host: "ai6g.live-labs.org",
-    name: "AI for 6G",
-    blurb:
-      "The three ideas behind 6G — smart surfaces, sending meaning instead of bits — each with a simulator you can push until it fails.",
-  },
-  {
-    host: "fraudshield.live-labs.org",
-    name: "FraudShield AI Lab",
-    blurb:
-      "Score live transactions for fraud, tune the threshold, then attack your own detector to see how it breaks.",
-  },
-  {
-    host: "logic.live-labs.org",
-    name: "LogicLab AI",
-    blurb:
-      "Describe a chip in plain English, get working Verilog back, and learn to read what it produced.",
-  },
-  {
-    host: "micro.live-labs.org",
-    name: "MicrobeAI BioLab",
-    blurb:
-      "Read the DNA of a whole microbial community, then run the digester those microbes live in and watch what makes it fail.",
-  },
-  {
-    host: "battery.live-labs.org",
-    name: "Battery Circularity AI",
-    blurb:
-      "Decide what happens to a retired EV battery: a second life powering something else, or the shredder.",
-  },
-  {
-    host: "virtual.live-labs.org",
-    name: "XRD Virtual Laboratory",
-    blurb:
-      "Run a real X-ray diffraction experiment: mount a powder, scan it, and measure how big its crystals are.",
-  },
-  {
-    host: "smartfactory.live-labs.org",
-    name: "SmartFactory AI",
-    blurb:
-      "Find the bottleneck on a production line, predict a breakdown before it happens, and work out what the fix is worth.",
-  },
-  {
-    host: "aiprogram.live-labs.org",
-    name: "AI Program Navigator",
-    blurb:
-      "Not sure where to start? Describe your background and get a route through the catalogue built for you.",
-  },
-  {
-    host: "drug.live-labs.org",
-    name: "RepurposeAI: Drug Discovery Lab",
-    blurb:
-      "Map drugs, genes and diseases as one graph, then predict the connections nobody has recorded yet.",
-  },
-  {
-    host: "metamaterial.live-labs.org",
-    name: "Pioneering Acoustic Metamaterials",
-    blurb:
-      "Design a lattice that blocks sound by its shape rather than its thickness — and check a printer could actually make it.",
-  },
-  {
-    host: "omicslab.live-labs.org",
-    name: "OmicsLab Pro",
-    blurb:
-      "Analyse real single-cell and spatial transcriptomics data the way a lab does: a versioned pipeline, your own interpretation, and a report that shows its working.",
-  },
+const audiences = [
+  { title: "Learners", desc: "Build confidence through practice, revise decisions, and keep a record of observations and conclusions." },
+  { title: "Educators", desc: "Use structured activities for preparation, discussion, assessment, or guided independent work." },
+  { title: "Lab authors", desc: "Present objectives, methods, evidence, limitations, and assessments in a consistent, reviewable format." },
 ];
 
+const learnerActions = [
+  { n: "01", title: "Choose what to examine", desc: "Start with a dataset, specimen, circuit, or case that fits the question you are asking." },
+  { n: "02", title: "Set up the experiment", desc: "Change one or more conditions and decide what you expect to happen before you run it." },
+  { n: "03", title: "Read what happened", desc: "Work with the plots, tables, signals, or model outputs produced by your choices." },
+  { n: "04", title: "Write down what it means", desc: "State what the evidence supports, where it is uncertain, and what you would test next." },
+];
 
 const steps = [
-  { icon: FlaskConical, title: "Read the whole guide first", desc: "Objective, every step, the result each one should produce, the known failure modes and the sources — all of it public, before you sign in or pay for anything." },
-  { icon: Lock, title: "Open the lab", desc: "Sign in and open the environment in a new tab. Access is per lab, either granted by an administrator or bought on its own." },
-  { icon: ListChecks, title: "Work it and check yourself", desc: "Follow the steps beside the running lab, compare what you see against what the guide says you should see, and use the troubleshooting entries when the two disagree." },
+  { title: "Ask and predict", desc: "Read the question, inspect the material you have been given, and note what you think will happen." },
+  { title: "Run and compare", desc: "Choose the conditions, complete the steps, and repeat the experiment when a comparison will help." },
+  { title: "Explain the result", desc: "Connect the output to what you did, note any uncertainty, and say what the evidence does and does not show." },
 ];
 
 /**
@@ -208,60 +130,6 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 
-/**
- * One entry in the network strip: a real link to the lab, with a card that
- * appears on hover naming the lab and what it does.
- *
- * The card is CSS-only (`group-hover` / `group-focus-within`) rather than
- * React state — it has no behaviour beyond appearing, and keeping it out of
- * state means no re-render per pointer move and nothing to hydrate. It is
- * `pointer-events-none` so it can never sit between the cursor and the link,
- * and `aria-hidden` because it only repeats what the link's own label says;
- * keyboard users get the same card via `focus-within`.
- *
- * Below `sm` it is not rendered at all: there is no hover on touch, and a
- * centred card on the first or last chip of the row would push the page
- * sideways.
- */
-function DomainLink({ host, name, blurb }: LabDomain) {
-  return (
-    <div className="relative group">
-      <a
-        href={`https://${host}/`}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`${name} — ${host} (opens in a new tab)`}
-        className="group/host inline-flex flex-col gap-0.5 rounded px-1 py-1.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/50"
-      >
-        <span className="text-sm font-medium text-foreground/85 transition-colors group-hover/host:text-primary-ink">{name}</span>
-        <span className="text-[11px] text-muted-foreground/70">{host}</span>
-      </a>
-
-      <div
-        role="presentation"
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-full left-1/2 z-40 mb-3 hidden w-64 md:w-72 -translate-x-1/2 translate-y-1 rounded-xl glass p-3.5 text-left opacity-0 shadow-2xl shadow-black/25 transition-all duration-150 ease-out sm:block group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"
-      >
-        <div className="flex items-start gap-2.5">
-          <span className="w-8 h-8 shrink-0 rounded-lg btn-brand flex items-center justify-center text-primary-foreground">
-            <FlaskConical className="w-4 h-4" />
-          </span>
-          <div className="min-w-0">
-            <div className="text-sm font-semibold leading-snug text-foreground">{name}</div>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{blurb}</p>
-          </div>
-        </div>
-        <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center gap-1.5 text-[11px] font-mono text-primary">
-          <ExternalLink className="w-3 h-3 shrink-0" />
-          <span className="truncate">https://{host}/</span>
-        </div>
-        {/* Arrow pointing back down at the hostname. */}
-        <span className="absolute left-1/2 top-full -mt-[5px] -translate-x-1/2 rotate-45 w-2.5 h-2.5 rounded-[2px] bg-card border-r border-b border-border/70" />
-      </div>
-    </div>
-  );
-}
-
 export default function Home() {
   return (
     <>
@@ -273,22 +141,14 @@ export default function Home() {
       <Navbar />
       <main id="main" className="flex-grow">
         {/* ===== Hero ===== */}
-        <section className="band-ink relative overflow-hidden pt-24 pb-0 md:pt-28">
+        <section className="band-ink relative flex min-h-svh flex-col justify-center overflow-hidden pt-24 pb-14 md:pt-28 md:pb-16 [@media(max-height:700px)]:pt-[4.5rem] [@media(max-height:700px)]:pb-5">
           <HeroAtmosphere />
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Three counted facts as the eyebrow, in place of a slogan —
-                every one of them is derivable from the guide files. */}
             <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.5 }}>
-              <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-muted-foreground mb-7">
-                <span className="inline-flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
-                  13 laboratories
-                </span>
-                <span className="opacity-40">·</span>
-                <span>104 guided steps</span>
-                <span className="opacity-40">·</span>
-                <span>46 cited sources</span>
+              <p className="mb-7 [@media(max-height:700px)]:mb-3 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-[color:var(--primary-ink)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
+                Practical, browser-based science
               </p>
             </motion.div>
 
@@ -297,7 +157,7 @@ export default function Home() {
               initial="hidden"
               animate="show"
               transition={{ duration: 0.55, delay: 0.05 }}
-              className="text-[2.7rem] sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-bold tracking-[-0.04em] leading-[0.95] max-w-[17ch] text-balance"
+              className="text-[clamp(2.5rem,7.5vw,5.5rem)] [@media(max-height:700px)]:text-[clamp(1.9rem,5.5vw,3rem)] font-bold tracking-[-0.04em] leading-[0.95] max-w-[17ch] text-balance"
             >
               Instruments you drive,{" "}
               <span className="text-gradient">not courses you watch.</span>
@@ -310,60 +170,181 @@ export default function Home() {
               initial="hidden"
               animate="show"
               transition={{ duration: 0.55, delay: 0.12 }}
-              className="mt-7 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10"
+              className="mt-7 [@media(max-height:700px)]:mt-4 flex flex-col gap-6 [@media(max-height:700px)]:gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-10"
             >
-              <p className="max-w-[52ch] text-lg leading-relaxed text-muted-foreground">
-                Browser laboratories that compute their own results, say what you should see at
-                every step, and cite where the science came from.
+              <p className="max-w-[56ch] text-lg leading-relaxed text-muted-foreground">
+                Choose the conditions, run the experiment, read the evidence, and explain what
+                the result means. Each lab gives you a clear method to follow and room to try
+                again.
               </p>
-              <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+              <div className="flex shrink-0 flex-row flex-wrap gap-3">
                 <Link href="/labs" className="px-6 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
-                  Browse the laboratories <ArrowRight className="w-4 h-4" />
+                  Explore the labs <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link href="#evidence" className="px-6 py-3.5 rounded-xl border border-border bg-white/5 font-semibold hover:bg-white/10 transition-colors text-center">
-                  How a lab works
+                <Link href="#how-it-works" className="px-6 py-3.5 rounded-xl border border-border bg-white/5 font-semibold hover:bg-white/10 transition-colors text-center">
+                  See how it works
                 </Link>
               </div>
             </motion.div>
 
-            {/* The artefact gets the full measure, the way Linear gives its
-                app screenshot the page — and it bleeds into the band below
-                so the hero ends on the data rather than on padding. */}
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              animate="show"
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-12 md:mt-16"
-            >
-              <AbsorptionFigure />
-            </motion.div>
-
-            <ul className="mt-7 flex flex-wrap gap-x-7 gap-y-2 pb-14 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2"><Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" />Full guides readable without an account</li>
-              <li className="flex items-center gap-2"><Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" />Access granted per lab, nothing recurring</li>
+            <ul className="mt-10 [@media(max-height:700px)]:mt-5 flex flex-wrap gap-x-7 gap-y-2 text-sm text-muted-foreground">
+              {["No installation needed", "Browser-based", "Guided workflows"].map((h) => (
+                <li key={h} className="flex items-center gap-2">
+                  <Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" />
+                  {h}
+                </li>
+              ))}
             </ul>
           </div>
         </section>
 
-        {/* ===== Logo / domain cloud ===== */}
-        {/* `overflow-x-clip` (not `hidden`) because a hover card centred on the
-            first or last chip of a wrapped row can reach past the viewport edge
-            on a narrow window. Clipping only the inline axis kills the stray
-            horizontal scrollbar while still letting the card overflow upwards
-            out of the strip, which `overflow-hidden` would cut off. */}
-        <section className="border-y border-border bg-muted/20 overflow-x-clip">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-5">
-              Each laboratory runs on its own subdomain
-            </p>
-            {/* Tighter on a phone, so short hostnames share a line instead of
-                stacking twelve deep. */}
-            <div className="flex flex-wrap items-start justify-center gap-x-8 gap-y-3 sm:gap-x-11">
-              {domains.map((d) => (
-                <DomainLink key={d.host} {...d} />
-              ))}
+        {/* ===== The part behind the curve ===== */}
+        {/* Still on the dark band, so the hero hands straight to the
+            specimen rather than breaking to white in between. The block is
+            ray-marched from the same field and the same isovalue the lab's
+            acoustic run is solved for. */}
+        <section className="band-ink relative isolate overflow-hidden border-t border-white/5 py-16 md:py-24">
+          {/* Two wide, very soft washes in the two channel colours, so the
+              band is lit by the same palette the specimen is coloured with
+              instead of being flat black. `isolate` keeps them under the
+              content; they are purely atmospheric and carry no meaning, so
+              they are hidden from assistive tech. */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+            <div className="absolute -left-24 top-0 h-[36rem] w-[36rem] rounded-full bg-[radial-gradient(circle,oklch(0.62_0.17_255/0.20),transparent_68%)] blur-3xl" />
+            <div className="absolute -right-16 bottom-[-10rem] h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,oklch(0.60_0.20_305/0.16),transparent_68%)] blur-3xl" />
+          </div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid items-center gap-10 md:gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6 }}
+                className="order-2 min-w-0 lg:order-1"
+              >
+                {/* A faint plinth under the specimen: the block is rendered
+                    on transparency, so without something behind it the cube
+                    floats on flat black with no sense of being lit. */}
+                <div className="relative mx-auto max-w-[460px]">
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-[8%] -z-10 rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.55_0.14_278/0.30),transparent_70%)] blur-2xl"
+                  />
+                  <GyroidSpecimen />
+                </div>
+                <p className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-[oklch(0.68_0.16_255)]" />
+                    First channel
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-[oklch(0.68_0.19_305)]" />
+                    Second channel
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <span aria-hidden="true" className="text-muted-foreground/40">&bull;</span>
+                    drag to turn it
+                  </span>
+                </p>
+              </motion.div>
+
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="order-1 min-w-0 lg:order-2"
+              >
+                {/* `--primary-ink`, not `--color-primary-ink`: the @theme alias is
+                    substituted at :root, so inside .band-ink it still holds the
+                    light-theme ink and would paint dark blue on a dark band. */}
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--primary-ink)]">
+                  Acoustic Metamaterials
+                </span>
+                <h2 className="mt-3 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.75rem]">
+                  The shape that absorbs the sound
+                </h2>
+                <p className="mt-5 max-w-[56ch] text-lg leading-relaxed text-muted-foreground">
+                  Not a render of a lattice. Your graphics card is solving the lab&rsquo;s own
+                  level-set field, <span className="font-mono text-[0.95em] text-foreground">sin x·cos y + sin y·cos z + sin z·cos x</span>,
+                  and filling the solid where that field falls within 0.615975 of zero.
+                </p>
+                <p className="mt-4 max-w-[56ch] leading-relaxed text-muted-foreground">
+                  That number is not a dial someone turned until it looked right. It is the
+                  tabulated isovalue for 60% porosity, and it puts 39.95% of the box in solid —
+                  the same design the lab&rsquo;s acoustic solver is run on. Change it and both the
+                  block and the spectrum move together, which is the whole point: in this
+                  laboratory the geometry is what produces the acoustics, not a caption attached
+                  to it.
+                </p>
+                <dl className="mt-8 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10">
+                  {[
+                    { v: "0.6", l: "Porosity", c: "oklch(0.68 0.16 255)" },
+                    { v: "3 mm", l: "Unit cell", c: "oklch(0.68 0.175 280)" },
+                    { v: "80 mm", l: "Core", c: "oklch(0.68 0.19 305)" },
+                  ].map((f) => (
+                    <div
+                      key={f.l}
+                      className="relative bg-[color:var(--card)] px-4 py-4 text-center"
+                    >
+                      {/* A hairline in the specimen's own palette, so the
+                          figures and the block read as one object. */}
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-0 top-0 h-[2px]"
+                        style={{ background: `linear-gradient(90deg, transparent, ${f.c} 35%, ${f.c} 65%, transparent)` }}
+                      />
+                      <dt className="sr-only">{f.l}</dt>
+                      <dd>
+                        <span className="block text-xl font-bold tabular-nums tracking-[-0.02em]">{f.v}</span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">{f.l}</span>
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </motion.div>
             </div>
+          </div>
+        </section>
+
+        {/* ===== What learners do ===== */}
+        {/* The brief supplies no eyebrow for this section, so it has none
+            rather than an invented one. */}
+        <section id="what-learners-do" className="scroll-mt-24 py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              variants={fadeUp} initial="hidden" whileInView="show"
+              viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}
+              className="mb-10 max-w-2xl md:mb-14"
+            >
+              <h2 className="text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.75rem]">
+                What learners actually do
+              </h2>
+              <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+                In every lab, learners make the same kinds of decisions they would meet in a
+                taught practical: what to test, which settings to use, what to record, and how
+                to explain the result.
+              </p>
+            </motion.div>
+            <ol className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+              {learnerActions.map((a, i) => (
+                <motion.li
+                  key={a.n}
+                  variants={fadeUp} initial="hidden" whileInView="show"
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ duration: 0.5, delay: i * 0.06 }}
+                  className="bg-card px-6 py-7"
+                >
+                  <span className="text-xs font-semibold tabular-nums tracking-[0.1em] text-primary-ink">
+                    {a.n}
+                  </span>
+                  <h3 className="mt-3 text-base font-semibold tracking-tight">{a.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{a.desc}</p>
+                </motion.li>
+              ))}
+            </ol>
           </div>
         </section>
 
@@ -388,12 +369,57 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ===== A second lab, a different shape of data ===== */}
+        {/* The metamaterials figures are both continuous — a curve and a
+            surface. This one is discrete and relational, which is the point
+            of putting it here: it shows that the labs are not variations on
+            one kind of science. Every node and edge comes from RepurposeAI's
+            own curated graph file. */}
+        <section className="scroll-mt-24 border-t border-border bg-muted/20 py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6 }}
+              className="mb-10 max-w-2xl md:mb-14"
+            >
+              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary-ink">
+                RepurposeAI
+              </span>
+              <h2 className="mt-3 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.75rem]">
+                Some labs compute a number. This one searches a structure.
+              </h2>
+              <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+                A drug that already passed safety trials for one disease may act on a target
+                implicated in another. Finding those is a graph problem, so the lab hands you
+                the graph — with the evidence tier and the source kept on every edge, because
+                an approved indication and a preclinical hint are not the same claim.
+              </p>
+            </motion.div>
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ duration: 0.6, delay: 0.08 }}
+            >
+              <RepurposeGraph />
+            </motion.div>
+          </div>
+        </section>
+
         {/* ===== How it works ===== */}
-        <section className="py-16 md:py-24 bg-muted/20 border-y border-border">
+        <section id="how-it-works" className="scroll-mt-24 py-16 md:py-24 bg-muted/20 border-y border-border">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mb-12">
-              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">How it works</span>
-              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">Read it, open it, check yourself against it</h2>
+              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">How each lab works</span>
+              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">Start with a question. Finish with an explanation.</h2>
+              <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+                The work is divided into three clear stages. You can see what you did, what
+                happened, and how the evidence supports your conclusion.
+              </p>
             </div>
             {/* Numbered rows on a rule rather than three cards: the three
                 beats are sequential, and cards gave them no order. */}
@@ -416,6 +442,64 @@ export default function Home() {
                 </motion.li>
               ))}
             </ol>
+          </div>
+        </section>
+
+        {/* ===== Learning approach ===== */}
+        <section id="learning-approach" className="scroll-mt-24 py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
+              <motion.div
+                variants={fadeUp} initial="hidden" whileInView="show"
+                viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}
+                className="min-w-0"
+              >
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary-ink">
+                  The method stays visible
+                </span>
+                <h2 className="mt-3 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.5rem]">
+                  You should be able to explain where a result came from.
+                </h2>
+                <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+                  That is why each lab shows the starting data, the settings you chose, and the
+                  output from every important step. Explanations come after the evidence, not in
+                  place of it.
+                </p>
+                <ul className="mt-7 space-y-3">
+                  {[
+                    "Teaching datasets with a clear source",
+                    "Experiments that can be repeated and compared",
+                    "Assumptions and limitations shown alongside the result",
+                  ].map((k) => (
+                    <li key={k} className="flex items-start gap-3 text-muted-foreground">
+                      <Check className="mt-1 h-4 w-4 shrink-0 text-[color:var(--color-success-ink)]" />
+                      <span>{k}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+
+              <motion.div
+                variants={fadeUp} initial="hidden" whileInView="show"
+                viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6, delay: 0.1 }}
+                className="min-w-0"
+              >
+                <ThresholdExample />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===== Highlight statement ===== */}
+        <section className="border-y border-border bg-muted/20 py-14 md:py-20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.p
+              variants={fadeUp} initial="hidden" whileInView="show"
+              viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.6 }}
+              className="text-center text-2xl font-semibold leading-[1.3] tracking-[-0.02em] text-balance md:text-[2rem]"
+            >
+              A result makes more sense when you have worked through the method yourself.
+            </motion.p>
           </div>
         </section>
 
@@ -477,26 +561,58 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ===== Audience ===== */}
+        <section id="audience" className="scroll-mt-24 py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              variants={fadeUp} initial="hidden" whileInView="show"
+              viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}
+              className="mb-10 max-w-2xl md:mb-14"
+            >
+              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary-ink">
+                For learning, teaching, and review
+              </span>
+              <h2 className="mt-3 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.75rem]">
+                A familiar structure for everyone involved
+              </h2>
+              <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+                Learners know what to do next. Educators can see how the work developed. Lab
+                authors have a consistent way to present methods and evidence.
+              </p>
+            </motion.div>
+            <div className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
+              {audiences.map((a, i) => (
+                <motion.div
+                  key={a.title}
+                  variants={fadeUp} initial="hidden" whileInView="show"
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ duration: 0.5, delay: i * 0.07 }}
+                  className="bg-card px-6 py-7"
+                >
+                  <h3 className="text-lg font-semibold tracking-tight">{a.title}</h3>
+                  <p className="mt-2 leading-relaxed text-muted-foreground">{a.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ===== Final CTA ===== */}
         <section className="pb-20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="relative overflow-hidden rounded-3xl bg-mesh border border-border p-10 md:p-16 text-center">
               <div className="relative">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  Start with the guide, not the sales page
+                  Start with a subject that interests you.
                 </h2>
                 {/* "Join thousands of researchers and students" was here. We
                     do not publish a user count, so we cannot invoke one. */}
                 <p className="text-muted-foreground max-w-xl mx-auto mb-8">
-                  Open any laboratory and read it end to end — every step, every expected
-                  result, every source — before you decide whether it is worth your afternoon.
+                  Read the lab overview, check what you need, and begin when you are ready.
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
                   <Link href="/labs" className="px-8 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
-                    Browse the laboratories <ArrowRight className="w-5 h-5" />
-                  </Link>
-                  <Link href="/register" className="px-8 py-3.5 rounded-xl border border-border bg-card font-semibold hover:bg-accent transition-colors">
-                    Create an account
+                    Explore all labs <ArrowRight className="w-5 h-5" />
                   </Link>
                 </div>
               </div>
@@ -515,17 +631,19 @@ export default function Home() {
                 <span className="font-bold text-lg">Live Labs</span>
               </div>
               <p className="text-muted-foreground text-sm max-w-xs">
-                Browser laboratories in biology, materials, physics, electronics and security —
-                each one computing its own results, and saying what you should see at every step.
+                Science is easier to understand when you can try it yourself.
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4 text-sm">Product</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/labs" className="hover:text-foreground transition-colors">Labs</Link></li>
+                <li><Link href="/labs" className="hover:text-foreground transition-colors">Explore labs</Link></li>
+                <li><Link href="/#learning-approach" className="hover:text-foreground transition-colors">Learning approach</Link></li>
+                {/* "For educators" has no page of its own yet, so it points at
+                    the audience section that addresses them. */}
+                <li><Link href="/#audience" className="hover:text-foreground transition-colors">For educators</Link></li>
                 <li><Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link></li>
-                <li><Link href="/#features" className="hover:text-foreground transition-colors">Features</Link></li>
-                <li><Link href="/#about" className="hover:text-foreground transition-colors">About</Link></li>
+                <li><Link href="/#main" className="hover:text-foreground transition-colors">Back to top</Link></li>
               </ul>
             </div>
             <div>

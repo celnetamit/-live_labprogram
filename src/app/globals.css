@@ -2,6 +2,38 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+  The site header has its own surface.
+
+  It was `bg-background`, which in dark mode is the exact colour of the page
+  behind it — so the bar dissolved into the first section and the only thing
+  marking it was the hairline. In dark it now sits on a deeper, markedly more
+  saturated indigo: lighter in L than the page (0.235 vs 0.16) and four times
+  the chroma (0.05 vs 0.014), so the chrome reads as chrome at a glance. Light
+  mode is deliberately untouched — a near-white page wants a near-white bar.
+*/
+.site-header {
+  background-color: var(--background);
+}
+.dark .site-header {
+  background-color: oklch(0.235 0.05 272);
+}
+
+/*
+  A hairline under the dark header, sweeping the two colours the gyroid
+  specimen is shaded with. It is the one place the chrome borrows the
+  figure's palette, which is why it is a 1px line and not a fill.
+*/
+.site-header-accent {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(0.68 0.16 255 / 0.55) 22%,
+    oklch(0.68 0.19 305 / 0.55) 78%,
+    transparent 100%
+  );
+}
+
 :root {
   --background: oklch(0.99 0.003 264);
   --foreground: oklch(0.18 0.02 266);

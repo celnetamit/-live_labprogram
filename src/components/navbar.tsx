@@ -48,7 +48,7 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
         this kind of site wants anyway; the only thing scrolling changes is
         whether it carries a hairline and a shadow.
       */
-      className={`fixed top-0 left-0 right-0 z-50 bg-background transition-shadow duration-300 ${
+      className={`site-header fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 ${
         scrolled ? "border-b border-border elev-1" : "border-b border-transparent"
       }`}
     >
@@ -112,7 +112,7 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
                   href="/register"
                   className="text-sm font-semibold btn-brand px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
                 >
-                  Get Started <ArrowRight className="w-4 h-4" />
+                  Start learning <ArrowRight className="w-4 h-4" />
                 </Link>
               </>
             )}
@@ -132,6 +132,13 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
           </div>
         </div>
       </div>
+
+      {/* Dark-mode signature: hidden in light, where the bar is near-white
+          and a coloured rule would read as decoration. */}
+      <span
+        aria-hidden="true"
+        className="site-header-accent pointer-events-none absolute inset-x-0 bottom-0 hidden h-px dark:block"
+      />
 
       {/* Mobile menu */}
       <AnimatePresence>
@@ -191,7 +198,7 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
                       onClick={() => setOpen(false)}
                       className="w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold btn-brand inline-flex items-center justify-center gap-1.5"
                     >
-                      Get Started <ArrowRight className="w-4 h-4" />
+                      Start learning <ArrowRight className="w-4 h-4" />
                     </Link>
                   </>
                 )}
