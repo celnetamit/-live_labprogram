@@ -2740,3 +2740,42 @@
 .dark .tint-4 { --tint: oklch(0.26 0.03 320); --tint-ink: oklch(0.83 0.08 320); }
 .tint-surface { background: var(--tint); }
 .tint-eyebrow { color: var(--tint-ink); }
+
+/*
+  The spectrum draws itself.
+
+  `pathLength="1"` normalises the curve so the dash offset animates from one
+  to zero regardless of how long the real path is — no measuring in JS. The
+  fill follows a beat later, so the line arrives first and the area settles
+  under it, which is the order a plotter would produce them in.
+
+  This is the one piece of motion on the page that is about the content
+  rather than about arrival: it shows a result being traced out. It is still
+  decoration, so it does not run for anyone who has asked for less of it.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .spectrum-line {
+    animation: spectrum-draw 1.6s cubic-bezier(0.33, 0, 0.1, 1) 0.15s both;
+  }
+  .spectrum-fill {
+    animation: spectrum-fade 0.8s ease-out 1.05s both;
+  }
+}
+/*
+  The dash lives in the keyframes, not on the element.
+
+  With `stroke-dasharray: 1; stroke-dashoffset: 1` set on `.spectrum-line`
+  itself, the curve's resting state was "not drawn" and only the animation
+  made it appear — so anything that stopped the animation running left an
+  empty chart with a lone peak marker floating in it. Keeping the dash
+  inside the keyframes means the resting state is the finished curve, and
+  the animation is purely additive.
+*/
+@keyframes spectrum-draw {
+  from { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  to { stroke-dasharray: 1; stroke-dashoffset: 0; }
+}
+@keyframes spectrum-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

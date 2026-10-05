@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import AbsorptionFigure from "@/components/absorption-figure";
+import HeroAtmosphere from "@/components/hero-atmosphere";
 import EvidencePanels from "@/components/evidence-panels";
 import Link from "next/link";
 
@@ -272,58 +273,78 @@ export default function Home() {
       <Navbar />
       <main id="main" className="flex-grow">
         {/* ===== Hero ===== */}
-        <section className="band-ink relative pt-28 pb-16 md:pt-32 md:pb-24 overflow-hidden">
-          {/* Was two animated 40rem colour blobs over a grid. On a light
-              surface that is the whole page turning blue behind the words. */}
-          <div className="absolute inset-0 bg-grid opacity-60" />
+        <section className="band-ink relative overflow-hidden pt-24 pb-0 md:pt-28">
+          <HeroAtmosphere />
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* The headline gets the full measure of the page rather than half
-                of it: at the size it wants to be, a two-column hero broke
-                "Instruments you / drive," across a line. */}
-            <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-white/5 px-3.5 py-1.5 text-sm text-muted-foreground mb-7">
-                <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
-                13 laboratories · 7 subject areas
-              </span>
-              <h1 className="text-[2.6rem] sm:text-6xl lg:text-7xl xl:text-[5.25rem] font-bold tracking-[-0.04em] leading-[0.95] mb-8 max-w-[18ch]">
-                Instruments you drive,{" "}
-                <span className="text-gradient">not courses you watch.</span>
-              </h1>
+            {/* Three counted facts as the eyebrow, in place of a slogan —
+                every one of them is derivable from the guide files. */}
+            <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.5 }}>
+              <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-muted-foreground mb-7">
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
+                  13 laboratories
+                </span>
+                <span className="opacity-40">·</span>
+                <span>104 guided steps</span>
+                <span className="opacity-40">·</span>
+                <span>46 cited sources</span>
+              </p>
             </motion.div>
 
-            <div className="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] gap-10 lg:gap-16 items-center">
-              <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6, delay: 0.08 }}>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-[46ch]">
-                  Browser laboratories in biology, materials, physics, electronics and security.
-                  Each one computes its results in its own engine, states what you should see at
-                  every step, and cites where the science came from.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 mb-7">
-                  <Link href="/labs" className="px-7 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
-                    Browse the laboratories <ArrowRight className="w-5 h-5" />
-                  </Link>
-                  <Link href="#evidence" className="px-7 py-3.5 rounded-xl border border-border bg-white/5 font-semibold hover:bg-white/10 transition-colors text-center">
-                    How a lab works
-                  </Link>
-                </div>
-                {/* `flex`, not `inline-flex`: as inline items these two ran
-                    together on one line at tablet width, with `space-y`
-                    silently doing nothing. */}
-                <ul className="space-y-2.5 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2.5"><Check className="w-4 h-4 mt-0.5 shrink-0 text-[color:var(--color-success-ink)]" /><span>Full guides readable without an account</span></li>
-                  <li className="flex items-start gap-2.5"><Check className="w-4 h-4 mt-0.5 shrink-0 text-[color:var(--color-success-ink)]" /><span>Access granted per lab, nothing recurring</span></li>
-                </ul>
-              </motion.div>
+            <motion.h1
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              transition={{ duration: 0.55, delay: 0.05 }}
+              className="text-[2.7rem] sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-bold tracking-[-0.04em] leading-[0.95] max-w-[17ch] text-balance"
+            >
+              Instruments you drive,{" "}
+              <span className="text-gradient">not courses you watch.</span>
+            </motion.h1>
 
-              {/* A real result, computed by one of the labs, rather than a
-                  picture of a dashboard. */}
-              <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6, delay: 0.16 }}>
-                <AbsorptionFigure />
-              </motion.div>
-            </div>
+            {/* One line, not a paragraph. The long version left a hole
+                between the headline and everything under it. */}
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              transition={{ duration: 0.55, delay: 0.12 }}
+              className="mt-7 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10"
+            >
+              <p className="max-w-[52ch] text-lg leading-relaxed text-muted-foreground">
+                Browser laboratories that compute their own results, say what you should see at
+                every step, and cite where the science came from.
+              </p>
+              <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+                <Link href="/labs" className="px-6 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
+                  Browse the laboratories <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link href="#evidence" className="px-6 py-3.5 rounded-xl border border-border bg-white/5 font-semibold hover:bg-white/10 transition-colors text-center">
+                  How a lab works
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* The artefact gets the full measure, the way Linear gives its
+                app screenshot the page — and it bleeds into the band below
+                so the hero ends on the data rather than on padding. */}
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-12 md:mt-16"
+            >
+              <AbsorptionFigure />
+            </motion.div>
+
+            <ul className="mt-7 flex flex-wrap gap-x-7 gap-y-2 pb-14 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2"><Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" />Full guides readable without an account</li>
+              <li className="flex items-center gap-2"><Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" />Access granted per lab, nothing recurring</li>
+            </ul>
           </div>
-          </section>
+        </section>
 
         {/* ===== Logo / domain cloud ===== */}
         {/* `overflow-x-clip` (not `hidden`) because a hover card centred on the
