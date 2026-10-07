@@ -56,6 +56,33 @@ export default function HeroAtmosphere() {
         </g>
       </svg>
 
+      {/*
+        A faint engineering grid, for depth. It is masked to a soft ellipse so
+        it never reaches the edges of the band: a grid that runs to the corners
+        reads as a background texture, while one that fades out reads as space
+        the headline is standing in. 72px cells, at 3% — any stronger and it
+        starts competing with the spectrum behind it.
+      */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)",
+          backgroundSize: "72px 72px",
+          maskImage: "radial-gradient(ellipse 85% 70% at 50% 42%, #000 20%, transparent 78%)",
+          WebkitMaskImage: "radial-gradient(ellipse 85% 70% at 50% 42%, #000 20%, transparent 78%)",
+        }}
+      />
+
+      {/* A vignette, so the corners sit back and the centre comes forward. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 100% 85% at 50% 38%, transparent 42%, rgb(0 0 0 / 0.30) 100%)",
+        }}
+      />
+
       {/* A hairline horizon so the band ends on a line rather than a fade. */}
       <div className="absolute inset-x-0 bottom-0 h-px bg-[color:var(--border)]" />
     </div>
