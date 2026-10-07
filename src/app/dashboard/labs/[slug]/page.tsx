@@ -478,8 +478,12 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
               {lab.difficulty ?? "Beginner"}
             </span>
             {!owned && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                <Lock className="h-3 w-3" /> Locked
+              <span
+                role="img"
+                aria-label="Locked"
+                className="inline-flex items-center rounded-full border border-border px-2 py-1 text-muted-foreground"
+              >
+                <Lock aria-hidden className="h-3 w-3" />
               </span>
             )}
           </div>
@@ -598,7 +602,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                 </span>
               </span>
               <span className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/80 to-transparent px-3 pb-2 pt-6 text-xs font-medium text-white">
-                <span>Watch the walkthrough</span>
+                <span>Watch the demo video</span>
                 {guide.video.durationSec ? (
                   <span className="tabular-nums">
                     {Math.floor(guide.video.durationSec / 60)}:
@@ -617,7 +621,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
           <SectionNav sections={sections} variant="strip" />
 
           <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_16rem]">
-            <div className="min-w-0 space-y-6">
+            <div className="lab-prose min-w-0 space-y-6">
               <LabSummarySection guide={guide} />
               <DemoVideo
                 video={guide.video}
@@ -658,18 +662,6 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                 </section>
               )}
 
-              {owned && lab.starterCode && (
-                <section className="panel" aria-labelledby="starter-heading">
-                  <div className="relative z-10 p-5 sm:p-6">
-                    <h2 id="starter-heading" className="mb-3 text-lg font-semibold tracking-tight">
-                      Starter code
-                    </h2>
-                    <pre className="overflow-x-auto rounded-lg border border-border bg-muted/50 p-4 text-sm">
-                      {lab.starterCode.trim()}
-                    </pre>
-                  </div>
-                </section>
-              )}
             </div>
 
             {/* Sticky rail. Only from `xl`, where taking 16rem off the content
@@ -685,7 +677,12 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                   */
                   <div className={`panel ${showcase.rail?.accent === "secondary" ? "sc-rail-secondary" : ""}`}>
                     <div className="relative z-10 p-4">
-                      <SectionNav sections={sections} variant="rail" appearance="showcase" />
+                      <SectionNav
+                        sections={sections}
+                        variant="rail"
+                        appearance="showcase"
+                        lead={owned ? launchButton("full") : undefined}
+                      />
                       {!owned ? (
                         <div className="sc-access-card">
                           <small>Full access</small>
@@ -739,9 +736,18 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                     </div>
                   </div>
                 )}
-                {/* A showcase page carries the price inside the contents
-                    panel above, so this one is only for launching. */}
-                {(!showcase || (owned && showcase.rail?.owned !== "launch")) && (
+                {/*
+                  Non-showcase labs only.
+
+                  A showcase page carries the price inside the contents panel
+                  above, so for a locked visitor this card never rendered
+                  there anyway — which left it doing one job on a showcase
+                  page: repeating the launch button. That control now sits in
+                  the About Lab header, next to the description it belongs
+                  with, so the rail no longer offers the same action a second
+                  time. A plain lab still needs this card for both states.
+                */}
+                {!showcase && (
                 <div className="panel">
                   <div className="relative z-10 p-4">
                   {owned ? (
@@ -789,18 +795,6 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                     </h2>
                     <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-muted-foreground">
                       {lab.instructions.trim()}
-                    </pre>
-                  </div>
-                </section>
-              )}
-              {lab.starterCode && (
-                <section className="panel" aria-labelledby="starter-heading">
-                  <div className="relative z-10 p-5 sm:p-6">
-                    <h2 id="starter-heading" className="mb-3 text-lg font-semibold tracking-tight">
-                      Starter code
-                    </h2>
-                    <pre className="overflow-x-auto rounded-lg border border-border bg-muted/50 p-4 text-sm">
-                      {lab.starterCode.trim()}
                     </pre>
                   </div>
                 </section>

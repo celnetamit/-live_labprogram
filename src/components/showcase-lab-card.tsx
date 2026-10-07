@@ -72,7 +72,6 @@ export default function ShowcaseLabCard({
       ? { label: "Steps", value: `${lab.totalSteps} steps` }
       : { label: "Progress", value: `${lab.completedSteps} of ${lab.totalSteps} steps` },
     ...(total ? [{ label: "Duration", value: total }] : []),
-    { label: "Level", value: lab.difficulty },
   ];
 
   return (
@@ -108,9 +107,9 @@ export default function ShowcaseLabCard({
           <span className="sc-card-category">{lab.subject}</span>
           <span className="sc-card-status">
             {locked ? (
-              <>
-                <Lock className="h-3 w-3" /> Locked
-              </>
+              <span role="img" aria-label="Locked" className="inline-flex items-center">
+                <Lock aria-hidden className="h-3.5 w-3.5" />
+              </span>
             ) : lab.status === "completed" ? (
               <>
                 <CheckCircle2 className="h-3 w-3" /> Completed

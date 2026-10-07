@@ -158,8 +158,12 @@ export default function LearnerLabCard({
           <Fallback title={lab.title} />
         )}
         {locked && (
-          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-md bg-background/85 px-2 py-1 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-            <Lock className="h-3 w-3" /> Locked
+          <span
+            role="img"
+            aria-label="Locked"
+            className="absolute right-2 top-2 inline-flex items-center rounded-md bg-background/85 p-1.5 text-muted-foreground backdrop-blur-sm"
+          >
+            <Lock aria-hidden className="h-3.5 w-3.5" />
           </span>
         )}
         {/*

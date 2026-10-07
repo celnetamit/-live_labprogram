@@ -288,10 +288,19 @@ export default function DemoVideo({
           )}
         </div>
 
-        {chapters.length > 0 && (
+        {/*
+          The chapter list belongs to a video that is playing.
+
+          `started` is set by the player's own `onPlay`, so for a self-hosted
+          file this appears the moment the video runs and not before. An
+          embedded host gives no play event across the iframe boundary, so
+          there the list stays visible — hiding it on a signal we never
+          receive would hide it permanently.
+        */}
+        {chapters.length > 0 && (!selfHosted || started) && (
           <div className="p-4 sm:p-5">
-            <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              <ListVideo className="w-4 h-4" /> Chapters
+            <h3 className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-foreground">
+              <ListVideo className="w-4 h-4" /> In this Video
             </h3>
             {/* Capped and scrollable so a long chapter list cannot push the
                 page layout around on desktop. */}

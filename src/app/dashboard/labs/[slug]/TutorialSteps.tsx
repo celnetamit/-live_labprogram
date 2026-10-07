@@ -192,9 +192,7 @@ export default function TutorialSteps({
       </div>
 
       <p className="mt-1.5 text-sm text-muted-foreground">
-        {locked
-          ? "Every step gives the exact controls to use, the result you should see, and why the lab behaves that way."
-          : "Follow the steps in order, as each one builds on what you learned in the previous step. Before moving on, check the expected result to make sure you are on track."}
+        Follow the workflow, validate each result, and build your analysis step by step.
       </p>
 
       {/* Progress. Renders empty on the server and fills in on the first client

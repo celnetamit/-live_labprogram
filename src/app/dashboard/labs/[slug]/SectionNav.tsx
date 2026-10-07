@@ -18,11 +18,16 @@ export default function SectionNav({
   sections,
   variant,
   appearance = "default",
+  lead,
 }: {
   sections: Section[];
   variant: "rail" | "strip";
   /** "showcase" draws the rail with an icon per section, in the lab's palette. */
   appearance?: "default" | "showcase";
+  /** Rendered above "On this page". The showcase rail uses it for the launch
+   *  control, so the first thing in the rail is the way into the lab rather
+   *  than a table of contents. */
+  lead?: React.ReactNode;
 }) {
   const [active, setActive] = useState(sections[0]?.id ?? "");
 
@@ -90,6 +95,7 @@ export default function SectionNav({
   if (appearance === "showcase") {
     return (
       <nav aria-label="Sections" className="sc-toc">
+        {lead && <div className="mb-3">{lead}</div>}
         <p className="sc-toc-label">On this page</p>
         <ul>
           {sections.map((s) => {

@@ -149,18 +149,42 @@ export default function AppShell({
       .filter((item) => isCurrent(item.href, pathname, breadcrumbRootHref))
       .sort((a, b) => b.href.length - a.href.length)[0]?.label ?? "Overview";
 
+  /*
+    The brand row and the greeting are two blocks, not one.
+
+    The greeting was a line of small text tucked under the wordmark, close
+    enough that it read as a subtitle of the product name rather than as
+    something addressed to the person. It now sits in its own card below the
+    rule, led by the initial, so the sidebar opens by naming who is signed in.
+  */
   const Brand = (
-    <div className="border-b border-sidebar-border px-6 py-4">
-      <div className="flex items-center">
-        <div className="w-8 h-8 rounded-lg btn-brand flex items-center justify-center text-primary-foreground font-bold text-sm mr-2.5">
+    <div className="border-b border-sidebar-border">
+      <div className="flex h-16 items-center px-6">
+        <div className="mr-2.5 flex h-8 w-8 items-center justify-center rounded-lg btn-brand text-sm font-bold text-primary-foreground">
           L
         </div>
-        <span className="font-bold text-lg tracking-tight">{brandTitle}</span>
+        <span className="text-lg font-bold tracking-tight">{brandTitle}</span>
       </div>
+
       {greetingName && (
-        <p className="mt-2 truncate text-sm text-sidebar-foreground/70">
-          Hi <span className="font-semibold text-sidebar-foreground">{greetingName}</span>!
-        </p>
+        <div className="px-4 pb-4">
+          <div className="flex items-center gap-3 rounded-xl border border-sidebar-border bg-[color:var(--sidebar-accent)] px-3 py-2.5">
+            <span
+              aria-hidden
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[color:var(--sidebar-primary)] text-sm font-bold uppercase text-[color:var(--sidebar-primary-foreground)]"
+            >
+              {greetingName.charAt(0)}
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[11px] font-medium uppercase tracking-wider text-[color:var(--sidebar-accent-foreground)] opacity-80">
+                Welcome back
+              </span>
+              <span className="block truncate text-sm font-semibold text-sidebar-foreground">
+                Hi {greetingName}!
+              </span>
+            </span>
+          </div>
+        </div>
       )}
     </div>
   );

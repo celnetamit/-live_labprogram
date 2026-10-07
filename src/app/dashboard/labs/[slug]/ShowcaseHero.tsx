@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { LabShowcase } from "@/content/labs";
+import { Lock, LockOpen } from "lucide-react";
 import { ArrowGlyph, PlayCircleGlyph, PlayGlyph } from "@/components/showcase-icons";
 import { wordmark } from "@/components/showcase-wordmark";
 export { showcaseChromeCss, showcaseRootClass, showcaseVars } from "@/lib/showcase";
@@ -41,22 +42,6 @@ export default function ShowcaseHero(props: Props) {
     the real name rather than advertising one the rest of the hub does not use.
   */
   const title = wordmark(showcase, props.name, "sc-title");
-
-  /* Authored labels, computed values; a figure with no value is dropped
-     rather than shown as a dash. */
-  const values = {
-    steps: String(props.steps),
-    handsOn: props.handsOn,
-    difficulty: props.difficulty,
-    walkthrough: props.videoLength,
-  };
-  const stats = (
-    showcase.stats ?? [
-      { kind: "steps", label: "Guided lab steps" },
-      { kind: "handsOn", label: "Hands-on time" },
-      { kind: "difficulty", label: "Difficulty level" },
-    ]
-  ).flatMap((s) => (values[s.kind] ? [{ value: values[s.kind]!, label: s.label }] : []));
 
   /*
     One primary action per state. A locked visitor gets a way forward from the
@@ -109,11 +94,16 @@ export default function ShowcaseHero(props: Props) {
         <div className="min-w-0">
           <div className="sc-eyebrow">
             <span className="sc-badge sc-badge-subject">{props.subject ?? "General"}</span>
-            {props.difficulty && <span className="sc-badge sc-badge-level">{props.difficulty}</span>}
             {owned ? (
-              <span className="sc-badge sc-badge-open">Unlocked</span>
+              <span className="sc-badge sc-badge-open" role="img" aria-label="Unlocked">
+                <LockOpen aria-hidden className="h-3.5 w-3.5" />
+              </span>
             ) : (
-              <span className="sc-badge sc-badge-lock">Locked</span>
+              /* The mark alone. The accessible name still says "Locked", so
+                 nothing is lost to a screen reader. */
+              <span className="sc-badge sc-badge-lock" role="img" aria-label="Locked">
+                <Lock aria-hidden className="h-3.5 w-3.5" />
+              </span>
             )}
           </div>
 
@@ -132,22 +122,11 @@ export default function ShowcaseHero(props: Props) {
             {props.videoLength && (
               <a href="#demo" className="sc-btn sc-btn-ghost focus-ring">
                 <PlayCircleGlyph className="h-[17px] w-[17px]" />
-                {props.videoLength} Walkthrough
+                {props.videoLength} Demo video
               </a>
             )}
           </div>
 
-          <dl className="sc-stats">
-            {stats.map((s) => (
-              /* Term first in the markup, as a `dl` requires; the CSS puts
-                 the value first on screen, because the number is what the
-                 strip is for. */
-              <div key={s.label} className="sc-stat">
-                <dt>{s.label}</dt>
-                <dd>{s.value}</dd>
-              </div>
-            ))}
-          </dl>
 
           {/* Below `xl` the rail that carries the progress card is hidden, so
               the figure sits here instead of disappearing. */}
@@ -180,7 +159,7 @@ export default function ShowcaseHero(props: Props) {
         */}
         {props.videoLength && (
           <div className="sc-video-wrap">
-            <a href="#demo" className="sc-video focus-ring" aria-label={`Watch the ${props.videoLength} lab walkthrough`}>
+            <a href="#demo" className="sc-video focus-ring" aria-label={`Watch the ${props.videoLength} demo video`}>
               <Image
                 src={props.photo}
                 alt=""
@@ -194,7 +173,7 @@ export default function ShowcaseHero(props: Props) {
               </span>
               <span className="sc-video-foot">
                 <span>
-                  <small>Lab walkthrough</small>
+                  <small>Demo video</small>
                   <strong>{showcase.walkthroughTitle}</strong>
                 </span>
                 <span className="sc-duration">{props.videoLength}</span>

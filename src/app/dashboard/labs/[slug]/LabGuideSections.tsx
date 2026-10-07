@@ -26,12 +26,16 @@ function Panel({
   title,
   children,
   aside,
+  lead,
 }: {
   id: string;
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   children: React.ReactNode;
   aside?: React.ReactNode;
+  /** A row above the heading. The overview uses it for the launch control, so
+   *  the first thing in the panel is the way into the lab. */
+  lead?: React.ReactNode;
 }) {
   const headingId = `${id}-heading`;
   return (
@@ -44,6 +48,7 @@ function Panel({
       aria-labelledby={headingId}
     >
       <div className="relative z-10 p-5 sm:p-6">
+        {lead && <div className="mb-4 flex">{lead}</div>}
         <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <h2
             id={headingId}
@@ -81,8 +86,10 @@ function FieldLabel({
   children: React.ReactNode;
 }) {
   return (
-    <h3 className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-      <Icon className={`h-3.5 w-3.5 shrink-0 ${tone}`} />
+    <h3 className="panel-heading mb-2.5 flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
+      <span aria-hidden className="panel-heading-icon">
+        <Icon className={`h-[1.125rem] w-[1.125rem] shrink-0 ${tone}`} />
+      </span>
       {children}
     </h3>
   );
@@ -176,15 +183,26 @@ function OutcomeList({ guide }: { guide: LabGuide }) {
  * and four feature cards — and its why, audience and outcomes move to
  * `LearningOutcomesSection`, so nothing the guide says is dropped.
  */
-export function LabSummarySection({ guide }: { guide: LabGuide }) {
+export function LabSummarySection({
+  guide,
+  action,
+}: {
+  guide: LabGuide;
+  /** The launch control. It is the first row of this panel, above the
+   *  heading, so the way into the lab sits with the description someone
+   *  reads before deciding to open it. */
+  action?: React.ReactNode;
+}) {
   const { summary, showcase } = guide;
 
   if (showcase) {
     return (
-      <Panel id="overview" icon={FlaskGlyph} title="About this lab">
+      <Panel id="overview" icon={FlaskGlyph} title="About Lab" lead={action}>
         <div className="sc-about">
           {showcase.about.map((para) => (
-            <p key={para}>{para}</p>
+            <p key={para}>
+              <RichText>{para}</RichText>
+            </p>
           ))}
         </div>
         {/*
@@ -194,6 +212,9 @@ export function LabSummarySection({ guide }: { guide: LabGuide }) {
           actually be.
         */}
         <div className="@container">
+          <h3 className="mb-3 mt-6 text-sm font-bold uppercase tracking-wider text-foreground">
+            Highlights
+          </h3>
           <ul className="sc-feature-grid">
             {showcase.features.map((f, i) => {
               const Icon = SHOWCASE_ICONS[f.icon];
@@ -214,7 +235,7 @@ export function LabSummarySection({ guide }: { guide: LabGuide }) {
   }
 
   return (
-    <Panel id="overview" icon={BookOpen} title="About this lab">
+    <Panel id="overview" icon={BookOpen} title="About Lab" lead={action}>
       <div className="space-y-5">
         {/*
           Capped at about 70 characters a line, measured rather than assumed:
@@ -245,7 +266,7 @@ export function LabSummarySection({ guide }: { guide: LabGuide }) {
 
 /**
  * Showcase labs only: the guide's why, audience and outcomes, which the
- * design's shorter "About this lab" no longer carries.
+ * design's shorter "About Lab" no longer carries.
  */
 export function LearningOutcomesSection({ guide }: { guide: LabGuide }) {
   return (

@@ -91,8 +91,9 @@ const guide: LabGuide = {
     intro:
       "Analyze microbial sequence data, understand how different microorganisms contribute to substrate breakdown and methane production, and link microbial composition to digester performance.",
     about: [
-      "Many microorganisms found in natural and engineered environments are difficult to grow and study in the laboratory. Metagenomics helps us study these microbial communities by analysing the genetic material present in a sample.",
-      "In MicrobeAI Lab you work with microbial sequencing data, check its quality, and explore the microbial groups present in the sample and the patterns within that community. The lab also includes an anaerobic digestion simulation, where you can explore how pH, temperature, substrate and retention time may influence digester behaviour.",
+      "The MicrobeAI Live Lab is designed to introduce learners to computational analysis of complex microbial communities using metagenomic sequencing data and process-based simulation. Since a large proportion of microorganisms present in the environment cannot be readily cultured under standard laboratory conditions, **metagenomics** enables their investigation through **direct analysis of microbial DNA** recovered from a sample.",
+      "Learners will work with microbial sequencing datasets to perform **quality assessment, taxonomic profiling, community composition analysis, and interpretation of microbial diversity patterns**. The lab further connects microbial community analysis with an **anaerobic digestion simulation**, enabling users to examine how operational variables such as **pH, temperature, substrate conditions, and retention time** can influence microbial activity, process stability, and predicted digester performance.",
+      "By integrating **microbial data analysis with bioprocess simulation**, the lab provides a practical framework for understanding how microbial community structure and environmental conditions interact within anaerobic systems.",
     ],
     tags: ["Metagenomics", "Microbial Ecology", "Bioinformatics", "Anaerobic Digestion", "Simulation"],
     walkthroughTitle: "From microbial community to ecosystem model",
@@ -132,13 +133,13 @@ const guide: LabGuide = {
     features: [
       {
         icon: "sequence",
-        title: "Real-World Sequencing Data",
+        title: "Metagenomic Data",
         body: "Explore public microbial sequencing data, along with selected reference and mock datasets. Review the data, check its quality, and understand how sequencing information is used before moving to biological interpretation.",
       },
       {
         icon: "analysis",
-        title: "Interactive Analysis",
-        body: "Explore the sequencing data step by step. Review sequence details, check data quality, explore microbial groups, and compare patterns within the community. Each step helps you understand what the data shows and how the results can be interpreted.",
+        title: "Microbial Community Analysis",
+        body: "Analyze microbial sequencing data through a structured bioinformatics workflow. Examine sequence-level information, evaluate data quality, identify microbial taxa, and compare community composition and diversity patterns to understand how sequencing data can reveal microbial ecosystem structure.",
       },
       {
         icon: "simulation",
@@ -294,12 +295,12 @@ const guide: LabGuide = {
    * `prerequisitesLabel` override is needed.
    */
   prerequisites: [
-    "Curated sequencing datasets for exploring microbial communities, including examples with different data-quality conditions.",
-    "Quality-control checks to help you determine whether a dataset is suitable for further analysis.",
-    "Microbial community profiles showing classified groups, relative abundance, and unclassified reads.",
-    "Functional interpretation tools for exploring possible biological roles associated with the identified community.",
-    "An anaerobic digestion simulation where you can adjust pH, temperature, substrate, and retention time.",
-    "A guided tutorial and assessment to help you interpret the results correctly and progress through the lab step by step.",
+    "**Curated Microbial Sequencing Datasets** — Work with selected sequencing datasets representing diverse microbial communities and varying data-quality conditions.",
+    "**Sequence Quality Assessment** — Evaluate sequencing quality and key QC indicators to determine whether datasets are suitable for downstream analysis.",
+    "**Microbial Community Profiling** — Examine taxonomic composition, relative abundance, classified microbial groups, and unclassified reads to characterize community structure.",
+    "**Functional Interpretation** — Explore predicted biological functions and metabolic potential associated with microbial community profiles.",
+    "**Anaerobic Digester Simulation** — Modify parameters such as pH, temperature, substrate conditions, and retention time to investigate their influence on simulated digester performance.",
+    "**Guided Analysis & Assessment** — Follow a structured workflow with guided interpretation and knowledge checks to understand results and progress through each stage of the lab.",
   ],
 
   steps: [
