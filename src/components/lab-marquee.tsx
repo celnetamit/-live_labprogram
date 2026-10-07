@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 
 /*
   The thirteen laboratories, running past.
 
-  Each tile is a real lab, links to its guide, and carries the same picture
+  Each tile is a real lab and carries the same picture
   the catalogue card carries — the cover photograph where one exists, the
   lab's own demo poster where one does not. That is the rule in
   `labImage()` (src/lib/learnerLabs.ts), and the sources below are copied
@@ -15,6 +14,12 @@ import Image from "next/image";
   carry for thirteen strings. If a cover is re-cropped there, change it here
   too — the filenames are content-hashed, so a stale one 404s rather than
   silently showing the old picture.
+
+  Nothing here is clickable. The tiles used to link to each lab's guide; they
+  are now presentational, and the catalogue button beneath the strip is the
+  single way through. Keep it that way in the CSS too — the hover lift and
+  the focus ring came off with the links, because a tile that rises under the
+  cursor promises a click it will not honour.
 
   The strip is one list rendered twice and translated by exactly half its
   width, which is what makes the loop seamless: at -50% the second copy sits
@@ -51,14 +56,11 @@ const LABS = [
 
 function Tile({ lab, hidden }: { lab: (typeof LABS)[number]; hidden?: boolean }) {
   return (
-    <Link
-      href={`/labs/${lab.slug}`}
-      className="lab-strip-tile focus-ring"
+    <div
+      className="lab-strip-tile"
       /* The second copy exists only to make the loop seamless, so it is
-         hidden from assistive tech and taken out of the tab order rather
-         than offering every lab twice. */
+         hidden from assistive tech rather than reading every lab twice. */
       aria-hidden={hidden || undefined}
-      tabIndex={hidden ? -1 : undefined}
     >
       {/*
         Eager, not lazy. A tile three thousand pixels off to the right is far
@@ -68,6 +70,10 @@ function Tile({ lab, hidden }: { lab: (typeof LABS)[number]; hidden?: boolean })
         distinct URLs across the two copies, and `sizes` holds the request to
         the width actually painted, so eager here is thirteen small images,
         not twenty-six large ones.
+
+        This was lost once already, by pasting a stale copy of this element
+        while making the tiles non-clickable. The symptom is subtle: no
+        failed request, no console error, just most of the row blank.
       */}
       <Image
         src={lab.src}
@@ -82,7 +88,7 @@ function Tile({ lab, hidden }: { lab: (typeof LABS)[number]; hidden?: boolean })
         <span className="lab-strip-subject">{lab.subject}</span>
         <span className="lab-strip-name">{lab.name}</span>
       </span>
-    </Link>
+    </div>
   );
 }
 
