@@ -153,6 +153,20 @@ export default function AppShell({
       .sort((a, b) => b.href.length - a.href.length)[0]?.label ?? "Overview";
 
   /*
+   * At a section root the two crumbs can be the same page. The learner shell
+   * calls its root "Dashboard" and its first nav item "Dashboard" too, so the
+   * header read "Dashboard › Dashboard" and the first one linked to the page
+   * you were already standing on. When they coincide, say it once.
+   *
+   * Compared by label rather than by `pathname === breadcrumbRootHref`,
+   * because the admin shell is also at its root on /admin and there the two
+   * crumbs are "Admin" and "Dashboard" — a section and a page within it, two
+   * different things to say. Collapsing on path would have silently dropped
+   * that one too.
+   */
+  const rootIsCurrentPage = currentLabel === breadcrumbRoot;
+
+  /*
     The brand row and the greeting are two blocks, not one.
 
     The greeting was a line of small text tucked under the wordmark, close
@@ -263,17 +277,21 @@ export default function AppShell({
             */}
             <nav aria-label="Breadcrumb" className="min-w-0">
               <ol className="flex items-center text-sm text-muted-foreground min-w-0">
-                <li className="min-w-0">
-                  <Link
-                    href={breadcrumbRootHref}
-                    className="tap-target block truncate rounded-sm transition-colors hover:text-foreground hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    {breadcrumbRoot}
-                  </Link>
-                </li>
-                <li aria-hidden="true">
-                  <ChevronRight className="h-4 w-4 mx-2 shrink-0" />
-                </li>
+                {!rootIsCurrentPage && (
+                  <>
+                    <li className="min-w-0">
+                      <Link
+                        href={breadcrumbRootHref}
+                        className="tap-target block truncate rounded-sm transition-colors hover:text-foreground hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {breadcrumbRoot}
+                      </Link>
+                    </li>
+                    <li aria-hidden="true">
+                      <ChevronRight className="h-4 w-4 mx-2 shrink-0" />
+                    </li>
+                  </>
+                )}
                 <li className="min-w-0">
                   <span aria-current="page" className="block truncate font-medium text-foreground">
                     {currentLabel}
