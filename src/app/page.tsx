@@ -118,13 +118,15 @@ const faqs = [
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="glass rounded-2xl overflow-hidden">
+    <div className="viv-card">
       <button
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
       >
         <span className="font-semibold">{q}</span>
-        {open ? <Minus className="w-5 h-5 text-primary shrink-0" /> : <Plus className="w-5 h-5 text-muted-foreground shrink-0" />}
+        <span className={`viv-check shrink-0 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden>
+          {open ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+        </span>
       </button>
       {open && <p className="px-5 pb-5 -mt-1 text-muted-foreground leading-relaxed">{a}</p>}
     </div>
@@ -158,8 +160,7 @@ export default function Home() {
             <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14">
               <div className="min-w-0">
                 <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.5 }}>
-                  <p className="mb-6 [@media(max-height:700px)]:mb-3 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-[color:var(--primary-ink)]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
+                  <p className="viv-eyebrow mb-6 [@media(max-height:700px)]:mb-3">
                     Practical, browser-based science
                   </p>
                 </motion.div>
@@ -194,18 +195,21 @@ export default function Home() {
                   transition={{ duration: 0.55, delay: 0.18 }}
                   className="mt-7 [@media(max-height:700px)]:mt-4 flex flex-row flex-wrap gap-3"
                 >
-                  <Link href="/labs" className="px-6 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
-                    Explore the labs <ArrowRight className="w-4 h-4" />
+                  <Link href="/labs" className="viv-btn group px-6 py-3.5 rounded-xl font-semibold inline-flex items-center justify-center gap-2">
+                    Explore the labs <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Link>
-                  <Link href="#how-it-works" className="px-6 py-3.5 rounded-xl border border-border bg-white/5 font-semibold hover:bg-white/10 transition-colors text-center">
+                  <Link href="#how-it-works" className="viv-btn-ghost px-6 py-3.5 rounded-xl font-semibold text-center">
                     See how it works
                   </Link>
                 </motion.div>
 
-                <ul className="mt-8 [@media(max-height:700px)]:mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                <ul className="mt-8 [@media(max-height:700px)]:mt-4 flex flex-wrap gap-2.5 text-sm text-muted-foreground">
                   {["No installation needed", "Browser-based", "Guided workflows"].map((h) => (
-                    <li key={h} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" />
+                    <li
+                      key={h}
+                      className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-[color:color-mix(in_oklch,var(--foreground)_5%,transparent)] px-3 py-1.5"
+                    >
+                      <Check className="w-3.5 h-3.5 shrink-0 text-[color:var(--color-success-ink)]" />
                       {h}
                     </li>
                   ))}
@@ -333,7 +337,7 @@ export default function Home() {
         {/* ===== What learners do ===== */}
         {/* The brief supplies no eyebrow for this section, so it has none
             rather than an invented one. */}
-        <section id="what-learners-do" className="scroll-mt-24 py-16 md:py-24">
+        <section id="what-learners-do" className="viv-surface scroll-mt-24 py-16 md:py-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               variants={fadeUp} initial="hidden" whileInView="show"
@@ -349,16 +353,16 @@ export default function Home() {
                 to explain the result.
               </p>
             </motion.div>
-            <ol className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+            <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {learnerActions.map((a, i) => (
                 <motion.li
                   key={a.n}
                   variants={fadeUp} initial="hidden" whileInView="show"
                   viewport={{ once: true, amount: 0.4 }}
                   transition={{ duration: 0.5, delay: i * 0.06 }}
-                  className="bg-card px-6 py-7"
+                  className="viv-card px-6 py-7"
                 >
-                  <span className="text-xs font-semibold tabular-nums tracking-[0.1em] text-primary-ink">
+                  <span className="viv-num block text-3xl font-bold tracking-[-0.03em]">
                     {a.n}
                   </span>
                   <h3 className="mt-3 text-base font-semibold tracking-tight">{a.title}</h3>
@@ -377,8 +381,8 @@ export default function Home() {
         <section id="evidence" className="scroll-mt-24 py-16 md:py-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mb-10 md:mb-14">
-              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">What you are getting</span>
-              <h2 className="text-3xl md:text-[2.75rem] font-bold tracking-[-0.03em] leading-[1.08] mt-3 text-balance">
+              <span className="viv-eyebrow">What you are getting</span>
+              <h2 className="text-3xl md:text-[2.75rem] font-bold tracking-[-0.03em] leading-[1.08] mt-4 text-balance">
                 Built to be checked, not just followed
               </h2>
               <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
@@ -394,8 +398,8 @@ export default function Home() {
         <section id="how-it-works" className="scroll-mt-24 py-16 md:py-24 bg-muted/20 border-y border-border">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mb-12">
-              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">How each lab works</span>
-              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">Start with a question. Finish with an explanation.</h2>
+              <span className="viv-eyebrow">How each lab works</span>
+              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-4">Start with a question. Finish with an explanation.</h2>
               <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
                 The work is divided into three clear stages. You can see what you did, what
                 happened, and how the evidence supports your conclusion.
@@ -412,9 +416,9 @@ export default function Home() {
                   whileInView="show"
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.07 }}
-                  className="grid sm:grid-cols-[3.5rem_minmax(0,16rem)_minmax(0,1fr)] gap-x-6 gap-y-2 border-b border-border py-7"
+                  className="group grid sm:grid-cols-[3.5rem_minmax(0,16rem)_minmax(0,1fr)] gap-x-6 gap-y-2 border-b border-border py-7 transition-colors hover:bg-[color:color-mix(in_oklch,var(--viv-a)_6%,transparent)]"
                 >
-                  <span className="text-2xl font-semibold tabular-nums text-muted-foreground/70">
+                  <span className="viv-num text-3xl font-bold tracking-[-0.03em]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className="text-lg font-semibold tracking-tight self-start">{s.title}</h3>
@@ -434,10 +438,10 @@ export default function Home() {
                 viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}
                 className="min-w-0"
               >
-                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary-ink">
+                <span className="viv-eyebrow">
                   The method stays visible
                 </span>
-                <h2 className="mt-3 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.5rem]">
+                <h2 className="mt-4 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.5rem]">
                   You should be able to explain where a result came from.
                 </h2>
                 <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
@@ -452,7 +456,9 @@ export default function Home() {
                     "Assumptions and limitations shown alongside the result",
                   ].map((k) => (
                     <li key={k} className="flex items-start gap-3 text-muted-foreground">
-                      <Check className="mt-1 h-4 w-4 shrink-0 text-[color:var(--color-success-ink)]" />
+                      <span className="viv-check mt-0.5" aria-hidden>
+                        <Check className="h-3.5 w-3.5" />
+                      </span>
                       <span>{k}</span>
                     </li>
                   ))}
@@ -471,15 +477,23 @@ export default function Home() {
         </section>
 
         {/* ===== Highlight statement ===== */}
-        <section className="border-y border-border bg-muted/20 py-14 md:py-20">
+        <section className="viv-surface relative overflow-hidden border-y border-border py-16 md:py-24">
+          {/* Two blooms, placed so the line sits in the light between them. */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+            <div className="viv-bloom viv-bloom-a -left-20 top-[-6rem] h-[22rem] w-[22rem]" />
+            <div className="viv-bloom viv-bloom-b -right-16 bottom-[-8rem] h-[20rem] w-[20rem]" />
+          </div>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="viv-rule mx-auto mb-8 w-28" />
             <motion.p
               variants={fadeUp} initial="hidden" whileInView="show"
               viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.6 }}
-              className="text-center text-2xl font-semibold leading-[1.3] tracking-[-0.02em] text-balance md:text-[2rem]"
+              className="text-center text-2xl font-semibold leading-[1.3] tracking-[-0.02em] text-balance md:text-[2.25rem]"
             >
-              A result makes more sense when you have worked through the method yourself.
+              A result makes more sense when you have{" "}
+              <span className="viv-text">worked through the method yourself</span>.
             </motion.p>
+            <div className="viv-rule mx-auto mt-8 w-28" />
           </div>
         </section>
 
@@ -490,12 +504,12 @@ export default function Home() {
             guide modules, see `aboutFigures`. */}
         <section id="about" className="scroll-mt-24 pb-16 md:pb-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <dl className="grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden rounded-2xl border border-border bg-border elev-1">
+            <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {aboutFigures.map((f) => (
-                <div key={f.l} className="bg-card px-6 py-7 text-center">
+                <div key={f.l} className="viv-card px-6 py-7 text-center">
                   <dt className="sr-only">{f.l}</dt>
                   <dd>
-                    <span className="block text-3xl md:text-4xl font-bold tracking-[-0.03em] tabular-nums">{f.v}</span>
+                    <span className="viv-num block text-4xl md:text-5xl font-bold tracking-[-0.03em]">{f.v}</span>
                     <span className="mt-1 block text-sm text-muted-foreground">{f.l}</span>
                   </dd>
                 </div>
@@ -508,16 +522,16 @@ export default function Home() {
         <section id="access" className="scroll-mt-24 py-16 md:py-24 bg-muted/20 border-y border-border">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mb-12">
-              <span className="text-sm font-semibold text-primary-ink uppercase tracking-wider">Access</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2">What you get, and what it costs you</h2>
+              <span className="viv-eyebrow">Access</span>
+              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-4">What you get, and what it costs you</h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
                 Written out here rather than left to the checkout page, because deciding
                 whether to trust a platform should not require reaching for a card first.
               </p>
             </div>
-            <div className="grid sm:grid-cols-2 gap-x-10 gap-y-8">
+            <div className="grid gap-4 sm:grid-cols-2">
               {accessTerms.map((t, i) => (
-                <motion.div key={t.title} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: i * 0.06 }}>
+                <motion.div key={t.title} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="viv-card px-6 py-6">
                   <h3 className="font-semibold mb-2">{t.title}</h3>
                   <p className="text-muted-foreground leading-relaxed text-[15px]">{t.desc}</p>
                 </motion.div>
@@ -527,11 +541,11 @@ export default function Home() {
         </section>
 
         {/* ===== FAQ ===== */}
-        <section className="py-16 md:py-24">
+        <section className="viv-surface py-16 md:py-24">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mb-10">
-              <span className="text-xs font-semibold text-primary-ink uppercase tracking-[0.12em]">FAQ</span>
-              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-3">Questions, answered</h2>
+              <span className="viv-eyebrow">FAQ</span>
+              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-[-0.025em] leading-[1.1] mt-4">Questions, answered</h2>
             </div>
             <div className="space-y-3">
               {faqs.map((f) => (
@@ -542,17 +556,17 @@ export default function Home() {
         </section>
 
         {/* ===== Audience ===== */}
-        <section id="audience" className="scroll-mt-24 py-16 md:py-24">
+        <section id="audience" className="viv-surface scroll-mt-24 py-16 md:py-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               variants={fadeUp} initial="hidden" whileInView="show"
               viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}
               className="mb-10 max-w-2xl md:mb-14"
             >
-              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary-ink">
+              <span className="viv-eyebrow">
                 For learning, teaching, and review
               </span>
-              <h2 className="mt-3 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.75rem]">
+              <h2 className="mt-4 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.75rem]">
                 A familiar structure for everyone involved
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
@@ -560,14 +574,14 @@ export default function Home() {
                 authors have a consistent way to present methods and evidence.
               </p>
             </motion.div>
-            <div className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-3">
               {audiences.map((a, i) => (
                 <motion.div
                   key={a.title}
                   variants={fadeUp} initial="hidden" whileInView="show"
                   viewport={{ once: true, amount: 0.4 }}
                   transition={{ duration: 0.5, delay: i * 0.07 }}
-                  className="bg-card px-6 py-7"
+                  className="viv-card px-6 py-7"
                 >
                   <h3 className="text-lg font-semibold tracking-tight">{a.title}</h3>
                   <p className="mt-2 leading-relaxed text-muted-foreground">{a.desc}</p>
@@ -580,7 +594,7 @@ export default function Home() {
         {/* ===== Final CTA ===== */}
         <section className="pb-20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="relative overflow-hidden rounded-3xl bg-mesh border border-border p-10 md:p-16 text-center">
+            <div className="viv-panel p-10 md:p-16 text-center">
               <div className="relative">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                   Start with a subject that interests you.
@@ -591,8 +605,8 @@ export default function Home() {
                   Read the lab overview, check what you need, and begin when you are ready.
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
-                  <Link href="/labs" className="px-8 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
-                    Explore all labs <ArrowRight className="w-5 h-5" />
+                  <Link href="/labs" className="viv-btn group px-8 py-3.5 rounded-xl font-semibold inline-flex items-center justify-center gap-2">
+                    Explore all labs <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
               </div>
@@ -609,7 +623,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg btn-brand flex items-center justify-center text-primary-foreground font-bold text-sm">L</div>
+                <div className="viv-btn w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm">L</div>
                 <span className="font-bold text-lg">Live Labs</span>
               </div>
               <p className="text-muted-foreground text-sm max-w-xs">

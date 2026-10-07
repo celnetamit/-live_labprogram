@@ -49,14 +49,14 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
         whether it carries a hairline and a shadow.
       */
       className={`site-header fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 ${
-        scrolled ? "border-b border-border elev-1" : "border-b border-transparent"
+        scrolled ? "border-b border-border elev-2" : "border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
-            <div className="w-9 h-9 rounded-xl btn-brand flex items-center justify-center text-primary-foreground font-bold text-lg group-hover:scale-105 transition-transform">
+            <div className="viv-btn w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg group-hover:scale-105 transition-transform">
               L
             </div>
             <span className="font-bold text-lg tracking-tight">Live Labs</span>
@@ -70,7 +70,7 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
                 href={l.href}
                 /* `py-1.5` takes the hit box to 24px+ — WCAG 2.2 AA target size.
                    The inline-link exception does not cover site navigation. */
-                className="inline-flex items-center rounded-md px-1 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="viv-navlink inline-flex items-center rounded-md px-1 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 {l.label}
               </Link>
@@ -95,7 +95,7 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
                 </Link>
                 <Link
                   href="/dashboard/labs"
-                  className="text-sm font-semibold btn-brand px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
+                  className="viv-btn text-sm font-semibold px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
                 >
                   My Labs <ArrowRight className="w-4 h-4" />
                 </Link>
@@ -110,7 +110,7 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
                 </Link>
                 <Link
                   href="/register"
-                  className="text-sm font-semibold btn-brand px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
+                  className="viv-btn text-sm font-semibold px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
                 >
                   Start learning <ArrowRight className="w-4 h-4" />
                 </Link>

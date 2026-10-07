@@ -3185,3 +3185,284 @@
 .band-fit .lab-strip-track {
   --tile: clamp(148px, min(42vw, 26vh), 280px);
 }
+
+/* ============================================================
+   VIVID — the home page's visual system
+   ============================================================
+
+   A deliberate reversal. `.text-gradient` and `.btn-brand` above were
+   flattened on purpose, with a comment arguing that moving colour on a
+   headline is the loudest tell that the words are marketing. That argument
+   still holds in general; it was overruled for this page on request, after
+   the alternative (restrained editorial) was shown and declined.
+
+   What did NOT change: not one claim, figure or number on the page. The
+   styling is louder; the content says exactly what it said before. If a
+   future pass wants the quiet version back, everything here is one class
+   prefix and can be lifted out in a block.
+
+   Two hues throughout, and they are not arbitrary — they are the two the
+   gyroid specimen is shaded with, which the header hairline already
+   borrowed. Light mode takes the darker pair so gradient text still passes
+   as text; dark mode takes the lighter pair.
+*/
+:root {
+  --viv-a: oklch(0.52 0.18 258);
+  --viv-b: oklch(0.48 0.2 302);
+  /*
+    Fills are a separate pair, and they do NOT follow the theme.
+
+    `.viv-btn` and `.viv-check` put white on the gradient. In dark mode the
+    text pair lightens to oklch(0.72) so it can be read ON the page, and
+    white on that measured 2.48:1 — a primary button nobody could read. A
+    filled brand surface has no reason to lighten in the dark anyway: it is
+    its own background. Pinned here, white clears 4.5:1 on both ends in both
+    themes.
+  */
+  --viv-fill-a: oklch(0.52 0.18 258);
+  --viv-fill-b: oklch(0.48 0.2 302);
+}
+.dark {
+  --viv-a: oklch(0.72 0.15 255);
+  --viv-b: oklch(0.7 0.18 305);
+}
+/*
+  `.band-ink` is a dark scope that exists inside light mode, so the theme
+  variables do not reach it — the same trap that once put white text on a
+  white surface here. Without this, the hero's gradient headline used the
+  light-mode pair (dark blue and violet) on a near-black band and measured
+  2.62:1. Restated, not inherited.
+*/
+.band-ink {
+  --viv-a: oklch(0.72 0.15 255);
+  --viv-b: oklch(0.7 0.18 305);
+}
+
+/* --- Gradient text -------------------------------------------------- */
+.viv-text,
+.text-gradient,
+.text-gradient-animated {
+  background-image: linear-gradient(100deg, var(--viv-a) 0%, var(--viv-b) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Descenders get clipped by `background-clip: text` on some line-heights;
+     a hair of padding-bottom and a matching negative margin keeps the `y`
+     in "Analyze" intact without moving anything. */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+/* --- Buttons -------------------------------------------------------- */
+.viv-btn {
+  position: relative;
+  background-image: linear-gradient(118deg, var(--viv-fill-a) 0%, var(--viv-fill-b) 100%);
+  color: #fff;
+  border: 1px solid transparent;
+  box-shadow: 0 8px 22px -12px color-mix(in oklch, var(--viv-a) 85%, transparent);
+  transition: box-shadow 0.28s ease, transform 0.28s ease, filter 0.28s ease;
+}
+.viv-btn:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.12) brightness(1.05);
+  box-shadow: 0 16px 34px -14px color-mix(in oklch, var(--viv-a) 95%, transparent);
+}
+.viv-btn:active {
+  transform: translateY(0);
+}
+/* The quiet one beside it. A gradient hairline that only appears on hover,
+   so the pair reads as primary and secondary rather than as two buttons. */
+.viv-btn-ghost {
+  position: relative;
+  border: 1px solid var(--border);
+  background: color-mix(in oklch, var(--foreground) 4%, transparent);
+  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+.viv-btn-ghost:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklch, var(--viv-a) 55%, transparent);
+  background: color-mix(in oklch, var(--viv-a) 10%, transparent);
+}
+
+/* --- Eyebrow pill --------------------------------------------------- */
+.viv-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklch, var(--viv-a) 32%, transparent);
+  background: color-mix(in oklch, var(--viv-a) 9%, transparent);
+  padding: 0.3rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  /*
+    `--viv-a`, not `--primary-ink`. `.band-ink` restates the `--color-*`
+    aliases but not the raw `--primary-ink` underneath them, so on the hero
+    band this pill was drawing light-mode navy on near-black at 1.25:1.
+    `--viv-a` is restated for that scope a few rules up, so it is correct in
+    both places by construction rather than by coincidence.
+  */
+  color: var(--viv-a);
+}
+.viv-eyebrow::before {
+  content: "";
+  height: 0.4rem;
+  width: 0.4rem;
+  border-radius: 999px;
+  background-image: linear-gradient(120deg, var(--viv-a), var(--viv-b));
+}
+
+/* --- Lifting card --------------------------------------------------- */
+.viv-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.viv-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in oklch, var(--viv-a) 38%, transparent);
+  box-shadow: 0 22px 40px -26px color-mix(in oklch, var(--viv-a) 85%, transparent);
+}
+/* A gradient edge that lights along the top on hover. */
+.viv-card::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background-image: linear-gradient(90deg, var(--viv-a), var(--viv-b));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.viv-card:hover::after {
+  opacity: 1;
+}
+
+/* --- Soft bloom ----------------------------------------------------- */
+/* Purely atmospheric, so it is always behind content and never hit-tested. */
+.viv-bloom {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 999px;
+  filter: blur(72px);
+  opacity: 0.5;
+}
+.viv-bloom-a { background: radial-gradient(circle, var(--viv-a), transparent 68%); }
+.viv-bloom-b { background: radial-gradient(circle, var(--viv-b), transparent 68%); }
+
+/* --- Gradient numeral ----------------------------------------------- */
+.viv-num {
+  background-image: linear-gradient(130deg, var(--viv-a), var(--viv-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Gradient hairline ---------------------------------------------- */
+.viv-rule {
+  height: 1px;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--viv-a) 60%, transparent) 20%,
+    color-mix(in oklch, var(--viv-b) 60%, transparent) 80%,
+    transparent
+  );
+}
+
+/* --- Check in a gradient disc --------------------------------------- */
+.viv-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.4rem;
+  width: 1.4rem;
+  flex: none;
+  border-radius: 999px;
+  background-image: linear-gradient(130deg, var(--viv-fill-a), var(--viv-fill-b));
+  color: #fff;
+}
+
+/* --- Section backdrop ----------------------------------------------- */
+.viv-surface {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--background);
+  background-image:
+    radial-gradient(at 8% 0%, color-mix(in oklch, var(--viv-a) 7%, transparent) 0, transparent 46%),
+    radial-gradient(at 92% 100%, color-mix(in oklch, var(--viv-b) 6%, transparent) 0, transparent 44%);
+}
+
+/* --- Panel: the big closing block ----------------------------------- */
+/*
+  The closing panel is the page's loudest moment, so it does not borrow the
+  theme pair — it uses the fills, which are saturated in both themes. Built
+  from the fills at 22% the dark version came out almost invisible, because
+  `--viv-a` there is a pale blue and a pale blue at 22% over a near-black
+  card is nothing.
+*/
+.viv-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid color-mix(in oklch, var(--viv-fill-a) 45%, transparent);
+  background-color: var(--card);
+  background-image:
+    radial-gradient(ellipse 70% 90% at 12% 6%, color-mix(in oklch, var(--viv-fill-a) 42%, transparent) 0, transparent 62%),
+    radial-gradient(ellipse 70% 90% at 88% 96%, color-mix(in oklch, var(--viv-fill-b) 40%, transparent) 0, transparent 62%),
+    linear-gradient(160deg, color-mix(in oklch, var(--viv-fill-a) 10%, transparent), transparent 55%);
+  box-shadow: 0 30px 70px -45px color-mix(in oklch, var(--viv-fill-a) 90%, transparent);
+}
+
+/* --- Nav link underline --------------------------------------------- */
+.viv-navlink {
+  position: relative;
+}
+.viv-navlink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.1rem;
+  height: 2px;
+  border-radius: 2px;
+  background-image: linear-gradient(90deg, var(--viv-a), var(--viv-b));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s ease;
+}
+.viv-navlink:hover::after,
+.viv-navlink:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/*
+  Everything above animates a transform or a shadow on hover. None of it
+  carries meaning, so none of it should run for someone who has asked their
+  system for less motion.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .viv-btn,
+  .viv-btn-ghost,
+  .viv-card,
+  .viv-navlink::after {
+    transition: none;
+  }
+  .viv-btn:hover,
+  .viv-btn-ghost:hover,
+  .viv-card:hover {
+    transform: none;
+  }
+  .viv-navlink:hover::after,
+  .viv-navlink:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
