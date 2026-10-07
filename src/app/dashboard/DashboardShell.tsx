@@ -14,10 +14,17 @@ const navGroups: NavGroup[] = [
   },
 ];
 
-export default function DashboardShell({ children }: { children: React.ReactNode }) {
+export default function DashboardShell({
+  children,
+  greetingName,
+}: {
+  children: React.ReactNode;
+  greetingName?: string | null;
+}) {
   return (
     <AppShell
       brandTitle="Student Hub"
+      greetingName={greetingName}
       navGroups={navGroups}
       breadcrumbRoot="Dashboard"
       breadcrumbRootHref="/dashboard"

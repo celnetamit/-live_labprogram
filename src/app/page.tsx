@@ -13,7 +13,9 @@ import Navbar from "@/components/navbar";
 import HeroAtmosphere from "@/components/hero-atmosphere";
 import EvidencePanels from "@/components/evidence-panels";
 import ThresholdExample from "@/components/threshold-example";
+import AbsorptionArray from "@/components/absorption-array";
 import GyroidSpecimen from "@/components/gyroid-specimen";
+import SupportLauncher from "@/components/support-launcher";
 import RepurposeGraph from "@/components/repurpose-graph";
 import Link from "next/link";
 
@@ -141,60 +143,88 @@ export default function Home() {
       <Navbar />
       <main id="main" className="flex-grow">
         {/* ===== Hero ===== */}
+        {/*
+          Two columns, with the artefact on the first screen.
+
+          The 3D block is the lab's own geometry, ray-marched live rather than
+          looped as a GIF: it turns at the display's refresh rate instead of a
+          fixed frame count, it can be dragged, and it costs no download at
+          all — the field is three sine terms, so nothing is fetched.
+        */}
         <section className="band-ink relative flex min-h-svh flex-col justify-center overflow-hidden pt-24 pb-14 md:pt-28 md:pb-16 [@media(max-height:700px)]:pt-[4.5rem] [@media(max-height:700px)]:pb-5">
           <HeroAtmosphere />
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.5 }}>
-              <p className="mb-7 [@media(max-height:700px)]:mb-3 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-[color:var(--primary-ink)]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
-                Practical, browser-based science
-              </p>
-            </motion.div>
+          <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+            <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14">
+              <div className="min-w-0">
+                <motion.div variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.5 }}>
+                  <p className="mb-6 [@media(max-height:700px)]:mb-3 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-[color:var(--primary-ink)]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-success-ink)]" />
+                    Practical, browser-based science
+                  </p>
+                </motion.div>
 
-            <motion.h1
-              variants={fadeUp}
-              initial="hidden"
-              animate="show"
-              transition={{ duration: 0.55, delay: 0.05 }}
-              className="text-[clamp(2.5rem,7.5vw,5.5rem)] [@media(max-height:700px)]:text-[clamp(1.9rem,5.5vw,3rem)] font-bold tracking-[-0.04em] leading-[0.95] max-w-[17ch] text-balance"
-            >
-              Instruments you drive,{" "}
-              <span className="text-gradient">not courses you watch.</span>
-            </motion.h1>
+                <motion.h1
+                  variants={fadeUp}
+                  initial="hidden"
+                  animate="show"
+                  transition={{ duration: 0.55, delay: 0.05 }}
+                  className="text-[clamp(2.1rem,4.6vw,3.9rem)] [@media(max-height:700px)]:text-[clamp(1.8rem,4vw,2.6rem)] font-bold tracking-[-0.035em] leading-[1.04] max-w-[16ch] text-balance"
+                >
+                  Run Real Experiments, Analyze Data,{" "}
+                  <span className="text-gradient">Discover Science</span>
+                </motion.h1>
 
-            {/* One line, not a paragraph. The long version left a hole
-                between the headline and everything under it. */}
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              animate="show"
-              transition={{ duration: 0.55, delay: 0.12 }}
-              className="mt-7 [@media(max-height:700px)]:mt-4 flex flex-col gap-6 [@media(max-height:700px)]:gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-10"
-            >
-              <p className="max-w-[56ch] text-lg leading-relaxed text-muted-foreground">
-                Choose the conditions, run the experiment, read the evidence, and explain what
-                the result means. Each lab gives you a clear method to follow and room to try
-                again.
-              </p>
-              <div className="flex shrink-0 flex-row flex-wrap gap-3">
-                <Link href="/labs" className="px-6 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
-                  Explore the labs <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link href="#how-it-works" className="px-6 py-3.5 rounded-xl border border-border bg-white/5 font-semibold hover:bg-white/10 transition-colors text-center">
-                  See how it works
-                </Link>
+                <motion.p
+                  variants={fadeUp}
+                  initial="hidden"
+                  animate="show"
+                  transition={{ duration: 0.55, delay: 0.12 }}
+                  className="mt-6 [@media(max-height:700px)]:mt-4 max-w-[52ch] text-lg leading-relaxed text-muted-foreground"
+                >
+                  Choose the conditions, run the experiment, read the evidence, and explain what
+                  the result means. Each lab gives you a clear method to follow and room to try
+                  again.
+                </motion.p>
+
+                <motion.div
+                  variants={fadeUp}
+                  initial="hidden"
+                  animate="show"
+                  transition={{ duration: 0.55, delay: 0.18 }}
+                  className="mt-7 [@media(max-height:700px)]:mt-4 flex flex-row flex-wrap gap-3"
+                >
+                  <Link href="/labs" className="px-6 py-3.5 btn-brand rounded-xl font-semibold inline-flex items-center justify-center gap-2">
+                    Explore the labs <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link href="#how-it-works" className="px-6 py-3.5 rounded-xl border border-border bg-white/5 font-semibold hover:bg-white/10 transition-colors text-center">
+                    See how it works
+                  </Link>
+                </motion.div>
+
+                <ul className="mt-8 [@media(max-height:700px)]:mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                  {["No installation needed", "Browser-based", "Guided workflows"].map((h) => (
+                    <li key={h} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" />
+                      {h}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </motion.div>
 
-            <ul className="mt-10 [@media(max-height:700px)]:mt-5 flex flex-wrap gap-x-7 gap-y-2 text-sm text-muted-foreground">
-              {["No installation needed", "Browser-based", "Guided workflows"].map((h) => (
-                <li key={h} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 shrink-0 text-[color:var(--color-success-ink)]" />
-                  {h}
-                </li>
-              ))}
-            </ul>
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                animate="show"
+                transition={{ duration: 0.6, delay: 0.22 }}
+                className="order-first min-w-0 lg:order-none"
+              >
+                <GyroidSpecimen className="mx-auto max-w-[400px] lg:max-w-none" />
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  Acoustic Metamaterials · gyroid lattice at 60% porosity · drag to turn it
+                </p>
+              </motion.div>
+            </div>
           </div>
         </section>
 
@@ -214,64 +244,33 @@ export default function Home() {
             <div className="absolute -right-16 bottom-[-10rem] h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,oklch(0.60_0.20_305/0.16),transparent_68%)] blur-3xl" />
           </div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid items-center gap-10 md:gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-              <motion.div
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.6 }}
-                className="order-2 min-w-0 lg:order-1"
-              >
-                {/* A faint plinth under the specimen: the block is rendered
-                    on transparency, so without something behind it the cube
-                    floats on flat black with no sense of being lit. */}
-                <div className="relative mx-auto max-w-[460px]">
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-[8%] -z-10 rounded-full bg-[radial-gradient(ellipse_at_center,oklch(0.55_0.14_278/0.30),transparent_70%)] blur-2xl"
-                  />
-                  <GyroidSpecimen />
-                </div>
-                <p className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[oklch(0.68_0.16_255)]" />
-                    First channel
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[oklch(0.68_0.19_305)]" />
-                    Second channel
-                  </span>
-                  <span className="inline-flex items-center gap-2">
-                    <span aria-hidden="true" className="text-muted-foreground/40">&bull;</span>
-                    drag to turn it
-                  </span>
-                </p>
-              </motion.div>
-
+            <div className="grid items-center gap-10 md:gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
               <motion.div
                 variants={fadeUp}
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="order-1 min-w-0 lg:order-2"
+                className="min-w-0"
               >
-                {/* `--primary-ink`, not `--color-primary-ink`: the @theme alias is
-                    substituted at :root, so inside .band-ink it still holds the
-                    light-theme ink and would paint dark blue on a dark band. */}
-                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--primary-ink)]">
+                {/* The subject leads, then the claim, then the argument. It was
+                    the other way up: the subject set as a 12px eyebrow over a
+                    44px headline, so the one word telling you which science
+                    this is was the smallest thing in the section. */}
+                <h2 className="text-4xl font-bold leading-[1.05] tracking-[-0.035em] text-balance md:text-[3.25rem]">
                   Acoustic Metamaterials
-                </span>
-                <h2 className="mt-3 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.75rem]">
-                  The shape that absorbs the sound
                 </h2>
-                <p className="mt-5 max-w-[56ch] text-lg leading-relaxed text-muted-foreground">
+                <p className="mt-3 text-xl font-semibold tracking-[-0.01em] text-[color:var(--primary-ink)] md:text-2xl">
+                  The shape that absorbs the sound
+                </p>
+                {/* Justified, with automatic hyphenation. Justifying without it
+                    opens rivers of white space in a narrow measure. */}
+                <p className="mt-5 max-w-[56ch] hyphens-auto text-justify leading-relaxed text-muted-foreground">
                   Not a render of a lattice. Your graphics card is solving the lab&rsquo;s own
                   level-set field, <span className="font-mono text-[0.95em] text-foreground">sin x·cos y + sin y·cos z + sin z·cos x</span>,
                   and filling the solid where that field falls within 0.615975 of zero.
                 </p>
-                <p className="mt-4 max-w-[56ch] leading-relaxed text-muted-foreground">
+                <p className="mt-4 max-w-[56ch] hyphens-auto text-justify leading-relaxed text-muted-foreground">
                   That number is not a dial someone turned until it looked right. It is the
                   tabulated isovalue for 60% porosity, and it puts 39.95% of the box in solid —
                   the same design the lab&rsquo;s acoustic solver is run on. Change it and both the
@@ -279,31 +278,17 @@ export default function Home() {
                   laboratory the geometry is what produces the acoustics, not a caption attached
                   to it.
                 </p>
-                <dl className="mt-8 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10">
-                  {[
-                    { v: "0.6", l: "Porosity", c: "oklch(0.68 0.16 255)" },
-                    { v: "3 mm", l: "Unit cell", c: "oklch(0.68 0.175 280)" },
-                    { v: "80 mm", l: "Core", c: "oklch(0.68 0.19 305)" },
-                  ].map((f) => (
-                    <div
-                      key={f.l}
-                      className="relative bg-[color:var(--card)] px-4 py-4 text-center"
-                    >
-                      {/* A hairline in the specimen's own palette, so the
-                          figures and the block read as one object. */}
-                      <span
-                        aria-hidden="true"
-                        className="absolute inset-x-0 top-0 h-[2px]"
-                        style={{ background: `linear-gradient(90deg, transparent, ${f.c} 35%, ${f.c} 65%, transparent)` }}
-                      />
-                      <dt className="sr-only">{f.l}</dt>
-                      <dd>
-                        <span className="block text-xl font-bold tabular-nums tracking-[-0.02em]">{f.v}</span>
-                        <span className="mt-0.5 block text-xs text-muted-foreground">{f.l}</span>
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
+              </motion.div>
+
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.6, delay: 0.18 }}
+                className="min-w-0"
+              >
+                <AbsorptionArray />
               </motion.div>
             </div>
           </div>
@@ -620,6 +605,8 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      <SupportLauncher />
 
       {/* ===== Footer ===== */}
       <footer className="border-t border-border bg-muted/20 py-12">

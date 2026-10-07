@@ -33,6 +33,30 @@ attribute vec2 aPos;
 void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }
 `;
 
+/**
+ * The lattices this component can draw: the field verbatim from
+ * `physics/tpms.ts`, and the isovalue from the `phi: 0.6` row of that
+ * lattice's table in `physics/tpmsTables.ts`. Integrating either field at its
+ * own isovalue returns a solid fraction of 0.400 — porosity 0.600 — so the
+ * two are the same porosity in different topologies, which is the only way a
+ * comparison between them means anything.
+ */
+export const LATTICES = {
+  gyroid: {
+    label: "Gyroid",
+    iso: 0.615975,
+    field: "sin(p.x)*cos(p.y) + sin(p.y)*cos(p.z) + sin(p.z)*cos(p.x)",
+  },
+  diamond: {
+    label: "Schwarz Diamond",
+    iso: 0.48601,
+    field:
+      "sin(p.x)*sin(p.y)*sin(p.z) + sin(p.x)*cos(p.y)*cos(p.z) + cos(p.x)*sin(p.y)*cos(p.z) + cos(p.x)*cos(p.y)*sin(p.z)",
+  },
+} as const;
+
+export type LatticeKey = keyof typeof LATTICES;
+
 const FRAG = `
 precision highp float;
 uniform vec2  uRes;
@@ -46,13 +70,18 @@ const int   MAX = 300;
 const float DT  = 0.075;    // under half the thinnest ligament, so nothing bands
 
 float F(vec3 p){
-  return sin(p.x)*cos(p.y) + sin(p.y)*cos(p.z) + sin(p.z)*cos(p.x);
+  return __FIELD__;
 }
+/* Central differences, not a hand-written derivative per lattice. The lab
+   makes the same call in physics/tpms.ts: seven differentiated expressions
+   is seven chances to put a sign in the wrong place, and the error shows up
+   only as a surface normal that is subtly wrong. */
 vec3 G(vec3 p){
+  const float h = 1e-3;
   return vec3(
-    cos(p.x)*cos(p.y) - sin(p.z)*sin(p.x),
-    cos(p.y)*cos(p.z) - sin(p.x)*sin(p.y),
-    cos(p.z)*cos(p.x) - sin(p.y)*sin(p.z));
+    F(p + vec3(h, 0.0, 0.0)) - F(p - vec3(h, 0.0, 0.0)),
+    F(p + vec3(0.0, h, 0.0)) - F(p - vec3(0.0, h, 0.0)),
+    F(p + vec3(0.0, 0.0, h)) - F(p - vec3(0.0, 0.0, h))) / (2.0 * h);
 }
 
 void main(){
@@ -155,7 +184,14 @@ function compile(gl: WebGLRenderingContext, type: number, src: string) {
   return sh;
 }
 
-export default function GyroidSpecimen({ className = "" }: { className?: string }) {
+export default function GyroidSpecimen({
+  className = "",
+  lattice = "gyroid",
+}: {
+  className?: string;
+  lattice?: LatticeKey;
+}) {
+  const spec = LATTICES[lattice];
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
@@ -176,7 +212,7 @@ export default function GyroidSpecimen({ className = "" }: { className?: string 
     if (!gl) { setFailed(true); return; }
 
     const vs = compile(gl, gl.VERTEX_SHADER, VERT);
-    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
+    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG.replace("__FIELD__", spec.field));
     if (!vs || !fs) { setFailed(true); return; }
     const prog = gl.createProgram();
     if (!prog) { setFailed(true); return; }
@@ -195,7 +231,7 @@ export default function GyroidSpecimen({ className = "" }: { className?: string 
 
     const uRes = gl.getUniformLocation(prog, "uRes");
     const uRot = gl.getUniformLocation(prog, "uRot");
-    gl.uniform1f(gl.getUniformLocation(prog, "uIso"), 0.615975);
+    gl.uniform1f(gl.getUniformLocation(prog, "uIso"), spec.iso);
     // One colour per labyrinth. Both are lifted off the brand blue rather
     // than picked freely, so the figure still belongs to the palette.
     gl.uniform3f(gl.getUniformLocation(prog, "uSolidA"), 0.3, 0.62, 0.97);
@@ -321,7 +357,8 @@ export default function GyroidSpecimen({ className = "" }: { className?: string 
       gl.deleteBuffer(buf);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lattice]);
 
   // Without WebGL there is nothing honest to put here, and a stand-in picture
   // of "some lattice" is exactly the decorative imagery this page avoids. The
@@ -336,7 +373,7 @@ export default function GyroidSpecimen({ className = "" }: { className?: string 
       <canvas
         ref={canvasRef}
         role="img"
-        aria-label="A rotating block of gyroid lattice, two unit cells across, at 60% porosity. The two colours are the two interlocking channels the lattice divides space into. This is the geometry the lab's acoustic solver is run on."
+        aria-label={`A rotating block of ${spec.label.toLowerCase()} lattice, two unit cells across, at 60% porosity. The two colours are the two interlocking channels the lattice divides space into.`}
         className={`h-full w-full touch-none select-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
       />
     </div>

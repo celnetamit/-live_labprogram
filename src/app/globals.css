@@ -2756,7 +2756,31 @@
   --border: oklch(0.32 0.02 258);
   --accent: oklch(0.3 0.05 255);
   --success-ink: oklch(0.78 0.15 158);
-  --color-success-ink: oklch(0.78 0.15 158);
+
+  /*
+    The @theme aliases, restated.
+
+    `@theme inline` emits `--color-x: var(--x)` on :root, where it is
+    substituted once against the light palette. A descendant that overrides
+    `--x` therefore does not move `--color-x`, so every Tailwind utility
+    (`bg-card`, `text-muted-foreground`, `border-border`) keeps painting the
+    light value inside this band. Only `--color-success-ink` was patched
+    before, which fixed one tick icon and left the rest latent: dropping any
+    card-based component in here produced a white panel carrying this band's
+    light text. Restating the set makes the band safe for any component.
+  */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-success-ink: var(--success-ink);
+
   background: var(--background);
   color: var(--foreground);
   color-scheme: dark;
@@ -2786,12 +2810,21 @@
   decoration, so it does not run for anyone who has asked for less of it.
 */
 @media (prefers-reduced-motion: no-preference) {
-  .spectrum-line {
-    animation: spectrum-draw 1.6s cubic-bezier(0.33, 0, 0.1, 1) 0.15s both;
-  }
-  .spectrum-fill {
-    animation: spectrum-fade 0.8s ease-out 1.05s both;
-  }
+  /*
+    The curve and its area fill carry no entrance animation.
+
+    Any CSS animation on these two paths leaves them unpainted once the
+    figure sits inside a framer-motion `whileInView` wrapper: the computed
+    style reports a 2.25px blue stroke at full opacity, the paint order puts
+    both paths above the gridlines, and nothing renders. Disabling animation
+    draws both correctly, and so does any change that forces a style recalc,
+    which is the signature of a compositing problem rather than of wrong CSS.
+
+    It may well only affect captured frames rather than real viewing. It is
+    not worth finding out on a chart whose entire purpose is to show measured
+    data: the surrounding card still fades in, and the data inside it is
+    simply always there.
+  */
 }
 /*
   The dash lives in the keyframes, not on the element.
@@ -2803,10 +2836,21 @@
   inside the keyframes means the resting state is the finished curve, and
   the animation is purely additive.
 */
-@keyframes spectrum-draw {
-  from { stroke-dasharray: 1; stroke-dashoffset: 1; }
-  to { stroke-dasharray: 1; stroke-dashoffset: 0; }
-}
+/*
+  No dash, no draw-on.
+
+  The curve was drawn with stroke-dasharray + a dashoffset sweep, against a
+  path carrying pathLength="1". That has now hidden the data twice: once when
+  the dash sat on the element so a stopped animation left an empty chart, and
+  again here, where any dasharray at all makes Chrome paint nothing on this
+  path while every computed style still reports a 2.25px blue stroke at
+  dashoffset 0 — it survived in the full-width hero and vanished the moment
+  the same figure was rendered into a narrower column.
+
+  A decorative reveal is not worth a chart that intermittently shows no data,
+  so the line simply fades in. The resting state is now the finished curve
+  with no dash involved anywhere.
+*/
 @keyframes spectrum-fade {
   from { opacity: 0; }
   to { opacity: 1; }

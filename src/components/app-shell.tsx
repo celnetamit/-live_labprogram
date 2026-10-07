@@ -23,6 +23,11 @@ export type NavGroup = {
 
 type AppShellProps = {
   brandTitle: string;
+  /**
+   * The signed-in person's first name, greeted under the brand. Omitted for a
+   * shell with no one behind it — a bare "Hi!" is worse than no greeting.
+   */
+  greetingName?: string | null;
   navGroups: NavGroup[];
   breadcrumbRoot: string;
   /**
@@ -118,6 +123,7 @@ function NavLinks({
 
 export default function AppShell({
   brandTitle,
+  greetingName,
   navGroups,
   breadcrumbRoot,
   breadcrumbRootHref,
@@ -144,11 +150,18 @@ export default function AppShell({
       .sort((a, b) => b.href.length - a.href.length)[0]?.label ?? "Overview";
 
   const Brand = (
-    <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
-      <div className="w-8 h-8 rounded-lg btn-brand flex items-center justify-center text-primary-foreground font-bold text-sm mr-2.5">
-        L
+    <div className="border-b border-sidebar-border px-6 py-4">
+      <div className="flex items-center">
+        <div className="w-8 h-8 rounded-lg btn-brand flex items-center justify-center text-primary-foreground font-bold text-sm mr-2.5">
+          L
+        </div>
+        <span className="font-bold text-lg tracking-tight">{brandTitle}</span>
       </div>
-      <span className="font-bold text-lg tracking-tight">{brandTitle}</span>
+      {greetingName && (
+        <p className="mt-2 truncate text-sm text-sidebar-foreground/70">
+          Hi <span className="font-semibold text-sidebar-foreground">{greetingName}</span>!
+        </p>
+      )}
     </div>
   );
 
