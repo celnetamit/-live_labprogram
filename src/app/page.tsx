@@ -17,7 +17,6 @@ import AbsorptionArray from "@/components/absorption-array";
 import GyroidSpecimen from "@/components/gyroid-specimen";
 import LabMarquee from "@/components/lab-marquee";
 import SupportLauncher from "@/components/support-launcher";
-import RepurposeGraph from "@/components/repurpose-graph";
 import Link from "next/link";
 
 const fadeUp = {
@@ -388,47 +387,6 @@ export default function Home() {
               </p>
             </div>
             <EvidencePanels />
-          </div>
-        </section>
-
-        {/* ===== A second lab, a different shape of data ===== */}
-        {/* The metamaterials figures are both continuous — a curve and a
-            surface. This one is discrete and relational, which is the point
-            of putting it here: it shows that the labs are not variations on
-            one kind of science. Every node and edge comes from RepurposeAI's
-            own curated graph file. */}
-        <section className="scroll-mt-24 border-t border-border bg-muted/20 py-16 md:py-24">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6 }}
-              className="mb-10 max-w-2xl md:mb-14"
-            >
-              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary-ink">
-                RepurposeAI
-              </span>
-              <h2 className="mt-3 text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-balance md:text-[2.75rem]">
-                Some labs compute a number. This one searches a structure.
-              </h2>
-              <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-                A drug that already passed safety trials for one disease may act on a target
-                implicated in another. Finding those is a graph problem, so the lab hands you
-                the graph — with the evidence tier and the source kept on every edge, because
-                an approved indication and a preclinical hint are not the same claim.
-              </p>
-            </motion.div>
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.6, delay: 0.08 }}
-            >
-              <RepurposeGraph />
-            </motion.div>
           </div>
         </section>
 
