@@ -1,14 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, Lock, Mail, User, ShieldCheck, Loader2 } from "lucide-react";
 import GoogleSignInButton from "@/components/google-sign-in-button";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const params = useSearchParams();
+
+  /*
+    Where the visitor was going before they were asked to sign in.
+
+    Someone browsing the catalogue who opens a lab is bounced to /login with
+    a `callbackUrl`, and the login page honours it. If they register instead,
+    that destination was being dropped on the way: the form sent them to a
+    bare /login, which then sent them to /dashboard — so a person who had
+    just chosen MicrobeAI landed on a dashboard with no mention of it. The
+    same-origin check is the point of parsing it rather than passing it
+    through: an unchecked callbackUrl is an open redirect.
+  */
+  const callbackUrl = useMemo(() => {
+    const raw = params.get("callbackUrl");
+    if (!raw) return null;
+    try {
+      const u = new URL(raw, window.location.origin);
+      return u.origin === window.location.origin ? u.pathname + u.search : null;
+    } catch {
+      return null;
+    }
+  }, [params]);
+
+  const loginHref = callbackUrl
+    ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+    : "/login";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -43,7 +70,7 @@ export default function RegisterForm() {
       }
 
       setSuccess("Account created successfully! Redirecting to login...");
-      setTimeout(() => router.push("/login"), 2000);
+      setTimeout(() => router.push(loginHref), 2000);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -159,7 +186,7 @@ export default function RegisterForm() {
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
+            <Link href={loginHref} className="font-medium text-primary hover:underline">
               Sign in
             </Link>
           </p>

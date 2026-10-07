@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Lock, Mail, Loader2 } from "lucide-react";
@@ -15,7 +15,7 @@ const OAUTH_ERRORS: Record<string, string> = {
     "That Google address already belongs to an account created another way",
 };
 
-export default function Login() {
+function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,6 +34,22 @@ export default function Login() {
     effect below depends on it, and without this the effect would re-run — and
     re-issue `getSession()` — on every keystroke in the form.
   */
+  /*
+    Carry the intended destination across to registration, so someone with no
+    account yet still comes back to the lab they were opening.
+
+    Read through `useSearchParams` rather than `window.location`: this
+    component renders on the server first, where `window` does not exist, so
+    a `typeof window` guard returns "/register" for the markup that is sent
+    and React keeps that value through hydration — the link never picks the
+    callback up.
+  */
+  const params = useSearchParams();
+  const registerHref = useMemo(() => {
+    const raw = params.get("callbackUrl");
+    return raw ? `/register?callbackUrl=${encodeURIComponent(raw)}` : "/register";
+  }, [params]);
+
   const handleRedirect = useCallback(async (role: string | undefined, forceRedirect = true) => {
     let dest = role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
     const cbRaw = new URLSearchParams(window.location.search).get("callbackUrl");
@@ -206,12 +222,26 @@ export default function Login() {
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-medium text-primary hover:underline">
+            <Link href={registerHref} className="font-medium text-primary hover:underline">
               Request access
             </Link>
           </p>
         </motion.div>
       </div>
     </main>
+  );
+}
+
+/*
+  `useSearchParams` opts a page out of static prerendering unless it sits
+  under a Suspense boundary, and the build fails rather than warns. The
+  fallback is deliberately empty: this page paints its own card instantly and
+  a spinner for one frame is more noticeable than nothing.
+*/
+export default function Login() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
