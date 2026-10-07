@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, ArrowRight, FlaskConical, CalendarClock, Wrench } from "lucide-react";
+import { Search, X, ArrowRight, FlaskConical, CalendarClock, Wrench } from "lucide-react";
 import type { LabPreview } from "@/lib/labPreview";
 import LearnerLabCard from "@/components/learner-lab-card";
 import type { CardShowcase, CoverEdge, ImageCredit } from "@/lib/learnerLabs";
@@ -134,10 +134,51 @@ export default function LabCatalogClient({
   const subjectCount = new Set(labs.filter((l) => l.status === "ACTIVE").map((l) => l.subject)).size;
   const ownedCount = labs.filter((l) => l.owned && l.status === "ACTIVE").length;
 
+  const selectClass =
+    "h-9 rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  const inlineFilters = (
+    <div className="flex flex-wrap items-center gap-2">
+      <select value={subject} onChange={(e) => setSubject(e.target.value)} className={selectClass}>
+        {subjects.map((sub) => (
+          <option key={sub} value={sub}>
+            {sub === "All" ? "All subjects" : sub}
+          </option>
+        ))}
+      </select>
+      <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className={selectClass}>
+        {difficulties.map((d) => (
+          <option key={d} value={d}>
+            {d === "All" ? "All levels" : d}
+          </option>
+        ))}
+      </select>
+      {query && (
+        <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-sm">
+          <Search aria-hidden className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className="font-medium">{query}</span>
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            aria-label="Clear search"
+            className="-mr-1 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </span>
+      )}
+    </div>
+  );
+
   return (
     <div className={`max-w-7xl mx-auto ${showcaseFontClass}`}>
       {/* Header — set on the page's backdrop (`.labs-backdrop`, drawn by the
-          page that hosts this), in the cards' own display face. */}
+          page that hosts this), in the cards' own display face.
+
+          Not on the public catalogue: there it restated the page's own title
+          and a count that the grid below shows anyway, pushing the labs
+          themselves below the fold. "My Labs" keeps it, because there the
+          line carries how many you own and the way back to Explore. */}
+      {!publicMode && (
       <div className="mb-7 flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-2 sm:pt-4">
         <div>
           <p className="labs-eyebrow">
@@ -161,16 +202,21 @@ export default function LabCatalogClient({
             )}
           </p>
         </div>
-        {!publicMode && (
-          <Link href="/labs" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 px-6 py-2 shrink-0 group">
-            Explore more labs
-            <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </Link>
-        )}
+        <Link href="/labs" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 px-6 py-2 shrink-0 group">
+          Explore more labs
+          <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </Link>
       </div>
+      )}
 
-      {/* Filters */}
+      {/* Filters. On the public catalogue they ride the section heading
+          instead of a panel of their own: two selects in a full-width box
+          left most of the row empty, and pushed the first card down the
+          page for no information. "My Labs" keeps the panel, which also
+          carries its search field. */}
+      {!publicMode && (
       <div className="labs-filters mb-4 grid grid-cols-2 gap-3 p-3 sm:p-4 md:flex md:flex-row">
+        {!publicMode && (
         <div className="relative col-span-2 flex-1">
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
           <input
@@ -180,6 +226,30 @@ export default function LabCatalogClient({
             className="h-10 w-full rounded-lg border border-input bg-background pl-10 pr-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
+        )}
+        {/*
+          The header search still sends people here as /labs?q=…, and without
+          the field there is nothing on the page saying why the grid is cut
+          down or how to undo it. The term is shown as a chip that clears
+          itself instead.
+        */}
+        {publicMode && query && (
+          <div className="col-span-2 flex flex-1 items-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-sm">
+              <Search aria-hidden className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-muted-foreground">Showing</span>
+              <span className="font-medium">{query}</span>
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="-mr-1 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          </div>
+        )}
         <select
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
@@ -203,6 +273,7 @@ export default function LabCatalogClient({
           ))}
         </select>
       </div>
+      )}
 
       {/* Progress filter. Counts are shown on the chip so an empty result is
           predictable before it is clicked. */}
@@ -246,10 +317,13 @@ export default function LabCatalogClient({
       {/* On Explore the grid is one of three status sections, so it gets a name
           of its own. "My Labs" keeps the plain count it always had. */}
       {publicMode ? (
-        <div className="mb-4 flex items-center gap-2">
-          <FlaskConical className="h-5 w-5 text-[color:var(--color-success-ink)]" />
-          <h2 className="text-xl font-bold tracking-tight">Active labs</h2>
-          <span className="pill text-[color:var(--color-success-ink)]">{filtered.length}</span>
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-2">
+          <div className="flex items-center gap-2">
+            <FlaskConical className="h-5 w-5 text-[color:var(--color-success-ink)]" />
+            <h2 className="text-xl font-bold tracking-tight">Active labs</h2>
+            <span className="pill text-[color:var(--color-success-ink)]">{filtered.length}</span>
+          </div>
+          {inlineFilters}
         </div>
       ) : (
         <p className="text-sm text-muted-foreground mb-4">

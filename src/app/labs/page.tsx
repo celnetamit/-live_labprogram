@@ -7,6 +7,7 @@ import { ownedLabIds, ownsLab, parseList } from "@/lib/access";
 import { getLabPreview } from "@/lib/labPreview";
 import { EXPLORE_STATUSES, formatLaunchDate } from "@/lib/labStatus";
 import { buildLearnerLab } from "@/lib/learnerLabs";
+import LabsBackdrop from "@/components/labs-backdrop";
 import LabCatalogClient, { type CatalogLab } from "@/app/dashboard/labs/LabCatalogClient";
 
 export const metadata: Metadata = {
@@ -89,9 +90,7 @@ export default async function PublicLabs({
           rather than slipping behind the body; `overflow-x-clip` so its
           glows cannot widen the page on a phone. */}
       <main id="main" className="relative isolate overflow-x-clip pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
-        <div aria-hidden className="labs-backdrop">
-          <span className="labs-backdrop-grain" />
-        </div>
+        <LabsBackdrop />
         <LabCatalogClient
           labs={catalog}
           isAdmin={user?.role === "SUPER_ADMIN"}
