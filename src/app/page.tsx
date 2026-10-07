@@ -15,6 +15,7 @@ import EvidencePanels from "@/components/evidence-panels";
 import ThresholdExample from "@/components/threshold-example";
 import AbsorptionArray from "@/components/absorption-array";
 import GyroidSpecimen from "@/components/gyroid-specimen";
+import LabMarquee from "@/components/lab-marquee";
 import SupportLauncher from "@/components/support-launcher";
 import RepurposeGraph from "@/components/repurpose-graph";
 import Link from "next/link";
@@ -233,7 +234,7 @@ export default function Home() {
             specimen rather than breaking to white in between. The block is
             ray-marched from the same field and the same isovalue the lab's
             acoustic run is solved for. */}
-        <section className="band-ink relative isolate overflow-hidden border-t border-white/5 py-16 md:py-24">
+        <section className="band-ink band-fit relative isolate flex min-h-svh flex-col justify-start overflow-hidden border-t border-white/5">
           {/* Two wide, very soft washes in the two channel colours, so the
               band is lit by the same palette the specimen is coloured with
               instead of being flat black. `isolate` keeps them under the
@@ -244,7 +245,7 @@ export default function Home() {
             <div className="absolute -right-16 bottom-[-10rem] h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,oklch(0.60_0.20_305/0.16),transparent_68%)] blur-3xl" />
           </div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid items-center gap-10 md:gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+            <div className="band-fit-grid grid items-start lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
               <motion.div
                 variants={fadeUp}
                 initial="hidden"
@@ -257,20 +258,20 @@ export default function Home() {
                     the other way up: the subject set as a 12px eyebrow over a
                     44px headline, so the one word telling you which science
                     this is was the smallest thing in the section. */}
-                <h2 className="text-4xl font-bold leading-[1.05] tracking-[-0.035em] text-balance md:text-[3.25rem]">
+                <h2 className="band-fit-title font-bold leading-[1.05] tracking-[-0.035em] text-balance">
                   Acoustic Metamaterials
                 </h2>
-                <p className="mt-3 text-xl font-semibold tracking-[-0.01em] text-[color:var(--primary-ink)] md:text-2xl">
+                <p className="band-fit-sub font-semibold tracking-[-0.01em] text-[color:var(--primary-ink)]">
                   The shape that absorbs the sound
                 </p>
                 {/* Justified, with automatic hyphenation. Justifying without it
                     opens rivers of white space in a narrow measure. */}
-                <p className="mt-5 max-w-[56ch] hyphens-auto text-justify leading-relaxed text-muted-foreground">
+                <p className="band-fit-prose max-w-[56ch] hyphens-auto text-justify text-muted-foreground">
                   Not a render of a lattice. Your graphics card is solving the lab&rsquo;s own
                   level-set field, <span className="font-mono text-[0.95em] text-foreground">sin x·cos y + sin y·cos z + sin z·cos x</span>,
                   and filling the solid where that field falls within 0.615975 of zero.
                 </p>
-                <p className="mt-4 max-w-[56ch] hyphens-auto text-justify leading-relaxed text-muted-foreground">
+                <p className="band-fit-prose max-w-[56ch] hyphens-auto text-justify text-muted-foreground">
                   That number is not a dial someone turned until it looked right. It is the
                   tabulated isovalue for 60% porosity, and it puts 39.95% of the box in solid —
                   the same design the lab&rsquo;s acoustic solver is run on. Change it and both the
@@ -288,9 +289,45 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.18 }}
                 className="min-w-0"
               >
-                <AbsorptionArray />
+                <div className="band-fit-chart"><AbsorptionArray /></div>
               </motion.div>
             </div>
+          </div>
+
+          {/* ===== The thirteen, running past ===== */}
+          {/* On the same band as the specimen, not in a section of its own.
+              Separately it sat behind its own border and its own vertical
+              padding, which stacked with this section's to leave an empty
+              strap of page between the spectrum and the first tile. Here the
+              acoustic figure hands straight to the thirteen laboratories.
+
+              Container is `max-w-7xl` to match the grid above, so the row
+              starts on the same left edge as the heading does.
+
+              The strip has no visible name now, so the region `aria-label`
+              in `lab-marquee.tsx` is the only thing naming it for a screen
+              reader. Keep it. */}
+          <div id="labs-strip" className="band-fit-strip relative scroll-mt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6 }}
+            >
+              <LabMarquee />
+            </motion.div>
+
+            <Link
+              href="/labs"
+              /* `bg-card` was for the light section this used to sit in; on the
+                 dark band it lands within 1.1:1 of the page behind it and the
+                 button loses its shape. This is the band's own secondary-button
+                 treatment, the same one the hero uses. */
+              className="band-fit-cta inline-flex items-center gap-2 rounded-xl border border-border bg-white/5 px-5 text-sm font-semibold transition-colors hover:bg-white/10"
+            >
+              Browse the catalogue <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </section>
 

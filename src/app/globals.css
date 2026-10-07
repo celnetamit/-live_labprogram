@@ -2970,3 +2970,218 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/*
+  The lab strip (`components/lab-marquee.tsx`).
+
+  Thirteen covers running horizontally, the list rendered twice and the track
+  translated by exactly -50% so the second copy arrives where the first began.
+
+  That exactness is why there is no `gap` here. With `gap`, 26 tiles have 25
+  gaps, so half the track width is 13 tiles plus 12.5 gaps — half a gap short
+  of one copy, and the loop jumps by that much every time it resets. Giving
+  each tile its own `margin-inline-end` makes the track 26 x (tile + margin),
+  whose half is exactly 13 of them. Keep it that way: reintroducing `gap`
+  reintroduces the stutter.
+
+  The motion is a CSS transform on one element, which the compositor runs
+  without waking JavaScript; pausing on hover is then one property rather
+  than a piece of React state.
+*/
+.lab-strip {
+  position: relative;
+  /* Clips the track to the page container, so the row ends where every other
+     section ends instead of running off the viewport. */
+  overflow: hidden;
+  /* The clip is at the padding box, and a hovered tile rises 4px and throws a
+     shadow below itself — both would be cut off against a tight edge. The
+     negative margin hands that room back, so the padding costs no layout. */
+  padding-block: 14px;
+  margin-block: -14px;
+  /* Fades both ends, so tiles enter and leave rather than being chopped
+     against a hard edge: the row reads as continuing past the frame. The
+     ramp has to be wider than it looks necessary — at 6% the entering tile
+     was still sharp enough to read its name, which looks like a clipping
+     fault rather than a tile on its way in. */
+  mask-image: linear-gradient(to right, transparent, #000 11%, #000 89%, transparent);
+}
+.lab-strip-track {
+  display: flex;
+  width: max-content;
+  animation: lab-strip-roll var(--roll, 72s) linear infinite;
+  --tile: clamp(188px, 21vw, 264px);
+  --sep: clamp(12px, 1.4vw, 20px);
+}
+.lab-strip:hover .lab-strip-track,
+.lab-strip:focus-within .lab-strip-track {
+  animation-play-state: paused;
+}
+@keyframes lab-strip-roll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+.lab-strip-tile {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--tile);
+  margin-inline-end: var(--sep);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  background: var(--muted);
+  box-shadow: 0 10px 24px -18px rgb(0 0 0 / 0.55);
+  transition: transform 0.3s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.lab-strip-tile:hover,
+.lab-strip-tile:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 18px 34px -20px rgb(0 0 0 / 0.6);
+}
+/* The name has to stay legible over thirteen different photographs, none of
+   which can be lightened, so it sits on its own gradient rather than
+   trusting the picture underneath it. */
+.lab-strip-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.82) 0%, rgb(0 0 0 / 0.45) 38%, rgb(0 0 0 / 0.04) 72%);
+}
+.lab-strip-meta {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: block;
+  padding: 12px 14px 13px;
+}
+.lab-strip-subject {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.76);
+}
+/* Two lines, because the longest name in the table is "Live-Lab Learning:
+   AI Program Navigator" and a third line would ride up over the picture. */
+.lab-strip-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.25;
+  color: #fff;
+  text-wrap: balance;
+}
+
+/*
+  A strip that rolls for seventy-two seconds is the clearest case there is for
+  honouring this. It stops, and the row becomes an ordinary scrollable one so
+  every lab stays reachable by swipe, wheel and keyboard.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .lab-strip {
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+  }
+  .lab-strip-track {
+    animation: none;
+  }
+  .lab-strip-tile {
+    scroll-snap-align: start;
+  }
+}
+
+/*
+  The acoustic band on one screen (`.band-fit`, page.tsx).
+
+  The band carries a heading, two paragraphs, a 192-pillar chart and the
+  thirteen-lab strip. At their natural sizes those total 1028px, which is a
+  scroll-and-a-bit on a laptop and nearly two screens on a short window. Every
+  size below is therefore expressed against viewport height, so the band
+  shrinks continuously to fit rather than snapping at breakpoints.
+
+  Why no @media (max-height: …) tiers: two height blocks have equal
+  specificity, so the one written last wins at every height they both match,
+  which is not what a tier is. `clamp()` against `vh` has no such ordering
+  problem, and it degrades smoothly between the sizes rather than jumping.
+
+  The floors are the point of each clamp — below them the element stops being
+  worth showing, and a scroll is the better outcome.
+
+  Content sits at the top of the band, not centred. Centring split the slack
+  evenly above and below, which pushed the heading down the screen and left a
+  matching dead band under the catalogue button; starting at the top spends
+  that slack on the type and the chart instead.
+
+  The 65px is the site header, which is `position: fixed` and so takes no
+  space in flow. Top-aligning without allowing for it put "Acoustic
+  Metamaterials" underneath the nav bar. If the header's height changes, this
+  changes with it.
+*/
+.band-fit {
+  padding-top: calc(65px + clamp(0.5rem, 1.6vh, 2.5rem));
+  padding-bottom: clamp(0.75rem, 2vh, 3rem);
+}
+.band-fit .band-fit-grid {
+  gap: clamp(0.75rem, 2.8vh, 3.5rem);
+}
+.band-fit .band-fit-title {
+  font-size: clamp(1.75rem, 6.4vh, 3.5rem);
+}
+.band-fit .band-fit-sub {
+  margin-top: clamp(0.25rem, 1vh, 0.75rem);
+  font-size: clamp(0.95rem, 3.1vh, 1.6rem);
+}
+.band-fit .band-fit-prose {
+  margin-top: clamp(0.5rem, 1.6vh, 1.25rem);
+  font-size: clamp(0.8125rem, 2.4vh, 1rem);
+  line-height: 1.5;
+}
+/*
+  The chart sets its own legibility floor: `absorption-array.tsx` keeps a
+  640px minimum width because at 358px its 11px axis labels land at about 4px.
+  Capping height with `width: auto` keeps that ratio — the chart gets smaller,
+  never squashed — and `min-width: 0` lets it go under the 640 floor only when
+  the window is too short to afford it, which is the trade this band makes to
+  stay on one screen.
+*/
+/*
+  Only on a wide screen. On a phone the scarce axis is width, not height, and
+  `absorption-array.tsx` already has the right answer there: keep the 640px
+  minimum and pan. Relaxing that floor on mobile too dropped the labels to
+  4.1px, which is the exact failure its comment warns about, in the one case
+  where nothing was gained for it.
+*/
+@media (min-width: 1024px) {
+  .band-fit .band-fit-chart svg {
+    max-height: clamp(11rem, 42vh, 30rem);
+    width: auto;
+    min-width: 0;
+    /* Flush right, so the chart's right edge meets its own caption's and the
+       band's right margin. Centred, it floated between the two with unequal
+       air on either side while the text column was hard left. */
+    margin-inline-start: auto;
+    margin-inline-end: 0;
+  }
+}
+.band-fit .band-fit-strip {
+  margin-top: clamp(0.75rem, 2.6vh, 5rem);
+}
+.band-fit .band-fit-cta {
+  margin-top: clamp(0.625rem, 2vh, 2rem);
+  padding-block: clamp(0.4rem, 1.1vh, 0.75rem);
+}
+/*
+  Tile size follows the shorter constraint. Width alone would keep 264px tiles
+  on a wide-but-short window, which is exactly the case that overflows; height
+  alone would shrink them to 82px on a phone, where there is height to spare
+  and width is what is scarce.
+*/
+.band-fit .lab-strip-track {
+  --tile: clamp(148px, min(42vw, 26vh), 280px);
+}
