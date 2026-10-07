@@ -36,7 +36,6 @@ export function PageHeader({
   title,
   subtitle,
   aside,
-  compact = false,
 }: {
   /** A counted fact ("12 live labs · 7 subjects"), never a slogan. */
   eyebrow?: ReactNode;
@@ -45,20 +44,21 @@ export function PageHeader({
   subtitle?: ReactNode;
   aside?: ReactNode;
   /** A smaller title, for one that carries a name ("Good afternoon, …"). */
-  compact?: boolean;
 }) {
   return (
-    <header className="mb-7 flex flex-col justify-between gap-4 pt-2 sm:flex-row sm:items-end sm:pt-4">
+    <header className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
       <div className="min-w-0">
-        {eyebrow && (
-          <p className="labs-eyebrow">
-            <span aria-hidden className={`labs-eyebrow-dot is-${eyebrowTone}`} />
-            {eyebrow}
-          </p>
-        )}
-        <h1 className={`labs-title ${compact ? "labs-title-compact" : ""}`}>{title}</h1>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <h1 className="labs-title labs-title-compact">{title}</h1>
+          {eyebrow && (
+            <p className="labs-eyebrow labs-eyebrow-inline">
+              <span aria-hidden className={`labs-eyebrow-dot is-${eyebrowTone}`} />
+              {eyebrow}
+            </p>
+          )}
+        </div>
         {subtitle && (
-          <p className="mt-2 max-w-2xl text-base text-muted-foreground sm:text-lg">{subtitle}</p>
+          <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground sm:text-base">{subtitle}</p>
         )}
       </div>
       {aside && <div className="shrink-0">{aside}</div>}

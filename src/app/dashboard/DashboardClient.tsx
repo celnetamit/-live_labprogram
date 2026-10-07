@@ -212,7 +212,6 @@ export default function DashboardClient({
             local time and the connection — facts about this viewer, read on
             the client, which is why it is blank for one frame. */}
         <PageHeader
-          compact
           eyebrowTone={online ? "live" : "warn"}
           eyebrow={
             <span suppressHydrationWarning>

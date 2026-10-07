@@ -74,8 +74,11 @@ function NavLinks({
   rootHref: string;
   onNavigate?: () => void;
 }) {
+  /* `pt-4`, not `pt-6`: the block above this ends in its own padding, so the
+     two stacked and the first item sat further from the divider than the
+     items sit from each other. */
   return (
-    <div className="flex-1 overflow-y-auto py-6 px-3 space-y-8">
+    <div className="flex-1 overflow-y-auto px-3 pb-6 pt-4 space-y-8">
       {navGroups.map((group, gi) => (
         <div key={gi} className="space-y-1">
           {group.title && (
@@ -94,7 +97,7 @@ function NavLinks({
                 className={`group relative flex items-center justify-between px-3 py-2.5 text-sm rounded-lg transition-colors ${
                   active
                     ? "bg-gradient-to-r from-primary/15 via-primary/5 to-transparent text-primary font-semibold before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-5 before:w-1 before:rounded-full before:bg-primary"
-                    : "font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    : "font-medium text-sidebar-foreground/90 hover:bg-accent hover:text-accent-foreground"
                 }`}
               >
                 <span className="flex items-center gap-3">
@@ -103,7 +106,7 @@ function NavLinks({
                       {item.emoji}
                     </span>
                   ) : (
-                    <Icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
+                    <Icon className={`h-4 w-4 ${active ? "text-primary" : "text-sidebar-foreground/70"}`} />
                   )}
                   {item.label}
                 </span>

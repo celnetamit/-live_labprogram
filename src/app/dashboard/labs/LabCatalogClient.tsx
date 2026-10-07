@@ -177,18 +177,25 @@ export default function LabCatalogClient({
           Not on the public catalogue: there it restated the page's own title
           and a count that the grid below shows anyway, pushing the labs
           themselves below the fold. "My Labs" keeps it, because there the
-          line carries how many you own and the way back to Explore. */}
+          line carries how many you own and the way back to Explore.
+
+          Tightened: three stacked rows — a pill, a 56px title and a one-line
+          count — took most of the first screen to say "My Labs, you own 11".
+          The pill sits beside the title now and the title is the compact
+          size, so the first card is visible without scrolling. */}
       {!publicMode && (
-      <div className="mb-7 flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-2 sm:pt-4">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="labs-eyebrow">
-            <span aria-hidden className="labs-eyebrow-dot" />
-            {activeCount} live labs · {subjectCount} subjects
-          </p>
-          <h1 className="labs-title">
-            {publicMode ? "Explore Labs" : "My Labs"}
-          </h1>
-          <p className="mt-2 max-w-2xl text-base text-muted-foreground sm:text-lg">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h1 className="labs-title labs-title-compact">
+              {publicMode ? "Explore Labs" : "My Labs"}
+            </h1>
+            <p className="labs-eyebrow labs-eyebrow-inline">
+              <span aria-hidden className="labs-eyebrow-dot" />
+              {activeCount} live labs · {subjectCount} subjects
+            </p>
+          </div>
+          <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground sm:text-base">
             {publicMode && signedIn ? (
               <>{activeCount} laboratories across 7 subject areas. You own <span className="text-primary font-medium">{ownedCount}</span> — open {ownedCount === 1 ? 'it' : 'them'} from <Link href="/dashboard/labs" className="text-primary font-medium hover:underline cursor-pointer">My Labs</Link>.</>
             ) : publicMode ? (
