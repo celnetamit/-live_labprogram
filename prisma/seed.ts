@@ -6,8 +6,8 @@ async function main() {
   console.log('Seeding database...')
 
   const labs = [
-    { name: "Cognicore AI", domainUrl: "https://cognicore.live-labs.org/", sourceUrl: "https://cognicore.live-labs.org/", slug: "cognicore-ai", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Intermediate", priceMinor: 9900, currency: "USD" },
-    { name: "Denovo GenAI Lab", domainUrl: "https://denovo.live-labs.org/", sourceUrl: "https://denovo.live-labs.org/", slug: "denovo-genai-lab", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Beginner", priceMinor: 39900, currency: "USD" },
+    { name: "Cognicore", domainUrl: "https://cognicore.live-labs.org/", sourceUrl: "https://cognicore.live-labs.org/", slug: "cognicore-ai", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Intermediate", priceMinor: 9900, currency: "USD" },
+    { name: "Denovo Lab", domainUrl: "https://denovo.live-labs.org/", sourceUrl: "https://denovo.live-labs.org/", slug: "denovo-genai-lab", category: "Computer Science", status: "ACTIVE", accessType: "PRIVATE", points: 300, difficulty: "Beginner", priceMinor: 39900, currency: "USD" },
     // OmicsLab authorises every session against this row: it has a server of
     // its own, and that server refuses to open a lab session unless
     // authorize-lab resolves a lab here and says the account may open it. A

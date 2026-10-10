@@ -2,7 +2,7 @@
   {
     "id": "cmrpue8sq000soneakbn4pvcq",
     "slug": "cognicore-ai",
-    "name": "Cognicore AI",
+    "name": "Cognicore",
     "description": "Explore Cognicore AI, an AI-powered computer science app in the live project catalog. Open the linked experience to test its workflows and use the catalog filters to compare similar tools.",
     "synopsis": "Explore Cognicore AI, an AI-powered computer science app in the live project catalog. Open the linked experience to test its workflows and use the catalog filters to compare similar tools.",
     "subject": "Computer Science",
@@ -28,7 +28,7 @@
   {
     "id": "cmrpue8ux000xonea76xg2p2h",
     "slug": "denovo-genai-lab",
-    "name": "Denovo GenAI Lab",
+    "name": "Denovo Lab",
     "description": "Explore Denovo GenAI Lab, an AI-powered computer science app in the live project catalog. Open the linked experience to test its workflows and use the catalog filters to compare similar tools.",
     "synopsis": "Explore Denovo GenAI Lab, an AI-powered computer science app in the live project catalog. Open the linked experience to test its workflows and use the catalog filters to compare similar tools.",
     "subject": "Computer Science",
@@ -54,7 +54,7 @@
   {
     "id": "cmrpue8ux111xonea76xg3p3i",
     "slug": "ai-6g",
-    "name": "AI For 6G Experimental Learning",
+    "name": "6G Experimental Learning",
     "description": "Explore AI For 6G, an AI-powered networking and electronics app in the live project catalog. Open the linked experience to test its workflows and use the catalog filters to compare similar tools.",
     "synopsis": "Explore AI For 6G, an AI-powered networking and electronics app in the live project catalog. Open the linked experience to test its workflows and use the catalog filters to compare similar tools.",
     "subject": "Electronics",
@@ -80,7 +80,7 @@
   {
     "id": "cmrpue8ux222xonea76xg4p4j",
     "slug": "fraudshield",
-    "name": "FraudShield AI Lab",
+    "name": "FraudShield Lab",
     "description": "Explore FraudShield AI, an advanced cyber security app in the live project catalog. Open the linked experience to test its workflows and use the catalog filters to compare similar tools.",
     "synopsis": "Explore FraudShield AI, an advanced cyber security app in the live project catalog. Open the linked experience to test its workflows and use the catalog filters to compare similar tools.",
     "subject": "Security",
@@ -106,7 +106,7 @@
   {
     "id": "cmrpue8ux333xonea76xg5p5k",
     "slug": "logiclab",
-    "name": "LogicLab AI",
+    "name": "LogicLab",
     "description": "Explore LogicLab AI, an experiential learning platform for digital logic and HDL. Open the linked experience to visualize hardware and generate Verilog using AI.",
     "synopsis": "Explore LogicLab AI, an experiential learning platform for digital logic and HDL. Open the linked experience to visualize hardware and generate Verilog using AI.",
     "subject": "Electronics",
@@ -132,7 +132,7 @@
   {
     "id": "cmrpue8ux444xonea76xg6p6l",
     "slug": "micro-ai",
-    "name": "MicrobeAI Lab",
+    "name": "Microbe Lab",
     "description": "Explore MicrobeAI Lab, an AI-powered bioinformatics platform. Simulate anaerobic bioreactors and analyze metagenomes in real-time.",
     "synopsis": "Explore MicrobeAI Lab, an AI-powered bioinformatics platform. Simulate anaerobic bioreactors and analyze metagenomes in real-time.",
     "subject": "Biology",
@@ -158,7 +158,7 @@
   {
     "id": "cmrpue8ux555xonea76xg7p7m",
     "slug": "battery-ai",
-    "name": "Battery Circularity AI",
+    "name": "Battery Circularity",
     "description": "Explore Battery Circularity AI, a platform for optimizing EV battery recycling and diagnostics using AI workflows.",
     "synopsis": "Explore Battery Circularity AI, a platform for optimizing EV battery recycling and diagnostics using AI workflows.",
     "subject": "Engineering",
@@ -210,7 +210,7 @@
   {
     "id": "cmrpue8ux777xonea76xg9p9o",
     "slug": "smartfactory-ai",
-    "name": "SmartFactory AI",
+    "name": "SmartFactory",
     "description": "Explore SmartFactory AI, an advanced platform for simulating and optimizing production line operations using AI workflows.",
     "synopsis": "Explore SmartFactory AI, an advanced platform for simulating and optimizing production line operations using AI workflows.",
     "subject": "Engineering",
@@ -236,7 +236,7 @@
   {
     "id": "cmrpue8ux888xonea76xga0a0",
     "slug": "ai-program-navigator",
-    "name": "Live-Lab Learning: AI Program Navigator",
+    "name": "Live-Lab Learning: Program Navigator",
     "description": "An experiential learning platform's AI-powered navigator to help users find the most suitable learning paths and workshops based on their profile and aspirations.",
     "synopsis": "An experiential learning platform's AI-powered navigator to help users find the most suitable learning paths and workshops based on their profile and aspirations.",
     "subject": "Computer Science",
@@ -262,7 +262,7 @@
   {
     "id": "cmrpue8ux999xonea76xgb1b1",
     "slug": "drugdiscovery-ai",
-    "name": "RepurposeAI: Drug Discovery Lab",
+    "name": "Repurpose: Drug Discovery Lab",
     "description": "An interactive educational platform for Drug Repurposing using Knowledge Graphs and AI. Features 3D visualization, biological data integration, and AI-powered link prediction analysis.",
     "synopsis": "An interactive educational platform for Drug Repurposing using Knowledge Graphs and AI. Features 3D visualization, biological data integration, and AI-powered link prediction analysis.",
     "subject": "Biology",

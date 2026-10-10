@@ -83,7 +83,7 @@ const guide: LabGuide = {
     ],
     tags: ["Drug Repurposing", "Knowledge Graphs", "Graph Embeddings", "AI Prediction"],
     walkthroughTitle: "From known medicines to new treatment hypotheses",
-    journey: "RepurposeAI",
+    journey: "Repurpose",
     card: {
       badge: "Interactive lab",
       icon: "graph",

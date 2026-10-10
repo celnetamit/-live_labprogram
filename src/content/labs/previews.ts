@@ -41,7 +41,7 @@ export const LAB_PREVIEWS: LabPreview[] = [
   },
   {
     slug: "micro-ai",
-    name: "MicrobeAI BioLab",
+    name: "Microbe Lab",
     blurb:
       "Read the DNA of a whole microbial community, then run the digester those microbes live in and watch what makes it fail.",
     media: "micro-ai.mp4",
@@ -49,7 +49,7 @@ export const LAB_PREVIEWS: LabPreview[] = [
   },
   {
     slug: "drugdiscovery-ai",
-    name: "RepurposeAI: Drug Discovery Lab",
+    name: "Repurpose: Drug Discovery Lab",
     blurb: "Explore how existing medicines can be studied for new therapeutic uses.",
     media: "drugdiscovery-ai.mp4",
     poster: "drugdiscovery-ai.jpg",
@@ -70,14 +70,14 @@ export const LAB_PREVIEWS: LabPreview[] = [
   },
   {
     slug: "logiclab",
-    name: "LogicLab AI",
+    name: "LogicLab",
     blurb:
       "Describe a chip in plain English, get working Verilog back, and learn to read what it produced.",
     media: null,
   },
   {
     slug: "fraudshield",
-    name: "FraudShield AI Lab",
+    name: "FraudShield Lab",
     blurb:
       "Score live transactions for fraud, tune the threshold, then attack your own detector to see how it breaks.",
     media: "fraudshield.mp4",
@@ -85,7 +85,7 @@ export const LAB_PREVIEWS: LabPreview[] = [
   },
   {
     slug: "smartfactory-ai",
-    name: "SmartFactory AI",
+    name: "SmartFactory",
     blurb:
       "Find the bottleneck on a production line, predict a breakdown before it happens, and work out what the fix is worth.",
     media: "smartfactory-ai.mp4",
@@ -93,7 +93,7 @@ export const LAB_PREVIEWS: LabPreview[] = [
   },
   {
     slug: "denovo-genai-lab",
-    name: "Denovo GenAI Lab",
+    name: "Denovo Lab",
     blurb:
       "Design a molecule that has never existed — and find out exactly where the AI stops being trustworthy.",
     media: "denovo-genai-lab.mp4",
@@ -101,7 +101,7 @@ export const LAB_PREVIEWS: LabPreview[] = [
   },
   {
     slug: "battery-ai",
-    name: "Battery Circularity AI",
+    name: "Battery Circularity",
     blurb:
       "Decide what happens to a retired EV battery: a second life powering something else, or the shredder.",
     media: "battery-ai.mp4",
@@ -109,7 +109,7 @@ export const LAB_PREVIEWS: LabPreview[] = [
   },
   {
     slug: "ai-6g",
-    name: "AI for 6G",
+    name: "6G Experimental Learning",
     blurb:
       "The three ideas behind 6G — smart surfaces, sending meaning instead of bits — each with a simulator you can push until it fails.",
     media: "ai-6g.mp4",
@@ -117,7 +117,7 @@ export const LAB_PREVIEWS: LabPreview[] = [
   },
   {
     slug: "cognicore-ai",
-    name: "Cognicore AI",
+    name: "Cognicore",
     blurb:
       "Summarise a contract, compare two drafts, and search a whole pile of documents by meaning rather than keyword.",
     media: "cognicore-ai.mp4",
@@ -125,7 +125,7 @@ export const LAB_PREVIEWS: LabPreview[] = [
   },
   {
     slug: "ai-program-navigator",
-    name: "AI Program Navigator",
+    name: "Live-Lab Learning: Program Navigator",
     blurb:
       "Not sure where to start? Describe your background and get a route through the catalogue built for you.",
     media: null,

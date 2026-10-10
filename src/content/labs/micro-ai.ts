@@ -91,13 +91,13 @@ const guide: LabGuide = {
     intro:
       "Analyze microbial sequence data, understand how different microorganisms contribute to substrate breakdown and methane production, and link microbial composition to digester performance.",
     about: [
-      "The MicrobeAI Live Lab is designed to introduce learners to computational analysis of complex microbial communities using metagenomic sequencing data and process-based simulation. Since a large proportion of microorganisms present in the environment cannot be readily cultured under standard laboratory conditions, **metagenomics** enables their investigation through **direct analysis of microbial DNA** recovered from a sample.",
+      "The Microbe Live Lab is designed to introduce learners to computational analysis of complex microbial communities using metagenomic sequencing data and process-based simulation. Since a large proportion of microorganisms present in the environment cannot be readily cultured under standard laboratory conditions, **metagenomics** enables their investigation through **direct analysis of microbial DNA** recovered from a sample.",
       "Learners will work with microbial sequencing datasets to perform **quality assessment, taxonomic profiling, community composition analysis, and interpretation of microbial diversity patterns**. The lab further connects microbial community analysis with an **anaerobic digestion simulation**, enabling users to examine how operational variables such as **pH, temperature, substrate conditions, and retention time** can influence microbial activity, process stability, and predicted digester performance.",
       "By integrating **microbial data analysis with bioprocess simulation**, the lab provides a practical framework for understanding how microbial community structure and environmental conditions interact within anaerobic systems.",
     ],
     tags: ["Metagenomics", "Microbial Ecology", "Bioinformatics", "Anaerobic Digestion", "Simulation"],
     walkthroughTitle: "From microbial community to ecosystem model",
-    journey: "MicrobeAI",
+    journey: "Microbe",
     card: {
       badge: "Interactive lab",
       icon: "sequence",
@@ -368,7 +368,7 @@ const guide: LabGuide = {
       expect:
         "You see the possible biological roles associated with the microbial community identified in the sample, organised by pathway and by guild.",
       why:
-        "In MicrobeAI, functional information is inferred from the organisms identified in the sample together with curated reference information. It can suggest what the community may be capable of doing, but it does not demonstrate that these functions are currently active. This distinction should remain clear throughout the lab.",
+        "In Microbe Lab, functional information is inferred from the organisms identified in the sample together with curated reference information. It can suggest what the community may be capable of doing, but it does not demonstrate that these functions are currently active. This distinction should remain clear throughout the lab.",
       minutes: 10,
     },
 

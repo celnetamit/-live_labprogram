@@ -53,7 +53,7 @@ const guide: LabGuide = {
     ],
     tags: ["Reflecting surfaces", "Semantic communication", "Autoencoders", "JSCC"],
     walkthroughTitle: "From a reflecting surface to a codec that degrades gracefully",
-    journey: "AI for 6G",
+    journey: "6G",
     photo: { position: "50% 55%" },
     card: {
       badge: "Interactive lab",
