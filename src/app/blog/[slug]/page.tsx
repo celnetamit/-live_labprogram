@@ -198,7 +198,7 @@ export default async function BlogPostPage({ params }: Props) {
       */}
       <div className={`blog-article ${showcaseFontClass}`}>
         <div aria-hidden className="blog-band" />
-        <div className="relative mx-auto grid max-w-6xl gap-10 pt-6 sm:pt-10 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16">
+        <div className="relative grid gap-10 pt-6 sm:pt-10 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16">
           <aside className="hidden lg:block">
             <div className="sticky top-24 space-y-7">
               <nav aria-label="Breadcrumb" className="blog-crumbs">
@@ -327,7 +327,7 @@ export default async function BlogPostPage({ params }: Props) {
       </div>
 
       {related.length ? (
-        <section aria-labelledby="keep-reading" className={`mx-auto mt-20 max-w-6xl ${showcaseFontClass}`}>
+        <section aria-labelledby="keep-reading" className={`mt-20 ${showcaseFontClass}`}>
           <h2 id="keep-reading" className="ui-h2 mb-6 text-2xl">
             Keep reading
           </h2>

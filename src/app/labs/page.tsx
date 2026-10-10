@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
-import Navbar from "@/components/navbar";
+import EditorialHeader from "@/components/editorial-header";
+import EditorialFooter from "@/components/editorial-footer";
 import { ownedLabIds, ownsLab, parseList } from "@/lib/access";
 import { getLabPreview } from "@/lib/labPreview";
 import { EXPLORE_STATUSES, formatLaunchDate } from "@/lib/labStatus";
@@ -12,7 +13,11 @@ import LabCatalogClient, { type CatalogLab } from "@/app/dashboard/labs/LabCatal
 
 export const metadata: Metadata = {
   title: "Explore Labs — Live Labs",
-  description: "Browse all premium workshop labs. Sign in to open a lab and unlock its resources.",
+  // "Sign in to open a lab and unlock its resources" stopped being true when
+  // each lab's guide — objective, steps, expected results, troubleshooting,
+  // sources — was published at /labs/<slug> to visitors with no account.
+  description:
+    "Every Live Labs laboratory, with its method, expected results and sources free to read. An account is needed to run an experiment, not to read how it works.",
 };
 
 // Reads the DB and the session per-request; never prerender at build time.
@@ -85,11 +90,11 @@ export default async function PublicLabs({
 
   return (
     <>
-      <Navbar user={user ? { name: user.name, email: user.email } : null} />
+      <EditorialHeader user={user ? { name: user.name, email: user.email } : null} />
       {/* `isolate` so the backdrop's negative z-index stays inside this page
           rather than slipping behind the body; `overflow-x-clip` so its
           glows cannot widen the page on a phone. */}
-      <main id="main" className="relative isolate overflow-x-clip pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
+      <main id="main" className="shell relative isolate min-h-screen overflow-x-clip pb-16 pt-10">
         <LabsBackdrop />
         <LabCatalogClient
           labs={catalog}
@@ -99,6 +104,7 @@ export default async function PublicLabs({
           initialQuery={initialQuery}
         />
       </main>
+      <EditorialFooter />
     </>
   );
 }

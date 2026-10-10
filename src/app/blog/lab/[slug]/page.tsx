@@ -100,11 +100,14 @@ export default async function LabTopicPage({ params }: Props) {
               <RichText>{guide.summary.what}</RichText>
             </p>
           ) : null}
+          {/* The lab's own page, which publishes the whole method. This used
+              to point at a filtered catalogue search, because at the time no
+              public page existed to point at. */}
           <Link
-            href={`/labs?q=${encodeURIComponent(lab.name)}`}
+            href={`/labs/${lab.slug}`}
             className="btn-brand mt-6 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
           >
-            Explore the lab <ArrowRight className="h-4 w-4" />
+            Read the lab guide <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </header>

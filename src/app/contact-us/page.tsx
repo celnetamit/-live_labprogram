@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, Phone, MapPin, Clock, Building2 } from "lucide-react";
-import Navbar from "@/components/navbar";
+import EditorialHeader from "@/components/editorial-header";
+import EditorialFooter from "@/components/editorial-footer";
 import { COMPANY } from "@/content/legal/company";
 import { LEGAL_PAGES } from "@/content/legal/pages";
 
@@ -36,9 +37,9 @@ export default function ContactPage() {
 
   return (
     <>
-      <Navbar />
-      <main className="pt-24 pb-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <EditorialHeader />
+      <main className="pt-10 pb-20">
+        <div className="shell"><div className="max-w-3xl">
           <header className="mb-10">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Contact Us</h1>
             <p className="mt-5 text-muted-foreground leading-relaxed">
@@ -150,8 +151,9 @@ export default function ContactPage() {
               Back to Live Labs
             </Link>
           </p>
-        </div>
+        </div></div>
       </main>
+      <EditorialFooter />
     </>
   );
 }

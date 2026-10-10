@@ -17,37 +17,10 @@ import { COMPANY } from "@/content/legal/company";
   unstated rather than invented.
 */
 
-const TEASER_KEY = "livelabs-support-teaser";
-
 export default function SupportLauncher() {
   const [open, setOpen] = useState(false);
-  const [teaser, setTeaser] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  /* The teaser bubble appears once, a few seconds in, and stays dismissed for
-     this browser. Reading localStorage can throw in a private window, so a
-     failure simply means no teaser rather than no launcher. */
-  useEffect(() => {
-    let dismissed = false;
-    try {
-      dismissed = localStorage.getItem(TEASER_KEY) === "dismissed";
-    } catch {
-      dismissed = true;
-    }
-    if (dismissed) return;
-    const t = setTimeout(() => setTeaser(true), 4000);
-    return () => clearTimeout(t);
-  }, []);
-
-  const hideTeaser = () => {
-    setTeaser(false);
-    try {
-      localStorage.setItem(TEASER_KEY, "dismissed");
-    } catch {
-      /* private mode: it will simply appear again next visit */
-    }
-  };
 
   // Escape closes the panel and returns focus to the button that opened it.
   useEffect(() => {
@@ -150,38 +123,9 @@ export default function SupportLauncher() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {teaser && !open && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            className="flex items-center gap-2 rounded-full border border-border bg-card py-2 pl-4 pr-2 text-sm elev-2"
-          >
-            <button
-              onClick={() => {
-                hideTeaser();
-                setOpen(true);
-              }}
-              className="text-left"
-            >
-              Need help? Talk to Live Labs
-            </button>
-            <button
-              onClick={hideTeaser}
-              aria-label="Dismiss"
-              className="rounded-full p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <button
         ref={buttonRef}
         onClick={() => {
-          hideTeaser();
           setOpen((v) => !v);
         }}
         aria-expanded={open}

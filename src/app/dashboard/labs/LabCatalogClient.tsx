@@ -170,7 +170,10 @@ export default function LabCatalogClient({
   );
 
   return (
-    <div className={`max-w-7xl mx-auto ${showcaseFontClass}`}>
+    /* The public catalogue sits under the site header and shares its shell, so
+       the two line up; inside the dashboard the page has its own chrome and
+       keeps the narrower box it was designed against. */
+    <div className={`mx-auto ${publicMode ? "w-full" : "max-w-7xl"} ${showcaseFontClass}`}>
       {/* Header — set on the page's backdrop (`.labs-backdrop`, drawn by the
           page that hosts this), in the cards' own display face.
 
@@ -324,7 +327,7 @@ export default function LabCatalogClient({
       {/* On Explore the grid is one of three status sections, so it gets a name
           of its own. "My Labs" keeps the plain count it always had. */}
       {publicMode ? (
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-2">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
           <div className="flex items-center gap-2">
             <FlaskConical className="h-5 w-5 text-[color:var(--color-success-ink)]" />
             <h2 className="text-xl font-bold tracking-tight">Active labs</h2>
@@ -349,7 +352,7 @@ export default function LabCatalogClient({
           long, how long the demo runs — is on the card itself, as progress for
           a lab the learner owns and as a plain meta line for one they do not.
       */}
-      <div className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((lab) => (
           <LearnerLabCard
             key={lab.id}

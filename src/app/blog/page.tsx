@@ -30,7 +30,7 @@ export default async function BlogIndex() {
   const [posts, labs] = await Promise.all([listPublicPosts(), labsWithPosts()]);
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div>
       <JsonLd
         data={{
           "@context": "https://schema.org",

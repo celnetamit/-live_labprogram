@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 import ThemeToggle from "@/components/theme-toggle";
 import LabSearch from "@/components/lab-search";
+import ScrollProgress from "@/components/scroll-progress";
 
 const navLinks = [
   { href: "/labs", label: "Labs" },
@@ -52,50 +53,63 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
         scrolled ? "border-b border-border elev-2" : "border-b border-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <ScrollProgress />
+      {/* The same shell every band below uses, so the logo sits on the page's
+          own left edge rather than 320px inside it on a wide display. */}
+      <div className="shell">
+        <div className="flex h-16 items-center justify-between gap-4">
+          {/*
+            Brand and section links are one group.
+
+            With `justify-between` across four separate children, the slack on
+            a wide display was split three ways and the logo ended up marooned
+            a couple of hundred pixels from its own links. Grouped, the left
+            side reads as one block and the search takes the slack.
+          */}
+          <div className="flex min-w-0 shrink-0 items-center gap-6 lg:gap-10">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
             <div className="viv-btn w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg group-hover:scale-105 transition-transform">
               L
             </div>
-            <span className="font-bold text-lg tracking-tight">Live Labs</span>
+            <span className="whitespace-nowrap text-lg font-bold tracking-tight">Live Labs</span>
           </Link>
 
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden items-center gap-5 md:flex lg:gap-8">
             {navLinks.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 /* `py-1.5` takes the hit box to 24px+ — WCAG 2.2 AA target size.
                    The inline-link exception does not cover site navigation. */
-                className="viv-navlink inline-flex items-center rounded-md px-1 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="viv-navlink inline-flex items-center whitespace-nowrap rounded-md px-1 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 {l.label}
               </Link>
             ))}
           </div>
+          </div>
 
           {/* Desktop search */}
-          <div className="hidden lg:flex items-center flex-1 max-w-xs mx-6">
+          <div className="hidden min-w-0 flex-1 items-center lg:flex lg:max-w-sm xl:max-w-md">
             <LabSearch variant="desktop" />
           </div>
 
           {/* Desktop actions */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden shrink-0 items-center gap-2 md:flex lg:gap-3">
             <ThemeToggle />
             {user ? (
               <>
                 <Link
                   href="/dashboard"
-                  className="text-sm font-medium px-3 py-2 rounded-lg hover:text-primary transition-colors"
+                  className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/dashboard/labs"
-                  className="viv-btn text-sm font-semibold px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
+                  className="viv-btn inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold"
                 >
                   My Labs <ArrowRight className="w-4 h-4" />
                 </Link>
@@ -104,13 +118,13 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
               <>
                 <Link
                   href="/login"
-                  className="text-sm font-medium px-3 py-2 rounded-lg hover:text-primary transition-colors"
+                  className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/register"
-                  className="viv-btn text-sm font-semibold px-4 py-2 rounded-lg inline-flex items-center gap-1.5"
+                  className="viv-btn inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold"
                 >
                   Start learning <ArrowRight className="w-4 h-4" />
                 </Link>
@@ -150,7 +164,7 @@ export default function Navbar({ user = null }: { user?: NavbarUser }) {
             transition={{ duration: 0.25 }}
             className="md:hidden overflow-hidden glass border-b border-border"
           >
-            <div className="px-4 py-4 space-y-1">
+            <div className="shell space-y-1 py-4">
               <div className="mb-3">
                 {/* Closing the menu on navigate stops the panel covering the page
                     the visitor just asked for. */}

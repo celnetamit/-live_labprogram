@@ -1,5 +1,7 @@
 "use client";
 
+import GyroidContours from "@/components/gyroid-contours";
+
 /*
   The hero's atmosphere.
 
@@ -27,6 +29,17 @@ export default function HeroAtmosphere() {
         className="absolute -top-24 right-[-6%] h-[34rem] w-[34rem] rounded-full opacity-[0.16] blur-[120px]"
         style={{ background: "radial-gradient(circle, oklch(0.7 0.13 200), transparent 65%)" }}
       />
+
+      {/*
+        The level-set field, alive.
+
+        Iso-contours of the gyroid field on a plane of constant z, with z
+        sweeping over ninety seconds. Masked away from the middle, because
+        the headline sits there and a moving pattern under type is the
+        fastest way to make a page feel cheap — the motion lives at the
+        edges, where it is caught rather than read.
+      */}
+      <GyroidContours className="[mask-image:radial-gradient(ellipse_58%_54%_at_50%_46%,transparent_30%,#000_88%)]" />
 
       {/* The spectrum itself, as light. */}
       <svg
@@ -75,13 +88,7 @@ export default function HeroAtmosphere() {
       />
 
       {/* A vignette, so the corners sit back and the centre comes forward. */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 100% 85% at 50% 38%, transparent 42%, rgb(0 0 0 / 0.30) 100%)",
-        }}
-      />
+      <div className="hero-vignette absolute inset-0" />
 
       {/* A hairline horizon so the band ends on a line rather than a fade. */}
       <div className="absolute inset-x-0 bottom-0 h-px bg-[color:var(--border)]" />

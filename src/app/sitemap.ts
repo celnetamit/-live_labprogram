@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { LEGAL_PAGES } from "@/content/legal/pages";
+import { EXPLORE_STATUSES } from "@/lib/labStatus";
 import prisma from "@/lib/prisma";
 import { absoluteUrl } from "@/lib/site";
 
@@ -26,9 +27,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: { slug: true, updatedAt: true, coverImage: true },
     }),
     prisma.lab.findMany({
-      where: { enabled: true, slug: { not: null }, blogPosts: { some: { status: "PUBLISHED" } } },
+      where: { enabled: true, slug: { not: null }, status: { in: [...EXPLORE_STATUSES] } },
       select: {
         slug: true,
+        updatedAt: true,
         blogPosts: {
           where: { status: "PUBLISHED" },
           orderBy: { updatedAt: "desc" },
@@ -48,12 +50,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
     { url: absoluteUrl("/labs"), changeFrequency: "weekly", priority: 0.9 },
     { url: absoluteUrl("/blog"), lastModified: newest, changeFrequency: "daily", priority: 0.8 },
+    /*
+      Every laboratory's own page.
+
+      These were missing entirely: the sitemap listed a /blog/lab topic page
+      only for labs that already had an article, which was two of thirteen,
+      and the lab's own content was behind sign-in so there was nothing else
+      to list. /labs/<slug> now publishes the whole guide, so each enabled lab
+      is a real, indexable page and belongs here.
+    */
     ...labs.map((lab) => ({
-      url: absoluteUrl(`/blog/lab/${lab.slug}`),
-      lastModified: lab.blogPosts[0]?.updatedAt,
+      url: absoluteUrl(`/labs/${lab.slug}`),
+      lastModified: lab.updatedAt,
       changeFrequency: "weekly" as const,
-      priority: 0.7,
+      priority: 0.8,
     })),
+    // The topic page is only worth listing once it has an article on it.
+    ...labs
+      .filter((lab) => lab.blogPosts.length > 0)
+      .map((lab) => ({
+        url: absoluteUrl(`/blog/lab/${lab.slug}`),
+        lastModified: lab.blogPosts[0]?.updatedAt,
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      })),
     ...posts.map((post) => ({
       url: absoluteUrl(`/blog/${post.slug}`),
       lastModified: post.updatedAt,

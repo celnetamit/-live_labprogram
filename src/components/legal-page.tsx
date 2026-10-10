@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
-import Navbar from "@/components/navbar";
+import EditorialHeader from "@/components/editorial-header";
+import EditorialFooter from "@/components/editorial-footer";
 import { COMPANY } from "@/content/legal/company";
 import type { LegalDocument } from "@/content/legal/types";
 import { LEGAL_PAGES } from "@/content/legal/pages";
@@ -25,9 +26,9 @@ export default function LegalPage({
 
   return (
     <>
-      <Navbar />
-      <main className="pt-24 pb-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <EditorialHeader />
+      <main className="pt-10 pb-20">
+        <div className="shell"><div className="max-w-3xl">
           <header className="mb-10">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">{doc.title}</h1>
             <p className="mt-3 text-sm text-muted-foreground">
@@ -115,8 +116,9 @@ export default function LegalPage({
               Back to Live Labs
             </Link>
           </p>
-        </div>
+        </div></div>
       </main>
+      <EditorialFooter />
     </>
   );
 }

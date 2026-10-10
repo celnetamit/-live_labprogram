@@ -215,20 +215,25 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
     step's title and goal, so the outline is browsable before you ask for
     access. Everything gated is removed from the object, not merely unrendered.
   */
-  const tutorialGuide =
-    guide && !owned
-      ? {
-          ...guide,
-          steps: guide.steps.map((step) => ({
-            title: step.title,
-            goal: step.goal,
-            minutes: step.minutes,
-            actions: [],
-            expect: "",
-          })),
-          troubleshooting: [],
-        }
-      : guide;
+  /*
+    No redaction any more: the guide is public.
+
+    This used to strip `actions`, `expect` and the whole troubleshooting list
+    out of the object passed to `TutorialSteps` for anyone without access —
+    correctly, at the time, because the client component serialises every prop
+    into the RSC payload whether it renders it or not, so hiding it in the DOM
+    still shipped it in View Source.
+
+    What changed is the policy, not the mechanism. `/labs/<slug>` now publishes
+    the same guide to anyone with no account at all, which is what the home
+    page has always claimed. Redacting it here would mean signing in showed a
+    learner LESS than being signed out did.
+
+    Access still gates the two things it always gated: launching the lab, and
+    recording progress against it — see `locked` below, which now means "cannot
+    record progress" rather than "cannot read".
+  */
+  const tutorialGuide = guide;
 
   const sections: Section[] = guide
     ? [
@@ -241,7 +246,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
         /* A showcase page moves the outcomes out of the overview into a
            panel of their own, after the tutorial. */
         ...(guide.showcase ? [{ id: "outcomes", label: "Learning Outcomes" }] : []),
-        ...(owned && guide.troubleshooting.length
+        ...(guide.troubleshooting.length
           ? [{ id: "troubleshooting", label: "Troubleshooting" }]
           : []),
       ]
@@ -631,7 +636,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
               <PrerequisitesSection guide={guide} />
               <TutorialSteps guide={tutorialGuide!} locked={!owned} serverCompleted={serverCompleted} />
               {showcase && <LearningOutcomesSection guide={guide} />}
-              {owned && <TroubleshootingSection guide={guide} />}
+              <TroubleshootingSection guide={guide} />
               {!owned && (
                 <section id="access" className="panel scroll-mt-32" aria-labelledby="unlock-heading">
                   <div className="relative z-10 p-6 text-center sm:p-8">

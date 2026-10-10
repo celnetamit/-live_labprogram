@@ -35,6 +35,28 @@
 }
 
 :root {
+  /*
+    Shared layout controls: adjust the product's rhythm from one place.
+
+    `--container-max` is a ceiling, not a target. It used to be 80rem and
+    every band on the page was pinned to it, so a 1920px display got 1280px
+    of page and 320px of dead gutter on each side — the header stopped short
+    of the logo's own screen edge, and the hero's two columns were squeezed
+    into two thirds of the window while the sides stayed empty. Below the
+    ceiling the shell is now the width of the window less its gutter, so a
+    wide display is actually used; above it the page stops growing, because
+    past roughly 2100px a full-width line stops being readable.
+
+    Width limits that exist for READING are therefore NOT set here. They sit
+    on the text itself, in `ch`, so the container can be as wide as the
+    display while a paragraph stays at a measure you can follow.
+  */
+  --container-max: 131rem;
+  --page-gutter: clamp(1.125rem, 3.4vw, 4.5rem);
+  --section-space: clamp(3rem, 6vw, 5.5rem);
+  --hero-gap: clamp(1.5rem, 4vw, 4rem);
+  --card-radius: 1.25rem;
+  --header-height: 4rem;
   --background: oklch(0.99 0.003 264);
   --foreground: oklch(0.18 0.02 266);
   --card: oklch(1 0 0);
@@ -2840,6 +2862,45 @@
 
 /*
   ---------------------------------------------------------------------------
+  The page shell
+  ---------------------------------------------------------------------------
+
+  One box for the whole product: the header, every band on the home page, the
+  public catalogue and the footer are all laid out inside it, so their left
+  edges line up down the length of the page instead of stepping in and out as
+  each section picked its own `max-w-*`. The home page alone used to carry
+  three different widths (80rem, 72rem and 64rem) stacked on top of each
+  other, which is visible as a ragged left edge the moment you scroll.
+
+  The width itself comes from `--container-max` / `--page-gutter`, documented
+  where they are declared.
+*/
+/*
+  `.shell` is now the SAME box as `.els-shell`.
+
+  It used to be a 131rem ceiling with the gutter added on top, which put the
+  catalogue's left edge at 54px while the home page's sat at 160 — so moving
+  between them shifted every heading sideways. One geometry for both, and the
+  gutter is a floor rather than an addition for the reason documented on
+  `.els-shell`.
+*/
+.shell {
+  width: min(100% - (var(--els-gutter, clamp(1.25rem, 4vw, 2.5rem)) * 2), 1280px);
+  margin-inline: auto;
+}
+
+/*
+  `.shell-flush` is the same box with no gutter of its own, for a section
+  that paints its own padding (the catalogue page's `main`, which needs the
+  padding on the scrolling element rather than on the grid).
+*/
+.shell-flush {
+  width: min(100%, 1280px);
+  margin-inline: auto;
+}
+
+/*
+  ---------------------------------------------------------------------------
   Bands and tinted panels
   ---------------------------------------------------------------------------
 
@@ -2901,6 +2962,75 @@
   color-scheme: dark;
 }
 
+/* The public light theme keeps the hero bright and editorial while the
+   contained instrument scene remains a dark, high-contrast specimen. */
+.hero-light {
+  --background: oklch(0.975 0.012 255);
+  --foreground: oklch(0.22 0.045 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.045 255);
+  --primary: oklch(0.52 0.19 255);
+  --primary-ink: oklch(0.43 0.17 255);
+  --primary-foreground: oklch(0.99 0 0);
+  --muted: oklch(0.94 0.02 255);
+  --muted-foreground: oklch(0.42 0.045 255);
+  --border: oklch(0.86 0.025 255);
+  --accent: oklch(0.93 0.04 255);
+  --success-ink: oklch(0.46 0.13 158);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-success-ink: var(--success-ink);
+  background:
+    radial-gradient(circle at 12% 24%, oklch(0.93 0.04 250 / 0.8), transparent 29rem),
+    radial-gradient(circle at 86% 16%, oklch(0.95 0.025 205 / 0.7), transparent 30rem),
+    var(--background);
+  color: var(--foreground);
+  color-scheme: light;
+}
+.hero-vignette {
+  background: radial-gradient(ellipse 100% 85% at 50% 38%, transparent 42%, rgb(42 72 126 / 0.07) 100%);
+}
+.dark .hero-vignette,
+.band-ink:not(.hero-light) .hero-vignette {
+  background: radial-gradient(ellipse 100% 85% at 50% 38%, transparent 42%, rgb(0 0 0 / 0.3) 100%);
+}
+.dark .hero-light {
+  --background: oklch(0.17 0.02 258);
+  --foreground: oklch(0.97 0.008 260);
+  --card: oklch(0.22 0.022 258);
+  --card-foreground: oklch(0.97 0.008 260);
+  --primary: oklch(0.72 0.13 250);
+  --primary-ink: oklch(0.78 0.12 250);
+  --primary-foreground: oklch(0.16 0.02 258);
+  --muted: oklch(0.26 0.02 258);
+  --muted-foreground: oklch(0.74 0.02 258);
+  --border: oklch(0.32 0.02 258);
+  --accent: oklch(0.3 0.05 255);
+  --success-ink: oklch(0.78 0.15 158);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-success-ink: var(--success-ink);
+  background: var(--background);
+  color: var(--foreground);
+  color-scheme: dark;
+}
+
 .tint-1 { --tint: oklch(0.955 0.025 250); --tint-ink: oklch(0.38 0.1 250); }
 .tint-2 { --tint: oklch(0.96 0.03 160); --tint-ink: oklch(0.36 0.09 160); }
 .tint-3 { --tint: oklch(0.965 0.035 75);  --tint-ink: oklch(0.4 0.1 60); }
@@ -2912,276 +3042,278 @@
 .tint-surface { background: var(--tint); }
 .tint-eyebrow { color: var(--tint-ink); }
 
+/* Complete lab collection: still previews in a responsive grid, with each
+   card linking to its real lab route. */
 /*
-  The spectrum draws itself.
+  ---------------------------------------------------------------------------
+  The laboratory showcase
+  ---------------------------------------------------------------------------
 
-  `pathLength="1"` normalises the curve so the dash offset animates from one
-  to zero regardless of how long the real path is — no measuring in JS. The
-  fill follows a beat later, so the line arrives first and the area settles
-  under it, which is the order a plotter would produce them in.
-
-  This is the one piece of motion on the page that is about the content
-  rather than about arrival: it shows a result being traced out. It is still
-  decoration, so it does not run for anyone who has asked for less of it.
+  A horizontal scroller rather than a grid, and the cards turn on their
+  vertical axis as they arrive at the middle of it and as they leave — the
+  tilt itself is written from JS in `interactive-lab-gallery.tsx`, which
+  measures where scrolling has put each card. Everything here is the box it
+  turns inside.
 */
-@media (prefers-reduced-motion: no-preference) {
-  /*
-    The curve and its area fill carry no entrance animation.
-
-    Any CSS animation on these two paths leaves them unpainted once the
-    figure sits inside a framer-motion `whileInView` wrapper: the computed
-    style reports a 2.25px blue stroke at full opacity, the paint order puts
-    both paths above the gridlines, and nothing renders. Disabling animation
-    draws both correctly, and so does any change that forces a style recalc,
-    which is the signature of a compositing problem rather than of wrong CSS.
-
-    It may well only affect captured frames rather than real viewing. It is
-    not worth finding out on a chart whose entire purpose is to show measured
-    data: the surrounding card still fades in, and the data inside it is
-    simply always there.
-  */
+.lab-carousel {
+  --lab-card-gap: 1.25rem;
+  --lab-cards: 1.12;
 }
-/*
-  The dash lives in the keyframes, not on the element.
+@media (min-width: 40rem)  { .lab-carousel { --lab-cards: 2.2; } }
+@media (min-width: 64rem)  { .lab-carousel { --lab-cards: 3.2; } }
+@media (min-width: 90rem)  { .lab-carousel { --lab-cards: 4.2; } }
+@media (min-width: 132rem) { .lab-carousel { --lab-cards: 5.2; } }
 
-  With `stroke-dasharray: 1; stroke-dashoffset: 1` set on `.spectrum-line`
-  itself, the curve's resting state was "not drawn" and only the animation
-  made it appear — so anything that stopped the animation running left an
-  empty chart with a lone peak marker floating in it. Keeping the dash
-  inside the keyframes means the resting state is the finished curve, and
-  the animation is purely additive.
-*/
-/*
-  No dash, no draw-on.
-
-  The curve was drawn with stroke-dasharray + a dashoffset sweep, against a
-  path carrying pathLength="1". That has now hidden the data twice: once when
-  the dash sat on the element so a stopped animation left an empty chart, and
-  again here, where any dasharray at all makes Chrome paint nothing on this
-  path while every computed style still reports a 2.25px blue stroke at
-  dashoffset 0 — it survived in the full-width hero and vanished the moment
-  the same figure was rendered into a narrower column.
-
-  A decorative reveal is not worth a chart that intermittently shows no data,
-  so the line simply fades in. The resting state is now the finished curve
-  with no dash involved anywhere.
-*/
-@keyframes spectrum-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/*
-  The lab strip (`components/lab-marquee.tsx`).
-
-  Thirteen covers running horizontally, the list rendered twice and the track
-  translated by exactly -50% so the second copy arrives where the first began.
-
-  That exactness is why there is no `gap` here. With `gap`, 26 tiles have 25
-  gaps, so half the track width is 13 tiles plus 12.5 gaps — half a gap short
-  of one copy, and the loop jumps by that much every time it resets. Giving
-  each tile its own `margin-inline-end` makes the track 26 x (tile + margin),
-  whose half is exactly 13 of them. Keep it that way: reintroducing `gap`
-  reintroduces the stutter.
-
-  The motion is a CSS transform on one element, which the compositor runs
-  without waking JavaScript; pausing on hover is then one property rather
-  than a piece of React state.
-*/
-.lab-strip {
-  position: relative;
-  /* Clips the track to the page container, so the row ends where every other
-     section ends instead of running off the viewport. */
-  overflow: hidden;
-  /* The clip is at the padding box and each tile throws a shadow below
-     itself, which a tight edge would cut off. The negative margin hands that
-     room back, so the padding costs no layout. */
-  padding-block: 14px;
-  margin-block: -14px;
-  /* Fades both ends, so tiles enter and leave rather than being chopped
-     against a hard edge: the row reads as continuing past the frame. The
-     ramp has to be wider than it looks necessary — at 6% the entering tile
-     was still sharp enough to read its name, which looks like a clipping
-     fault rather than a tile on its way in. */
-  mask-image: linear-gradient(to right, transparent, #000 11%, #000 89%, transparent);
-}
-.lab-strip-track {
+.lab-carousel-bar {
   display: flex;
-  width: max-content;
-  animation: lab-strip-roll var(--roll, 72s) linear infinite;
-  --tile: clamp(188px, 21vw, 264px);
-  --sep: clamp(12px, 1.4vw, 20px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
-/* Hover only. Nothing inside the strip is focusable any more, so
-   `:focus-within` could never fire — holding the row still so a name can be
-   read is still worth doing on hover. */
-.lab-strip:hover .lab-strip-track {
-  animation-play-state: paused;
+.lab-carousel-count {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: .6rem;
+  font-size: .8rem;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
 }
-@keyframes lab-strip-roll {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
+.lab-carousel-index { flex: 0 0 auto; white-space: nowrap; }
+.lab-carousel-index strong { font-weight: 700; color: var(--primary-ink); }
+.lab-carousel-sep { flex: 0 0 auto; width: 1px; height: .9rem; background: var(--border); }
+.lab-carousel-now {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.lab-carousel-nav { display: flex; flex: 0 0 auto; gap: .5rem; }
+.lab-carousel-nav button {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--foreground);
+  transition: background .18s ease, border-color .18s ease, opacity .18s ease;
+}
+.lab-carousel-nav button:hover:not(:disabled) { border-color: var(--primary); background: var(--accent); }
+.lab-carousel-nav button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.lab-carousel-nav button:disabled { cursor: default; opacity: .4; }
+.lab-carousel-nav svg { width: 1.1rem; height: 1.1rem; }
+
+.lab-carousel-viewport {
+  /* Breaks the shell's gutter so a card can travel off the edge of the page
+     and come back, then restores it as padding so the first and last card
+     still line up with the heading above them. */
+  margin-inline: calc(-1 * var(--page-gutter));
+  padding-block: 2.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline-start: var(--page-gutter);
+  scrollbar-width: none;
+  /* The turn is only convincing if a card can leave. Without the fade the
+     rotated card is sliced off by the scroll container's edge. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
+.lab-carousel-viewport::-webkit-scrollbar { display: none; }
+
+.lab-carousel-track {
+  display: flex;
+  margin: 0;
+  padding: 0 var(--page-gutter);
+  gap: var(--lab-card-gap);
+  list-style: none;
+}
+.lab-carousel-slot {
+  flex: 0 0 calc((100% - (var(--lab-cards) - 1) * var(--lab-card-gap)) / var(--lab-cards));
+  min-width: 0;
+  scroll-snap-align: start;
+  transform-style: preserve-3d;
+  /* Short, because it has to keep up with a finger. The transform itself is
+     set per frame from the scroll position; this only smooths the step the
+     previous/next buttons take. */
+  transition: transform .18s ease-out, opacity .18s ease-out;
+  will-change: transform, opacity;
 }
 
-.lab-strip-tile {
-  position: relative;
-  flex: 0 0 auto;
-  width: var(--tile);
-  margin-inline-end: var(--sep);
-  aspect-ratio: 4 / 3;
+.lab-showcase-card {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
   overflow: hidden;
-  border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
-  background: var(--muted);
-  box-shadow: 0 10px 24px -18px rgb(0 0 0 / 0.55);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius, 1.25rem);
+  background: var(--card);
+  color: var(--card-foreground);
+  box-shadow: 0 1px 2px rgb(16 32 64 / .04);
+  transition: border-color .18s ease, box-shadow .18s ease;
 }
-/* No hover state. The tiles are presentational — they lifted and took the
-   primary border back when they were links, and leaving that on something
-   inert is a promise of a click that never comes. */
-/* The name has to stay legible over thirteen different photographs, none of
-   which can be lightened, so it sits on its own gradient rather than
-   trusting the picture underneath it. */
-.lab-strip-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgb(0 0 0 / 0.82) 0%, rgb(0 0 0 / 0.45) 38%, rgb(0 0 0 / 0.04) 72%);
+.lab-carousel-slot.is-active .lab-showcase-card {
+  border-color: color-mix(in oklch, var(--primary) 45%, var(--border));
+  box-shadow: 0 18px 38px rgb(22 44 86 / .13);
 }
-.lab-strip-meta {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  display: block;
-  padding: 12px 14px 13px;
+.lab-showcase-copy {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .4rem;
+  padding: 1rem 1.1rem 1.1rem;
 }
-.lab-strip-subject {
-  display: block;
-  font-size: 10px;
+.lab-showcase-subject {
+  font-size: .68rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: .12em;
   text-transform: uppercase;
-  color: rgb(255 255 255 / 0.76);
+  color: var(--primary-ink);
 }
-/* Two lines, because the longest name in the table is "Live-Lab Learning:
-   AI Program Navigator" and a third line would ride up over the picture. */
-.lab-strip-name {
+.lab-showcase-title {
+  /* Two lines for every card, whatever the name's length, so a row of cards
+     is a row and not a staircase. */
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  min-height: 2.9em;
   overflow: hidden;
-  margin-top: 3px;
-  font-size: 14px;
+  margin: 0;
+  font-size: 1rem;
   font-weight: 650;
-  line-height: 1.25;
-  color: #fff;
-  text-wrap: balance;
+  line-height: 1.45;
+  letter-spacing: -.01em;
 }
+.lab-showcase-link {
+  color: inherit;
+  text-decoration: none;
+}
+/* The card's click target, over the copy only — the preview above it has to
+   stay draggable. */
+.lab-showcase-link::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+.lab-showcase-link:focus-visible { outline: none; }
+.lab-showcase-link:focus-visible::after {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+  border-radius: .5rem;
+}
+.lab-showcase-card:has(.lab-showcase-link:hover) {
+  border-color: color-mix(in oklch, var(--primary) 55%, var(--border));
+  box-shadow: 0 16px 34px rgb(22 44 86 / .16);
+}
+.lab-showcase-card:has(.lab-showcase-link:hover) .lab-showcase-action svg { transform: translateX(.2rem); }
+.lab-showcase-action {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin-top: auto;
+  padding: .3rem .1rem;
+  font-size: .85rem;
+  font-weight: 650;
+  color: var(--primary-ink);
+  text-decoration: none;
+}
+.lab-showcase-action svg { width: 1rem; height: 1rem; transition: transform .18s ease; }
 
-/*
-  A strip that rolls for seventy-two seconds is the clearest case there is for
-  honouring this. It stops, and the row becomes an ordinary scrollable one so
-  every lab stays reachable by swipe, wheel and keyboard.
-*/
+.lab-3d-preview {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(145deg, #0b213a, #122f4a 55%, #1b2758);
+  /*
+    `touch-action: none` here used to make every preview a dead spot for
+    touch: you could not swipe the row past a card or scroll the page from
+    one. Panning stays with the browser, and rotation is a mouse and pen
+    gesture — see the pointerType check in `lab-3d-preview.tsx`.
+  */
+  touch-action: pan-x pan-y;
+}
+/* Only the card in the middle of the carousel takes the gesture. */
+.lab-3d-preview.is-live { cursor: grab; }
+.lab-3d-preview.is-live:active, .lab-3d-preview.is-interacting { cursor: grabbing; }
+.lab-3d-fallback, .lab-3d-canvas, .lab-3d-grid { position: absolute; inset: 0; width: 100%; height: 100%; }
+.lab-3d-fallback { z-index: -2; opacity: .16; filter: saturate(.8) contrast(1.05); }
+.lab-3d-canvas { z-index: 1; display: block; }
+.lab-3d-grid {
+  z-index: 2;
+  pointer-events: none;
+  opacity: .25;
+  background-image: linear-gradient(rgba(169, 216, 255, .12) 1px, transparent 1px), linear-gradient(90deg, rgba(169, 216, 255, .12) 1px, transparent 1px);
+  background-size: 2.2rem 2.2rem;
+  mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+}
+.lab-3d-preview::after {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 3;
+  height: 45%;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(to top, rgba(3, 13, 27, .55), transparent);
+}
+.lab-3d-reset {
+  position: absolute;
+  top: .7rem;
+  right: .7rem;
+  z-index: 4;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgba(181, 223, 255, .28);
+  border-radius: .65rem;
+  color: #d8edff;
+  background: rgba(8, 25, 45, .65);
+  cursor: pointer;
+  transition: background .18s ease, transform .18s ease;
+}
+.lab-3d-reset:hover { background: rgba(41, 103, 163, .72); transform: rotate(-12deg); }
+.lab-3d-reset svg { width: .9rem; height: .9rem; }
+@media (hover: none) {
+  .lab-3d-hint, .lab-3d-reset { display: none; }
+}
+.lab-3d-hint {
+  position: absolute;
+  right: .75rem;
+  bottom: .7rem;
+  z-index: 4;
+  color: rgba(221, 241, 255, .72);
+  font-size: .68rem;
+  letter-spacing: .04em;
+  pointer-events: none;
+}
+.lab-collection-copy { max-width: 84ch; }
+.lab-collection-copy p {
+  margin-top: 1rem;
+  color: var(--muted-foreground);
+  font-size: clamp(1rem, .95rem + .25vw, 1.125rem);
+  line-height: 1.75;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
 @media (prefers-reduced-motion: reduce) {
-  .lab-strip {
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-  }
-  .lab-strip-track {
-    animation: none;
-  }
-  .lab-strip-tile {
-    scroll-snap-align: start;
-  }
-}
-
-/*
-  The acoustic band on one screen (`.band-fit`, page.tsx).
-
-  The band carries a heading, two paragraphs, a 192-pillar chart and the
-  thirteen-lab strip. At their natural sizes those total 1028px, which is a
-  scroll-and-a-bit on a laptop and nearly two screens on a short window. Every
-  size below is therefore expressed against viewport height, so the band
-  shrinks continuously to fit rather than snapping at breakpoints.
-
-  Why no @media (max-height: …) tiers: two height blocks have equal
-  specificity, so the one written last wins at every height they both match,
-  which is not what a tier is. `clamp()` against `vh` has no such ordering
-  problem, and it degrades smoothly between the sizes rather than jumping.
-
-  The floors are the point of each clamp — below them the element stops being
-  worth showing, and a scroll is the better outcome.
-
-  Content sits at the top of the band, not centred. Centring split the slack
-  evenly above and below, which pushed the heading down the screen and left a
-  matching dead band under the catalogue button; starting at the top spends
-  that slack on the type and the chart instead.
-
-  The 65px is the site header, which is `position: fixed` and so takes no
-  space in flow. Top-aligning without allowing for it put "Acoustic
-  Metamaterials" underneath the nav bar. If the header's height changes, this
-  changes with it.
-*/
-.band-fit {
-  padding-top: calc(65px + clamp(0.5rem, 1.6vh, 2.5rem));
-  padding-bottom: clamp(0.75rem, 2vh, 3rem);
-}
-.band-fit .band-fit-grid {
-  gap: clamp(0.75rem, 2.8vh, 3.5rem);
-}
-.band-fit .band-fit-title {
-  font-size: clamp(1.75rem, 6.4vh, 3.5rem);
-}
-.band-fit .band-fit-sub {
-  margin-top: clamp(0.25rem, 1vh, 0.75rem);
-  font-size: clamp(0.95rem, 3.1vh, 1.6rem);
-}
-.band-fit .band-fit-prose {
-  margin-top: clamp(0.5rem, 1.6vh, 1.25rem);
-  font-size: clamp(0.8125rem, 2.4vh, 1rem);
-  line-height: 1.5;
-}
-/*
-  The chart sets its own legibility floor: `absorption-array.tsx` keeps a
-  640px minimum width because at 358px its 11px axis labels land at about 4px.
-  Capping height with `width: auto` keeps that ratio — the chart gets smaller,
-  never squashed — and `min-width: 0` lets it go under the 640 floor only when
-  the window is too short to afford it, which is the trade this band makes to
-  stay on one screen.
-*/
-/*
-  Only on a wide screen. On a phone the scarce axis is width, not height, and
-  `absorption-array.tsx` already has the right answer there: keep the 640px
-  minimum and pan. Relaxing that floor on mobile too dropped the labels to
-  4.1px, which is the exact failure its comment warns about, in the one case
-  where nothing was gained for it.
-*/
-@media (min-width: 1024px) {
-  .band-fit .band-fit-chart svg {
-    max-height: clamp(11rem, 42vh, 30rem);
-    width: auto;
-    min-width: 0;
-    /* Flush right, so the chart's right edge meets its own caption's and the
-       band's right margin. Centred, it floated between the two with unequal
-       air on either side while the text column was hard left. */
-    margin-inline-start: auto;
-    margin-inline-end: 0;
-  }
-}
-.band-fit .band-fit-strip {
-  margin-top: clamp(0.75rem, 2.6vh, 5rem);
-}
-.band-fit .band-fit-cta {
-  margin-top: clamp(0.625rem, 2vh, 2rem);
-  padding-block: clamp(0.4rem, 1.1vh, 0.75rem);
-}
-/*
-  Tile size follows the shorter constraint. Width alone would keep 264px tiles
-  on a wide-but-short window, which is exactly the case that overflows; height
-  alone would shrink them to 82px on a phone, where there is height to spare
-  and width is what is scarce.
-*/
-.band-fit .lab-strip-track {
-  --tile: clamp(148px, min(42vw, 26vh), 280px);
+  /* No turn, no travel: the scroller stays a plain row of upright cards and
+     the JS leaves `transform` alone (see `settle()`). */
+  .lab-carousel-slot,
+  .lab-showcase-card,
+  .lab-showcase-action svg,
+  .lab-carousel-nav button { transition: none; }
+  .lab-carousel-viewport { scroll-behavior: auto; }
 }
 
 /* ============================================================
@@ -3232,6 +3364,14 @@
   2.62:1. Restated, not inherited.
 */
 .band-ink {
+  --viv-a: oklch(0.72 0.15 255);
+  --viv-b: oklch(0.7 0.18 305);
+}
+.hero-light {
+  --viv-a: oklch(0.52 0.18 258);
+  --viv-b: oklch(0.48 0.2 302);
+}
+.dark .hero-light {
   --viv-a: oklch(0.72 0.15 255);
   --viv-b: oklch(0.7 0.18 305);
 }
@@ -3464,3 +3604,1081 @@
     transform: scaleX(1);
   }
 }
+
+/*
+  Section seams.
+
+  A 1px `--border` line between sections is correct and invisible. These
+  replace it at the few places the page changes register — into "how it
+  works", into the access terms, into the footer — with the same two-hue
+  hairline the highlight uses, fading out at both ends so it reads as a seam
+  rather than a rule drawn edge to edge.
+
+  Done with `::before` rather than `border-image`, which cannot be dashed,
+  rounded or faded reliably across browsers.
+*/
+.viv-seam {
+  position: relative;
+}
+.viv-seam::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -1px;
+  height: 1px;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--viv-a) 55%, transparent) 18%,
+    color-mix(in oklch, var(--viv-b) 55%, transparent) 82%,
+    transparent
+  );
+}
+
+/*
+  The hero band.
+
+  Height is capped rather than tied to the viewport: see the note on the
+  section in `src/app/page.tsx`. `min()` keeps it full-height on a laptop
+  and stops it stretching to 1080px of mostly air on a tall display.
+*/
+.hero-band {
+  min-height: min(100svh, 54rem);
+}
+
+/*
+  The hero's own grid gap, which has to carry a two-column layout at 1920px
+  and a stacked one at 320px, so it is a clamp rather than a fixed step.
+*/
+@media (min-width: 64rem) {
+  .hero-grid {
+    column-gap: clamp(2rem, 3.6vw, 4.5rem);
+  }
+}
+
+/*
+  Interactive hero laboratory: lightweight SVG scene, no model download.
+
+  The block is sized from the drawing rather than from the column. The art is
+  900x560; its height is the clamp below, and the width follows from the ratio
+  and is then capped at the column, so the panel, its hotspots and its caption
+  are one block of one width. Before this, `min-height` on a column that had
+  become 950px wide left a 510px drawing adrift in the middle of it with a
+  946px caption bar underneath.
+
+  The ceiling of 32rem was set when the column was 572px wide. In the full
+  shell it is closer to 950px, and a 512px-tall scene left the band half empty
+  beside a 600px-tall headline block.
+*/
+.lab-scene {
+  --scene-art-h: clamp(17rem, 30vw, 34rem);
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--scene-art-h) * 900 / 560);
+  margin-inline: auto;
+  isolation: isolate;
+  perspective: 1100px;
+}
+.lab-scene-grid {
+  position: absolute;
+  inset: 0 0 18%;
+  opacity: .28;
+  background-image: linear-gradient(rgba(121, 190, 231, .12) 1px, transparent 1px), linear-gradient(90deg, rgba(121, 190, 231, .12) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 76%);
+  z-index: -2;
+}
+.lab-scene-glow { position: absolute; border-radius: 999px; filter: blur(58px); pointer-events: none; z-index: -1; }
+.lab-scene-glow-a { width: 15rem; height: 15rem; right: 4%; top: 14%; background: rgba(85, 164, 255, .18); }
+.lab-scene-glow-b { width: 13rem; height: 13rem; left: 20%; bottom: 5%; background: rgba(176, 105, 255, .13); }
+/* In flow, and carrying the art's own aspect ratio, so the hotspots and the
+   hint below are positioned against the drawing and not against the column. */
+.lab-scene-stage { position: relative; aspect-ratio: 900 / 560; transform-style: preserve-3d; transition: transform .25s ease-out; will-change: transform; }
+.lab-scene-art { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 24px 32px rgba(0, 0, 0, .34)); }
+/* `fill-box` so the float turns the molecule about itself. With the default
+   `view-box` the origin is a point near the top-left corner of the whole
+   drawing and a 2deg rotation swings the molecule across the bench. */
+.scene-molecule { animation: molecule-float 7s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+/* `translate(-50%, -50%)` so left/top below are the CENTRE of the marker, and
+   the figures are read straight off the drawing: the microscope's objective is
+   at (229, 283) of 900x560, the display at (719, 130), the molecule at
+   (680, 305). Any scale on hover has to restate the translate, since the two
+   share one property. */
+.lab-hotspot { position: absolute; width: 2.1rem; height: 2.1rem; display: grid; place-items: center; border: 1px solid rgba(138, 216, 255, .8); border-radius: 999px; background: rgba(38, 123, 188, .24); box-shadow: 0 0 0 7px rgba(71, 170, 237, .08), 0 0 22px rgba(94, 199, 255, .45); cursor: pointer; transform: translate(-50%, -50%); transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
+.lab-hotspot span { display: block; width: .45rem; height: .45rem; border-radius: 999px; background: #b9edff; box-shadow: 0 0 12px #7bd9ff; }
+.lab-hotspot:hover, .lab-hotspot:focus-visible, .lab-hotspot.is-active { transform: translate(-50%, -50%) scale(1.18); background: rgba(151, 102, 255, .42); box-shadow: 0 0 0 9px rgba(178, 113, 255, .1), 0 0 28px rgba(177, 115, 255, .7); }
+.lab-hotspot:focus-visible { outline: 2px solid #8fd2ff; outline-offset: 3px; }
+.lab-hotspot-experiments { left: 25.4%; top: 50.5%; }
+.lab-hotspot-data { left: 79.9%; top: 23.2%; }
+.lab-hotspot-science { left: 75.6%; top: 54.5%; }
+/* In flow under the stage, lifted so it still overlaps the foot of the panel
+   the way it did when it was absolutely placed. */
+.lab-scene-caption { position: relative; z-index: 1; margin: -2.5rem 4% 0; overflow: hidden; border-radius: 1rem; background: rgba(9, 20, 34, .76); border-color: rgba(146, 202, 240, .24); box-shadow: 0 20px 40px rgba(0, 0, 0, .24); }
+.lab-instrument-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .25rem; padding: .25rem; border-bottom: 1px solid rgba(146, 202, 240, .2); }
+.lab-instrument-tabs button { display: inline-flex; min-width: 0; min-height: 2.5rem; align-items: center; justify-content: center; gap: .4rem; overflow-wrap: anywhere; border: 1px solid transparent; border-radius: .6rem; background: transparent; color: #aec0d9; font-size: .72rem; font-weight: 600; }
+.lab-instrument-tabs button:hover { background: rgba(114, 161, 231, .14); color: #eff5ff; }
+.lab-instrument-tabs button:focus-visible { background: rgba(114, 161, 231, .14); color: #eff5ff; outline: 2px solid #8fd2ff; outline-offset: 2px; }
+.lab-instrument-tabs button[aria-selected="true"] { border-color: rgba(145, 182, 255, .45); background: rgba(94, 132, 218, .22); color: #b9d0ff; }
+.lab-instrument-tabs svg { width: .95rem; height: .95rem; flex: 0 0 auto; }
+.lab-instrument-details { padding: .75rem 1rem .85rem; min-height: 6rem; }
+.lab-caption-icon { display: grid; width: 2rem; height: 2rem; flex: 0 0 auto; place-items: center; border-radius: .65rem; background: linear-gradient(135deg, #397fda, #9a57d9); color: white; }
+.lab-caption-icon svg { width: 1rem; height: 1rem; }
+.lab-caption-link { display: grid; flex: 0 0 auto; width: 2rem; height: 2rem; place-items: center; margin-left: auto; border-radius: 999px; color: #bfeeff; transition: background .2s ease, color .2s ease; }
+.lab-caption-link:hover { background: rgba(114, 208, 255, .14); color: white; }
+.lab-caption-link:focus-visible { background: rgba(114, 208, 255, .14); color: white; outline: 2px solid #8fd2ff; outline-offset: 2px; }
+.lab-caption-link svg { width: 1rem; height: 1rem; }
+.lab-scene-hint { position: absolute; right: 2%; top: -1.9rem; display: inline-flex; align-items: center; gap: .4rem; color: rgba(178, 209, 233, .7); font-size: .68rem; letter-spacing: .05em; }
+.lab-scene-hint svg { width: .85rem; height: .85rem; color: #86d9ff; }
+/*
+  The light treatment of the caption, the tabs and the hint is scoped to the
+  light theme.
+
+  `.hero-light` is on the hero section in BOTH themes — `.dark .hero-light`
+  restates the dark tokens so the band goes dark with the rest of the page —
+  but these rules were not guarded, so in dark mode the band went dark and the
+  caption under the instrument panel stayed a white card.
+*/
+html:not(.dark) .hero-light .lab-scene-caption { background: rgba(255, 255, 255, .96); border-color: rgba(166, 185, 216, .7); box-shadow: 0 18px 34px rgba(52, 79, 125, .12); }
+html:not(.dark) .hero-light .lab-instrument-tabs { border-bottom-color: rgba(166, 185, 216, .55); }
+html:not(.dark) .hero-light .lab-instrument-tabs button { color: #526987; }
+html:not(.dark) .hero-light .lab-instrument-tabs button:hover, html:not(.dark) .hero-light .lab-instrument-tabs button:focus-visible { background: #f0f4ff; color: #1b3562; }
+html:not(.dark) .hero-light .lab-instrument-tabs button[aria-selected="true"] { border-color: #c6d5f4; background: #e7efff; color: #2858c3; }
+html:not(.dark) .hero-light .lab-instrument-details { color: #172b4c; }
+html:not(.dark) .hero-light .lab-scene-caption .text-white { color: #192b4a; }
+html:not(.dark) .hero-light .lab-scene-caption .text-slate-300 { color: #536987; }
+html:not(.dark) .hero-light .lab-scene-caption .text-cyan-200\/70 { color: #275dd0; }
+html:not(.dark) .hero-light .lab-caption-link { color: #315fd1; }
+html:not(.dark) .hero-light .lab-caption-link:hover, html:not(.dark) .hero-light .lab-caption-link:focus-visible { color: #5537b8; background: #e9efff; }
+html:not(.dark) .hero-light .lab-instrument-tabs button:focus-visible, html:not(.dark) .hero-light .lab-caption-link:focus-visible, html:not(.dark) .hero-light .lab-hotspot:focus-visible { outline-color: #2858c3; }
+html:not(.dark) .hero-light .lab-scene-hint { color: #607493; }
+html:not(.dark) .hero-light .lab-scene-hint svg { color: #315fd1; }
+@keyframes molecule-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(2deg); } }
+/* Stacked under the headline: the width is whatever the column gives, up to a
+   measure that keeps the drawing from dominating the screen, and the stage's
+   aspect ratio takes care of the height. */
+@media (max-width: 1023px) { .lab-scene { max-width: min(44rem, 100%); } }
+/* The hint asks you to move a pointer across the bench, so it is for a
+   pointer. On a phone it was also landing under the floating support button
+   and being clipped by it. */
+@media (max-width: 1023px) { .lab-scene-hint { display: none; } }
+@media (max-width: 560px) { .lab-scene-caption { margin-inline: 0; } .lab-hotspot { width: 1.8rem; height: 1.8rem; } }
+@media (prefers-reduced-motion: reduce) { .lab-scene-stage, .scene-molecule { transition: none; animation: none; } }
+
+/* ============================================================
+   EDITORIAL — the home page, rebuilt to the reference design
+   ============================================================
+
+   Every value below was measured off the reference site rather than
+   guessed, so the numbers are odd on purpose:
+
+     ink            rgb(20 20 21)      body text, the dark bands
+     blue           rgb(35 84 255)     the one action colour
+     orange         rgb(255 85 29)     the feature banner
+     cream          rgb(247 246 242)   the warm off-white band
+     container      1280px             content is 1280 at 1600 wide
+     display        48px / 58.656px / -1.44px, weight 400, serif
+     section head   40px / 50px / -1.2px, weight 400, serif
+     card head      20px / 25.6px / -0.4px, medium, sans
+     body           14px / 21px / -0.28px, sans
+     lead           20px / 30px / -0.4px, sans
+     pill button    radius 24px, padding 12px 16px
+     circle button  28px, radius 100%, 1px border
+     cards          radius 0 — square corners throughout
+
+   Two things are deliberately NOT copied: the reference's wordmark and its
+   photography. The marks stay Live Labs' own and every photograph here is
+   a frame from one of this platform's own laboratories, in `public/demos/`.
+
+   Everything is namespaced `.els-` and nothing here is used outside the
+   home page and the site header, so the catalogue, the blog and the legal
+   pages keep the system above untouched.
+*/
+.els {
+  --els-ink: #141415;
+  --els-blue: #2354ff;
+  --els-blue-deep: #1b41c9;
+  --els-orange: #ff551d;
+  --els-cream: #f7f6f2;
+  --els-line: rgb(20 20 21 / 0.16);
+  --els-line-soft: rgb(20 20 21 / 0.09);
+  --els-dim: rgb(20 20 21 / 0.64);
+  --els-max: 1280px;
+  --els-gutter: clamp(1.25rem, 4vw, 2.5rem);
+
+  background: #fff;
+  color: var(--els-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  letter-spacing: -0.02em;
+}
+
+/* The reference is a light design and has no dark mode. Rather than invent
+   one, the page pins its own colour scheme so the site's dark theme cannot
+   half-apply to it and leave white cards on a dark page. */
+.els { color-scheme: light; }
+
+/*
+  The gutter is a floor, not an addition.
+
+  `max-width` plus `padding-inline` meant that once the window was wider than
+  the container the content got BOTH — centred at 1280 and then pushed a
+  further 40px in, so the hero headline started at 200px where the reference
+  starts at 160 and the page looked inset from its own header.
+
+  Sized by `width` instead, the gutter only applies while the window is
+  narrower than the container: at 1600 the box is exactly 1280 centred (left
+  edge 160, the reference's number) and at 375 it is the window less 2x20px.
+*/
+.els-shell {
+  width: min(100% - (var(--els-gutter) * 2), var(--els-max));
+  margin-inline: auto;
+}
+
+/* --- type ------------------------------------------------------------- */
+.els-display,
+.els-h2,
+.els-h3-serif {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+.els-display { font-size: clamp(2rem, 1.1rem + 2.8vw, 3rem); line-height: 1.22; }
+.els-h2 { font-size: clamp(1.75rem, 1.1rem + 2.1vw, 2.5rem); line-height: 1.25; }
+.els-h3-serif { font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2rem); line-height: 1.26; }
+.els-display em, .els-h2 em, .els-h3-serif em { font-style: italic; }
+
+.els-lead {
+  font-size: clamp(1rem, 0.93rem + 0.3vw, 1.25rem);
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+.els-card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+}
+.els-body { font-size: 0.875rem; line-height: 1.5; letter-spacing: -0.02em; }
+.els-meta {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* --- actions ---------------------------------------------------------- */
+.els-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: 24px;
+  background: var(--els-blue);
+  color: #fff;
+  font-size: 0.875rem;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+.els-pill:hover { background: var(--els-blue-deep); }
+.els-pill svg { width: 1rem; height: 1rem; flex: 0 0 auto; }
+
+.els-pill-ghost {
+  background: transparent;
+  border-color: currentColor;
+  color: var(--els-ink);
+}
+.els-pill-ghost:hover { background: var(--els-ink); color: #fff; }
+
+/* On a photograph, where a hairline would disappear. */
+.els-pill-glass {
+  background: rgb(255 255 255 / 0.16);
+  border-color: rgb(255 255 255 / 0.5);
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+.els-pill-glass:hover { background: #fff; color: var(--els-ink); }
+
+/* The reference's recurring affordance: a 28px ring with an arrow in it,
+   sitting at the foot of a card rather than a worded link. */
+.els-circle {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--els-blue);
+  border-radius: 100%;
+  color: var(--els-blue);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.els-circle svg { width: 0.85rem; height: 0.85rem; }
+.els-card:hover .els-circle,
+a:hover > .els-circle { background: var(--els-blue); color: #fff; }
+
+.els-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--els-blue);
+  text-decoration: none;
+}
+.els-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.els-link svg { width: 0.9rem; height: 0.9rem; }
+
+:where(.els) a:focus-visible,
+:where(.els) button:focus-visible {
+  outline: 2px solid var(--els-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* --- cards and bands --------------------------------------------------- */
+/* Square corners and a hairline. No shadow anywhere in the reference. */
+.els-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.75rem 1.5rem 2rem;
+  border: 1px solid var(--els-line-soft);
+  background: #fff;
+  transition: border-color 0.18s ease;
+}
+.els-card:hover { border-color: var(--els-line); }
+/* Only the arrow is pushed to the foot. Matching `:last-child` instead sent
+   the body paragraph down there too, leaving a hole under every title. */
+.els-card > .els-circle { margin-top: auto; }
+
+/*
+  The vertical rhythm, measured off the reference at 1600 wide.
+
+  Measured from the CARD'S BORDER BOX, which is the edge you actually see.
+  A first pass took these off the card's inner text wrapper instead, which
+  sits inside ~37px of the card's own padding, and every figure came out
+  inflated — section-to-section read as 196px when the real gap is 112.
+
+    block of content -> next heading   112px   (56 top + 56 bottom)
+    heading          -> its content     40px
+    quick-link strip -> first content   52px
+    grid gap                            20px
+
+  These are the measurements, not approximations of them. If they need to
+  move, re-measure against bordered boxes rather than nudging.
+*/
+.els-band { padding-block: clamp(2.25rem, 3.5vw, 3.5rem); }
+.els-band-cream { background: var(--els-cream); }
+/* The strip sits closer to the first row than a section join does: 52px. */
+.els-band-lead { padding-top: clamp(2rem, 3.25vw, 3.25rem); }
+.els-band-ink { background: var(--els-ink); color: #fff; }
+.els-band-ink .els-body,
+.els-band-ink .els-lead { color: rgb(255 255 255 / 0.74); }
+.els-band-ink .els-card {
+  border-color: rgb(255 255 255 / 0.18);
+  background: transparent;
+  color: #fff;
+}
+.els-band-ink .els-circle { border-color: #fff; color: #fff; }
+.els-band-ink .els-card:hover .els-circle { background: #fff; color: var(--els-ink); }
+
+.els-band-head { margin-bottom: clamp(1.25rem, 2.5vw, 2.5rem); }
+.els-band-head .els-lead { margin-top: 1rem; max-width: 62ch; color: var(--els-dim); }
+
+.els-grid { display: grid; gap: 1.25rem; }
+.els-grid-2 { grid-template-columns: minmax(0, 1fr); }
+.els-grid-3 { grid-template-columns: minmax(0, 1fr); }
+.els-grid-4 { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 40rem) {
+  .els-grid-3, .els-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .els-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 64rem) {
+  .els-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .els-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* --- header ------------------------------------------------------------ */
+.els-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #fff;
+  border-bottom: 1px solid var(--els-line-soft);
+  color: var(--els-ink);
+}
+/*
+  The header runs the width of the window, not the 1280 content box.
+
+  The reference puts its wordmark about 25px from the left edge and its
+  account icon about 75px from the right, while every section below it stays
+  in the centred container — so the bar is deliberately wider than the page.
+  Boxed in `.els-shell` ours started the logo 195px in and left the row
+  looking indented against the same reference.
+*/
+.els-header-bar {
+  width: 100%;
+  padding-inline: clamp(1rem, 1.9vw, 2.25rem);
+}
+.els-header-row {
+  display: flex;
+  height: 78px;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2rem);
+}
+/* `margin-left: auto` on the links, and the actions directly after them, puts
+   the whole cluster on the right with the wordmark alone on the left — the
+   reference's arrangement. `space-between` spread all three evenly instead. */
+.els-nav { margin-left: auto; margin-right: clamp(0.5rem, 1vw, 1rem); }
+.els-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--els-ink);
+  text-decoration: none;
+}
+.els-wordmark-mark {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 100%;
+  background: var(--els-orange);
+  color: #fff;
+  font-family: var(--font-serif), serif;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.els-wordmark-text {
+  font-family: var(--font-serif), serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+  color: var(--els-orange);
+  white-space: nowrap;
+}
+/*
+  The reference sets 24px between its links, but it has seven of them spread
+  across 560px. With four short words the same 24px reads as one clumped
+  block hard against the pill, so this opens to 34px and adds a margin before
+  the actions — the row is doing the same job with less text in it.
+*/
+.els-nav { display: none; align-items: center; gap: clamp(1.25rem, 2.1vw, 2.125rem); }
+@media (min-width: 64rem) { .els-nav { display: flex; } }
+.els-nav a {
+  color: var(--els-ink);
+  font-size: 0.875rem;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.els-nav a:hover { color: var(--els-blue); }
+.els-header-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 0.75rem; margin-left: 0; }
+/* Without `.els-nav` in the row (below 64rem) the actions take the push. */
+@media (max-width: 63.99rem) { .els-header-actions { margin-left: auto; } }
+
+/*
+  The menu button is hidden from 64rem by its own rule, not by Tailwind's
+  `lg:hidden`. `.els-icon-btn { display: grid }` is unlayered plain CSS and
+  unlayered rules outrank everything Tailwind emits in `@layer utilities`, so
+  the utility lost and the hamburger sat next to the full desktop nav.
+*/
+/* `.els-header` prefix so this outranks `.els-icon-btn { display: grid }`,
+   which is declared further down the file at the same specificity and was
+   therefore winning on source order. */
+.els-header .els-menu-btn { display: grid; }
+@media (min-width: 64rem) { .els-header .els-menu-btn { display: none; } }
+.els-icon-btn {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 100%;
+  color: var(--els-ink);
+  background: transparent;
+  transition: background 0.18s ease;
+}
+.els-icon-btn:hover { background: rgb(20 20 21 / 0.06); }
+.els-icon-btn svg { width: 1.15rem; height: 1.15rem; }
+.els-header .els-pill { display: none; }
+@media (min-width: 48rem) { .els-header .els-pill { display: inline-flex; } }
+
+/*
+  At 320px the wordmark plus three 36px icon buttons came to 328px inside a
+  280px row and pushed the page 15px wide. The search icon goes first — it
+  only links to /labs, which the drawer lists by name — and the wordmark
+  drops a step with it.
+*/
+@media (max-width: 26rem) {
+  .els-header-actions { gap: 0.25rem; }
+  .els-header-actions [aria-label="Search labs"] { display: none; }
+  .els-wordmark-text { font-size: 1.05rem; letter-spacing: 0.04em; }
+  .els-wordmark-mark { width: 1.75rem; height: 1.75rem; font-size: 0.9rem; }
+  .els-icon-btn { width: 2rem; height: 2rem; }
+}
+
+.els-drawer {
+  border-top: 1px solid var(--els-line-soft);
+  background: #fff;
+  padding-block: 1rem 1.5rem;
+}
+.els-drawer a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--els-line-soft);
+  color: var(--els-ink);
+  font-size: 1rem;
+  text-decoration: none;
+}
+.els-drawer svg { width: 1rem; height: 1rem; color: var(--els-blue); }
+
+/* --- hero --------------------------------------------------------------- */
+.els-hero {
+  position: relative;
+  isolation: isolate;
+  background: var(--els-ink);
+  color: #fff;
+}
+.els-hero-media { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+
+/*
+  One frame per slide, all mounted, crossfading.
+
+  Swapping a single `<img src>` instead gave a white flash on every change
+  while the next file decoded, and the first change is the one a visitor is
+  most likely to be looking at.
+*/
+.els-hero-frame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.9s ease, transform 0.9s ease;
+  transform: scale(1.04);
+  will-change: opacity, transform;
+}
+.els-hero-frame[data-on="true"] { opacity: 1; transform: scale(1); }
+.els-hero-photo { object-fit: cover; }
+
+.els-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgb(20 20 21 / 0.94) 0%, rgb(20 20 21 / 0.82) 36%, rgb(20 20 21 / 0.38) 70%, rgb(20 20 21 / 0.22) 100%),
+    linear-gradient(0deg, rgb(20 20 21 / 0.72) 0%, transparent 46%);
+}
+@media (max-width: 63.99rem) {
+  /* Stacked, the copy sits over the middle of the picture rather than its
+     left third, so the scrim has to be flat rather than directional. */
+  .els-hero-scrim { background: rgb(20 20 21 / 0.76); }
+}
+
+/* --- hero controls ------------------------------------------------------- */
+.els-hero-controls {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+  min-height: 2.5rem;
+}
+.els-hero-play,
+.els-hero-nav > button {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 0.34);
+  border-radius: 100%;
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  transition: background 0.18s ease;
+}
+.els-hero-play:hover,
+.els-hero-nav > button:hover { background: rgb(255 255 255 / 0.28); }
+.els-hero-play svg,
+.els-hero-nav > button svg { width: 0.95rem; height: 0.95rem; }
+.els-hero-nav { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+.els-hero-dots { display: flex; align-items: center; gap: 0.5rem; }
+
+/*
+  The active dot is a pill that fills over the slide's own interval, so the
+  bar reports how long is left rather than only which slide is showing. The
+  fill is keyed on the slide index via `data-filling`, which React remounts
+  on every change — that restart is what makes the animation track the timer.
+*/
+.els-hero-dot {
+  display: block;
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.42);
+  transition: width 0.3s ease, background 0.3s ease;
+}
+.els-hero-dot:hover { background: rgb(255 255 255 / 0.7); }
+.els-hero-dot[data-on="true"] { width: 2.25rem; background: rgb(255 255 255 / 0.34); }
+.els-hero-dot > span { display: block; height: 100%; width: 0; border-radius: 999px; background: #fff; }
+.els-hero-dot[data-on="true"] > span { width: 100%; }
+.els-hero-dot[data-filling="true"] > span { animation: els-dot-fill 7s linear forwards; }
+@keyframes els-dot-fill { from { width: 0; } to { width: 100%; } }
+
+/* --- hero copy ----------------------------------------------------------- */
+.els-hero-inner {
+  position: relative;
+  display: flex;
+  min-height: clamp(26rem, 54vh, 34rem);
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(2rem, 4vw, 3rem) clamp(5rem, 9vw, 7rem);
+}
+
+/*
+  The hero and the strip under it fill exactly one screen.
+
+  The reference's first screen ends on the strip: nothing of the section
+  below shows above the fold. The arithmetic, with the header in flow at
+  79px and the strip pulled up over the hero by 72px:
+
+      79 + heroHeight - 72 + 62(strip) = 100svh
+      heroHeight = 100svh - 69px
+
+  so the hero runs a little past the fold and the strip, rising back over
+  it, lands on it. The strip's margin has to be a constant for that to hold,
+  which is why the clamp is restated here.
+
+  Only from 48rem, where the strip is a single row. Stacked two or three
+  rows deep on a phone it cannot be made to end on the fold without
+  squeezing the headline, and a phone's first screen is a scroll anyway.
+*/
+@media (min-width: 48rem) {
+  .els-hero { min-height: calc(100svh - 79px); }
+  .els-hero-inner { flex: 1 1 auto; min-height: 0; padding-bottom: 2rem; }
+}
+.els-hero { display: flex; flex-direction: column; }
+.els-hero > .els-shell { display: flex; flex: 1 1 auto; flex-direction: column; }
+/*
+  The slides are stacked on one grid cell so the hero does not change height
+  as the headline's line count changes — a hero that grows and shrinks every
+  seven seconds pushes the whole page up and down under the reader.
+*/
+.els-hero-copy {
+  grid-area: 1 / 1;
+  max-width: 46rem;
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  pointer-events: none;
+}
+.els-hero-copy[data-on="true"] { opacity: 1; transform: none; pointer-events: auto; }
+/*
+  The copy sits in the upper part of the band, not its middle.
+
+  Centred, the headline landed 35% of the way down the hero; the reference
+  puts its own at 16%, with the photograph carrying the space underneath.
+  `start` packs the copy to the top of the grid and leaves that space where
+  it belongs.
+*/
+.els-hero-inner { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; }
+.els-hero-eyebrow { color: rgb(255 255 255 / 0.74); }
+.els-hero .els-lead { margin-top: 1.25rem; max-width: 44ch; color: rgb(255 255 255 / 0.84); }
+.els-hero-actions { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+/*
+  The strip of section links that overlaps the foot of the hero.
+
+  Measured off the reference rather than approximated:
+
+    bar / inactive tab   rgb(64 60 59)      a warm dark grey, SOLID
+    tab text and icon    rgb(247 246 242)   the cream, not the brand orange
+    active tab           rgb(247 246 242)   a cream panel with dark ink on it
+    font                 16px               not the 14px the body uses
+    padding              19px
+    height               62px
+    separators           none
+
+  Ours had it translucent over the photograph with orange icons, hairline
+  rules between the tabs and 14px text, which read as a different component.
+*/
+.els-quicklinks {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  background: rgb(64 60 59);
+}
+@media (min-width: 48rem) { .els-quicklinks { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.els-quicklinks a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 19px;
+  color: rgb(247 246 242);
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.els-quicklinks a:hover { background: rgb(84 79 78); color: #fff; }
+/* The lead tab is a cream panel carrying dark ink, the way the reference
+   marks the one it wants you to take. */
+.els-quicklinks a[data-lead="true"] {
+  background: var(--els-cream);
+  color: var(--els-ink);
+}
+.els-quicklinks a[data-lead="true"]:hover { background: #fff; color: var(--els-ink); }
+.els-quicklinks svg { width: 1.25rem; height: 1.25rem; flex: 0 0 auto; color: currentColor; }
+
+/* --- feature banner ----------------------------------------------------- */
+.els-feature {
+  position: relative;
+  overflow: hidden;
+  background: var(--els-orange);
+  color: #fff;
+}
+.els-feature-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 2rem;
+  padding: clamp(2rem, 4vw, 3.25rem);
+}
+@media (min-width: 64rem) {
+  .els-feature-inner { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; }
+}
+.els-feature-figures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: rgb(255 255 255 / 0.28);
+  border: 1px solid rgb(255 255 255 / 0.28);
+}
+.els-feature-figures > div { background: var(--els-orange); padding: 1.25rem 1.1rem; }
+.els-feature-figures dd span:first-child {
+  font-family: var(--font-serif), serif;
+  font-size: clamp(1.9rem, 1.3rem + 1.6vw, 2.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  display: block;
+}
+/* The photograph is clipped on a diagonal, as the reference's banner is. */
+.els-feature-photo {
+  position: absolute;
+  inset: 0 0 0 auto;
+  z-index: 0;
+  width: 46%;
+  clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%);
+  opacity: 0.38;
+  mix-blend-mode: multiply;
+}
+.els-feature-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.7) brightness(0.55);
+}
+@media (max-width: 63.99rem) { .els-feature-photo { display: none; } }
+
+/* --- editorial grid (the laboratory collection) -------------------------- */
+.els-editorial { display: grid; gap: 1.25rem; }
+@media (min-width: 64rem) {
+  .els-editorial { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+}
+.els-feature-card {
+  position: relative;
+  /* Required. The image sits at `z-index: -2` and the scrim at `-1`; with no
+     stacking context here both slip behind the page's own background and the
+     card renders as an empty white box. */
+  isolation: isolate;
+  display: flex;
+  min-height: 26rem;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  color: #fff;
+  text-decoration: none;
+}
+.els-feature-card img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.els-feature-card::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  background: linear-gradient(0deg, rgb(20 20 21 / 0.92) 8%, rgb(20 20 21 / 0.55) 48%, rgb(20 20 21 / 0.2) 100%);
+}
+.els-feature-card h3 { font-size: clamp(1.4rem, 1rem + 1.3vw, 2rem); font-weight: 600; line-height: 1.18; letter-spacing: -0.02em; }
+.els-feature-card p { margin-top: 0.85rem; max-width: 46ch; color: rgb(255 255 255 / 0.8); }
+
+.els-storylist { display: flex; flex-direction: column; }
+.els-story {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--els-line-soft);
+  color: inherit;
+  text-decoration: none;
+}
+.els-story:first-child { padding-top: 0; }
+.els-story img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.els-story-tag {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  padding: 2px 6px;
+  background: rgb(20 20 21 / 0.07);
+  color: var(--els-dim);
+}
+.els-story h4 { font-size: 0.9375rem; font-weight: 500; line-height: 1.35; letter-spacing: -0.02em; }
+.els-story:hover h4 { color: var(--els-blue); }
+@media (max-width: 29.99rem) { .els-story { grid-template-columns: 5rem minmax(0, 1fr) 28px; gap: 0.75rem; } }
+
+/* --- stepped photo collage (the reference's recurring image treatment) --- */
+.els-stepped { position: relative; aspect-ratio: 4 / 3; }
+.els-stepped img {
+  position: absolute;
+  width: 62%;
+  height: 62%;
+  object-fit: cover;
+  outline: 1px solid rgb(255 255 255 / 0.5);
+  outline-offset: -1px;
+}
+.els-band-ink .els-stepped img { outline-color: rgb(20 20 21 / 0.6); }
+.els-stepped img:nth-child(1) { top: 0; left: 0; }
+.els-stepped img:nth-child(2) { top: 19%; left: 19%; }
+.els-stepped img:nth-child(3) { top: 38%; left: 38%; }
+
+/* --- numbered cards ------------------------------------------------------ */
+.els-num {
+  font-family: var(--font-serif), serif;
+  font-size: 2.25rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--els-orange);
+}
+
+/* --- faq ----------------------------------------------------------------- */
+.els-faq { border-top: 1px solid var(--els-line-soft); }
+.els-faq-item { border-bottom: 1px solid var(--els-line-soft); }
+.els-faq-item > button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.35rem 0;
+  text-align: left;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: inherit;
+}
+.els-faq-item > button:hover { color: var(--els-blue); }
+.els-faq-item p { max-width: 78ch; padding-bottom: 1.5rem; color: var(--els-dim); }
+
+/* --- closing pair -------------------------------------------------------- */
+.els-closing { display: grid; gap: 1.25rem; }
+@media (min-width: 48rem) { .els-closing { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.els-closing-card {
+  position: relative;
+  isolation: isolate; /* same reason as `.els-feature-card` */
+  display: flex;
+  min-height: 18rem;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  color: #fff;
+  text-decoration: none;
+}
+.els-closing-card img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.els-closing-card::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  background: linear-gradient(135deg, rgb(20 20 21 / 0.88), rgb(20 20 21 / 0.55));
+}
+.els-closing-card h3 { font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; max-width: 22ch; }
+
+/* --- footer -------------------------------------------------------------- */
+.els-footer { background: var(--els-ink); color: #fff; padding-block: clamp(3rem, 5vw, 4.5rem) 2rem; }
+.els-footer h2 { font-size: 1rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+.els-footer a { color: rgb(255 255 255 / 0.78); text-decoration: none; font-size: 0.875rem; }
+.els-footer a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.els-footer li { margin-bottom: 0.85rem; }
+.els-footer li a { display: inline-flex; align-items: center; gap: 0.45rem; }
+.els-footer li svg { width: 0.8rem; height: 0.8rem; opacity: 0.7; }
+.els-footer-base {
+  margin-top: clamp(2.5rem, 4vw, 3.5rem);
+  padding-top: 1.75rem;
+  border-top: 1px solid rgb(255 255 255 / 0.16);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgb(255 255 255 / 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .els * { transition: none !important; animation: none !important; }
+}
+
+/* ============================================================
+   The bubble hover
+   ============================================================
+
+   A soft, translucent disc that swells out of the element under the pointer
+   and drifts up a little as it goes, with a faint ring chasing it — a bubble
+   surfacing rather than a flat colour change.
+
+   Three things keep it from becoming noise:
+
+   * It is painted on a `::before` under the content (`z-index: 0` against the
+     content's `1`), so text never dims and nothing has to be re-coloured.
+   * The easing overshoots slightly on the way in and settles — a bubble
+     expands fast and stops soft — and the exit is a plain quick fade, because
+     a bubble that deflates slowly reads as a lag.
+   * It is off entirely under `prefers-reduced-motion`, where the plain
+     border and background changes already carry the hover state.
+
+   Applied to the things a pointer actually lands on: cards, pills, circle
+   buttons, the quick-link strip and the story rows.
+*/
+.els-card,
+.els-pill,
+.els-circle,
+.els-quicklinks a,
+.els-story,
+.els-closing-card,
+.els-feature-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+/* These two already declare their own stacking context and clipping above;
+   restating `overflow` here would crop their photography. */
+.els-circle { overflow: visible; }
+
+.els-card::before,
+.els-pill::before,
+.els-quicklinks a::before,
+.els-story::before {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 60%;
+  width: 180%;
+  aspect-ratio: 1;
+  content: "";
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgb(35 84 255 / 0.1) 0%,
+      rgb(35 84 255 / 0.06) 46%,
+      rgb(35 84 255 / 0.02) 68%,
+      transparent 72%);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.15s ease-in, opacity 0.15s ease-in;
+}
+.els-card:hover::before,
+.els-pill:hover::before,
+.els-quicklinks a:hover::before,
+.els-story:hover::before {
+  opacity: 1;
+  /* Up a touch as it swells, and a hair past full before settling. */
+  transform: translate(-50%, -62%) scale(1);
+  transition: transform 0.62s cubic-bezier(0.18, 1.3, 0.38, 1), opacity 0.28s ease-out;
+}
+
+/* The chasing ring. Thin, slower, and gone by the time the disc settles. */
+.els-card::after,
+.els-quicklinks a::after,
+.els-story::after {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 60%;
+  width: 60%;
+  aspect-ratio: 1;
+  content: "";
+  border: 1px solid rgb(35 84 255 / 0.22);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0;
+  pointer-events: none;
+}
+.els-card:hover::after,
+.els-quicklinks a:hover::after,
+.els-story:hover::after { animation: els-bubble-ring 0.72s ease-out forwards; }
+@keyframes els-bubble-ring {
+  0%   { opacity: 0.85; transform: translate(-50%, -50%) scale(0.4); }
+  100% { opacity: 0;    transform: translate(-50%, -78%) scale(2.6); }
+}
+
+/* The content has to sit above the bubble. */
+.els-card > *,
+.els-pill > *,
+.els-quicklinks a > *,
+.els-story > * { position: relative; z-index: 1; }
+.els-pill, .els-quicklinks a, .els-story { z-index: 0; }
+
+/* On the dark band and over photography the blue disc disappears, so those
+   get a white one. */
+.els-band-ink .els-card::before,
+.els-quicklinks a::before {
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgb(255 255 255 / 0.16) 0%,
+      rgb(255 255 255 / 0.08) 46%,
+      rgb(255 255 255 / 0.03) 68%,
+      transparent 72%);
+}
+.els-band-ink .els-card::after,
+.els-quicklinks a::after { border-color: rgb(255 255 255 / 0.3); }
+
+/* The pill is already a filled colour; its bubble is a lighter wash of the
+   same, so the control brightens from the middle out. */
+.els-pill::before {
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgb(255 255 255 / 0.3) 0%,
+      rgb(255 255 255 / 0.14) 48%,
+      transparent 72%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .els-card::before, .els-card::after,
+  .els-pill::before,
+  .els-quicklinks a::before, .els-quicklinks a::after,
+  .els-story::before, .els-story::after { display: none; }
+}
+
+/*
+  The header's search panel.
+
+  Opened by the magnifier, it drops under the bar across the full width and
+  holds `LabSearch` — the same typeahead the rest of the site uses. It is a
+  panel rather than a field sitting in the row because the row is 79px and a
+  dropdown of suggestions hanging out of it reads as a different component.
+*/
+.els-search-panel {
+  border-bottom: 1px solid var(--els-line-soft);
+  background: #fff;
+  padding-block: 1.25rem;
+}
+.els-search-field { max-width: 36rem; }
+.els-drawer .els-search-field { max-width: none; }

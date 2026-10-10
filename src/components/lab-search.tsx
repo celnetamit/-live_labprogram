@@ -38,9 +38,14 @@ const DEBOUNCE_MS = 250;
 export default function LabSearch({
   variant = "desktop",
   onNavigate,
+  /* Set when the field is revealed by a control rather than being on the
+     page already — the header's magnifier opens a panel, and a panel that
+     opens without the caret in it makes you click twice to type. */
+  autoFocus = false,
 }: {
   variant?: "desktop" | "mobile";
   onNavigate?: () => void;
+  autoFocus?: boolean;
 }) {
   const router = useRouter();
   const listId = useId();
@@ -185,6 +190,7 @@ export default function LabSearch({
             onFocus={() => setOpen(true)}
             onKeyDown={onKeyDown}
             placeholder="Search labs"
+            autoFocus={autoFocus}
             autoComplete="off"
             role="combobox"
             aria-expanded={showDropdown}

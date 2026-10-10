@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
-import { Check, Eye, Lightbulb, ListChecks, Lock, RotateCcw } from "lucide-react";
+import { Check, Eye, Lightbulb, ListChecks, RotateCcw } from "lucide-react";
 import type { LabGuide } from "@/content/labs";
 import { RichText } from "@/components/rich-text";
 
@@ -62,9 +62,10 @@ function parseDone(raw: string | null): Set<number> {
  * them to an empty server row, and a learner who worked offline on a second
  * device would lose whichever side loaded second.
  *
- * When `locked`, step titles and goals still render, but the actions, expected
- * results and explanations are not emitted at all. Gating by omission rather
- * than by CSS: content that ships to the browser is not gated.
+ * `locked` means progress cannot be RECORDED, not that the method cannot be
+ * read. The step number is a static badge instead of a completion toggle; the
+ * actions, expected results and explanations render either way, because the
+ * same guide is published at /labs/<slug> to a visitor with no account.
  */
 export default function TutorialSteps({
   guide,
@@ -297,12 +298,11 @@ export default function TutorialSteps({
                     <RichText>{step.goal}</RichText>
                   </p>
 
-                  {locked ? (
-                    <p className="mt-3 inline-flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
-                      <Lock className="h-3.5 w-3.5 shrink-0" />
-                      Instructions, expected result and explanation unlock with the lab
-                    </p>
-                  ) : (
+                  {/* The method reads the same whether or not you have access
+                      — it is published at /labs/<slug> to visitors with no
+                      account. `locked` now only means progress cannot be
+                      recorded, which is the toggle above. */}
+                  {(
                     <div className="mt-3 space-y-3">
                       <ol className="space-y-2">
                         {step.actions.map((action, actionIndex) => (
