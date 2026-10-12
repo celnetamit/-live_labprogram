@@ -25,10 +25,9 @@ import type { LabGuide } from "./types";
  * branches on `showcase && coverPhoto`, so until then it keeps rendering the
  * standard template rather than a hero with a hole where the picture goes.
  *
- * The palette is keyed to a spatial transcriptomics section — a near-black
- * ground with the cyan, magenta, green and amber of the cluster colours. Once
- * the photograph is in place these should be re-checked against it, the way
- * every other lab's were sampled from its own cover.
+ * The palette is sampled from the cover micrograph: a neutral black ground
+ * with the section's teal-green, magenta and olive accents over its pale
+ * lavender tissue mass.
  */
 const guide: LabGuide = {
   slug: "spatial-ai",
@@ -60,37 +59,37 @@ const guide: LabGuide = {
       description:
         "Perturb a simulated tumour section, watch the effect propagate through the tissue, and compare rescue candidates on traceable numbers.",
     },
-    /* Sampled from the cover: #0398ca cyan, #0faaa5 teal, #880577 magenta and
-       #f1d804 yellow are the four most-present cluster colours in the section.
-       `onDark` is each lifted to read on the near-black hero; `ink` is each
-       darkened to clear 4.5:1 as text on white. */
+    /* Sampled from the cover. The section's saturated accents are a teal-green
+       (#1f5e4d), a magenta ring (#752346) and an olive speckle (#5d4e33),
+       over the pale lavender tissue mass. `onDark` lifts each to read on the
+       black hero; `ink` darkens each to clear 4.5:1 as text on white. */
     palette: {
-      primary: { onDark: "#3fb6e0", ink: "#0a6a8c" },
-      secondary: { onDark: "#d861c2", ink: "#8a1a79" },
-      action: { onDark: "#dcd9e4", ink: "#5b5566" },
-      quiet: { onDark: "#35c4bd", ink: "#0d6f6a" },
-      cta: { onDark: "#3fb6e0", ink: "#0a6a8c", text: "#04101a" },
-      level: "#f1d804",
+      primary: { onDark: "#36c2a4", ink: "#0c6a57" },
+      secondary: { onDark: "#e4609b", ink: "#99214f" },
+      action: { onDark: "#cdc4dd", ink: "#5d5570" },
+      quiet: { onDark: "#cbbf4a", ink: "#6e6512" },
+      cta: { onDark: "#36c2a4", ink: "#0c6a57", text: "#04120e" },
+      level: "#e4609b",
       features: [
-        { onDark: "#3fb6e0", ink: "#0a6a8c" },
-        { onDark: "#d861c2", ink: "#8a1a79" },
-        { onDark: "#35c4bd", ink: "#0d6f6a" },
-        { onDark: "#f1d804", ink: "#6f5e03" },
+        { onDark: "#36c2a4", ink: "#0c6a57" },
+        { onDark: "#e4609b", ink: "#99214f" },
+        { onDark: "#cdc4dd", ink: "#5d5570" },
+        { onDark: "#cbbf4a", ink: "#6e6512" },
       ],
     },
-    /* The picture's own ground is #0a0112 — a very dark violet-black, read off
-       all four corners — so the page's neutrals are tinted toward it. */
+    /* The plate's own ground is a neutral #0d0d0d, so the page's neutrals stay
+       neutral rather than being tinted toward a hue the picture does not have. */
     ground: {
-      page: "#0a0710",
-      sidebar: "#07040c",
-      surface: ["#171222", "#0c0814"],
-      hero: "#0a0112",
-      scrim: "#050009",
+      page: "#0c0c0d",
+      sidebar: "#090909",
+      surface: ["#17171a", "#0d0d0f"],
+      hero: "#0d0d0d",
+      scrim: "#070707",
       scrimStops: [97, 90, 46, 16, 84],
-      text: "#f6f4f8",
-      muted: "#aaa3b4",
-      copy: "#b0a9ba",
-      soft: "#817a8c",
+      text: "#f6f5f7",
+      muted: "#a9a7ad",
+      copy: "#afadb4",
+      soft: "#807e86",
     },
     /*
       Four claims, each one true of this lab and checkable in the guide below:
