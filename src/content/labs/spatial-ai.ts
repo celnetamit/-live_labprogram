@@ -50,7 +50,7 @@ const guide: LabGuide = {
   video: {
     url: null,
     chapters: [
-      { at: 0, label: "Spatial Omics AI Virtual LiveLab — spatial perturbation propagation and therapeutic rescue" },
+      { at: 0, label: "Spatial Omics Virtual LiveLab — spatial perturbation propagation and therapeutic rescue" },
       { at: 8, label: "Step 1 — the research-use boundary, and starting a new project" },
       { at: 20, label: "Step 2 — Data & QC: structural checks, data-driven checks, and prediction eligibility" },
       { at: 34, label: "Step 3 — Baseline tissue: the spatial map, markers, pathway activity, the spatial graph" },
@@ -60,7 +60,7 @@ const guide: LabGuide = {
       { at: 90, label: "Step 7 — Compare candidates: the endpoint table and the Pareto front, and why there is no single score" },
       { at: 102, label: "Step 8 — Interpretation, Validate and Report: AI prose grounded in the run, and the assembled report" },
       { at: 112, label: "Methods & model card, and the parameter registry" },
-      { at: 118, label: "Spatial Omics AI Virtual LiveLab — a Live Labs laboratory" },
+      { at: 118, label: "Spatial Omics Virtual LiveLab — a Live Labs laboratory" },
     ],
   },
 
