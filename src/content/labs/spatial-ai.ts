@@ -19,13 +19,101 @@ import type { LabGuide } from "./types";
  * the AI panel only writes prose about numbers that already exist, and a
  * gate rejects anything it cannot trace back to the evidence it was given.
  *
- * No `showcase` here yet: the editorial hero needs a sourced cover
- * photograph and a palette sampled from it, the way every other showcased
- * lab's does, and this lab does not have one checked in. The guide below
- * renders on the standard (non-photographic) template until that exists.
+ * The `showcase` block below gives this lab the editorial page the other
+ * showcased labs get. It only takes effect once a cover photograph is
+ * registered for `spatial-ai` in `src/content/labs/photos.ts`: the page
+ * branches on `showcase && coverPhoto`, so until then it keeps rendering the
+ * standard template rather than a hero with a hole where the picture goes.
+ *
+ * The palette is keyed to a spatial transcriptomics section — a near-black
+ * ground with the cyan, magenta, green and amber of the cluster colours. Once
+ * the photograph is in place these should be re-checked against it, the way
+ * every other lab's were sampled from its own cover.
  */
 const guide: LabGuide = {
   slug: "spatial-ai",
+
+
+  showcase: {
+    overline: "Spatial perturbation & rescue",
+    title: [{ text: "Spatial" }, { text: " Omics", accent: "primary" }],
+    headline: "Perturb a tissue section and watch the effect spread, not just land.",
+    intro:
+      "Knock out a gene or dose a real compound, see how the change propagates through the section's own cell neighbourhood, then compare rescue candidates on evidence rather than on a single invented score.",
+    about: [
+      "A tumour is not a dish of identical cells; it is tissue, and what happens to one cell depends on what is next to it. This lab makes that spatial structure the subject rather than averaging it away.",
+      "A mechanistic tissue solver and a trained graph neural network show how a perturbation spreads outward from the cells it touched directly. Every eligible rescue therapy is then simulated separately against the same altered tissue before any of them are compared.",
+    ],
+    tags: ["Spatial transcriptomics", "Perturbation modelling", "Model validation", "Therapeutic rescue"],
+    walkthroughTitle: "From a perturbed section to a comparable rescue",
+    journey: "Spatial Omics",
+    /* No demo video for this lab yet (`video.url` is null), so the hero shows
+       the two figures it can compute rather than an empty walkthrough slot. */
+    stats: [
+      { kind: "steps", label: "Guided steps" },
+      { kind: "handsOn", label: "Hands-on time" },
+    ],
+    rail: { owned: "launch", accent: "secondary" },
+    card: {
+      badge: "Interactive lab",
+      icon: "simulation",
+      description:
+        "Perturb a simulated tumour section, watch the effect propagate through the tissue, and compare rescue candidates on traceable numbers.",
+    },
+    palette: {
+      primary: { onDark: "#4fc3d9", ink: "#2a6f83" },
+      secondary: { onDark: "#e05a9e", ink: "#9c2f66" },
+      action: { onDark: "#dde3e8", ink: "#56666f" },
+      quiet: { onDark: "#6fc08a", ink: "#3f7a55" },
+      cta: { onDark: "#4fc3d9", ink: "#2a6f83", text: "#04101a" },
+      level: "#e8b44a",
+      features: [
+        { onDark: "#4fc3d9", ink: "#2a6f83" },
+        { onDark: "#e05a9e", ink: "#9c2f66" },
+        { onDark: "#6fc08a", ink: "#3f7a55" },
+        { onDark: "#e8b44a", ink: "#8a6414" },
+      ],
+    },
+    ground: {
+      page: "#080b10",
+      sidebar: "#06080c",
+      surface: ["#131a22", "#0a0e14"],
+      hero: "#0b1119",
+      scrim: "#04070b",
+      scrimStops: [97, 90, 46, 16, 84],
+      text: "#f4f6f8",
+      muted: "#a4aeb8",
+      copy: "#aab4bd",
+      soft: "#7c868f",
+    },
+    /*
+      Four claims, each one true of this lab and checkable in the guide below:
+      the propagation model, the simulate-before-ranking rule, the refusal to
+      print a composite score, and §1.4's no-LLM-numbers gate.
+    */
+    features: [
+      {
+        icon: "simulation",
+        title: "Effects that propagate",
+        body: "A tissue solver and a trained graph network show how a change spreads through the section's neighbourhood, not only the cells it touched.",
+      },
+      {
+        icon: "analysis",
+        title: "Simulated before compared",
+        body: "Every eligible rescue candidate is run separately against the same altered tissue before any of them are placed against each other.",
+      },
+      {
+        icon: "graph",
+        title: "No invented score",
+        body: "Candidates meet on an endpoint table and a Pareto front; no single ranking is printed without frozen, reviewer-approved weights.",
+      },
+      {
+        icon: "insight",
+        title: "Numbers you can trace",
+        body: "Every figure comes from a solver, a statistical test or a validated model. The AI panel writes prose about numbers that already exist.",
+      },
+    ],
+  },
 
   summary: {
     tagline:
