@@ -73,17 +73,22 @@ export const COVER_PHOTO: Record<string, CoverPhoto> = {
   /* A spatial transcriptomics micrograph: tissue architecture with the
      gene-expression signal overlaid.
 
-     The catalogue card is 2:1 and the lab hero is 3.6:1, and both centre-crop
-     this one file. A first pass sized the section for the hero — small, on a
-     wide black field — and the card then showed three-quarters empty frame
-     next to covers that are full-bleed photographs. This is the section's
-     densest 2:1 band instead, filling the frame: the card shows all of it and
-     the hero's middle band is still tissue edge to edge. tint and edge are
-     measured off the finished file and are tissue now, not the plate's black.
+     The section is round, so any rectangle over it leaves black corners — and
+     the catalogue card (2:1) and the lab hero (3.6:1) both centre-crop this
+     one file, so those corners showed as empty frame beside covers that are
+     full-bleed photographs. Cropping inside the specimen instead would have
+     cost a 3.7x upscale and landed in the pale region with none of the
+     colour.
+
+     So the gaps are filled with the picture itself: a window taken from
+     entirely inside the specimen, blown up and blurred, carries the backdrop,
+     and the whole section sits sharp on top with the plate's ground masked
+     out at its rim. No black anywhere, and nothing in the frame comes from
+     outside this image.
 
      NOTE: supplied from nature.com. It still needs its full citation in
      `credit` below, and a licence check before it is used commercially. */
-  "spatial-ai": { src: "/labs/spatial-ai.91a69345.jpg", tint: "#7e7589", edge: "#7e7588", edgeIsLight: true },
+  "spatial-ai": { src: "/labs/spatial-ai.ae49a5ba.jpg", tint: "#73687d", edge: "#685e72", edgeIsLight: true },
   omicslab: { src: "/labs/omicslab.9a645e33.jpg", tint: "#888990", edge: "#8c8a88" },
   fraudshield: { src: "/labs/fraudshield.ee467982.jpg", tint: "#3a4045", edge: "#323b43" },
   logiclab: { src: "/labs/logiclab.32701fc0.jpg", tint: "#b9b9bc", edge: "#c2c4c8", edgeIsLight: true },

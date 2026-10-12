@@ -698,22 +698,12 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                               keeps saying so. */}
                           <AccessRequestPanel {...requestProps} variant="rail" />
                         </div>
-                      ) : showcase.rail?.owned === "launch" ? (
-                        /* omicslab_pro_with_new_image.html's card: the lab
-                           runs on its own site, so the rail says so and
-                           opens it. */
-                        <div className="sc-access-card">
-                          <small>External lab</small>
-                          <strong className="sc-access-card-title">Opens in a new tab</strong>
-                          <span>Launch the full {showcase.journey} workflow when you are ready.</span>
-                          {launchUrl && (
-                            <a href={launchUrl} target="_blank" rel="noopener noreferrer" className="sc-access-launch focus-ring">
-                              {startLabel}
-                              <span className="sr-only"> (opens in a new tab)</span>
-                            </a>
-                          )}
-                        </div>
                       ) : heroSteps > 0 && (
+                        /* No "External lab / Opens in a new tab" card here any
+                           more. It restated the launch button that already
+                           sits at the top of this rail, and said the lab opens
+                           in a new tab where the button already says so. A
+                           learner with access gets their progress instead. */
                         <div className="sc-progress-card">
                           <small>Your progress</small>
                           <strong>
