@@ -71,14 +71,19 @@ export const COVER_PHOTO: Record<string, CoverPhoto> = {
     credit: "Yong, E. Microbiome sequencing offers hope for diagnostics. Nature (2012)",
   },
   /* A spatial transcriptomics micrograph: tissue architecture with the
-     gene-expression signal overlaid. Cropped out of the page it was supplied
-     in, then placed at its own size on a 1600x560 canvas of the plate's own
-     black (#0d0d0d) rather than upscaled into the 3.6:1 hero. tint and edge
-     are measured off the finished file.
+     gene-expression signal overlaid.
+
+     The catalogue card is 2:1 and the lab hero is 3.6:1, and both centre-crop
+     this one file. A first pass sized the section for the hero — small, on a
+     wide black field — and the card then showed three-quarters empty frame
+     next to covers that are full-bleed photographs. This is the section's
+     densest 2:1 band instead, filling the frame: the card shows all of it and
+     the hero's middle band is still tissue edge to edge. tint and edge are
+     measured off the finished file and are tissue now, not the plate's black.
 
      NOTE: supplied from nature.com. It still needs its full citation in
      `credit` below, and a licence check before it is used commercially. */
-  "spatial-ai": { src: "/labs/spatial-ai.616c7e38.jpg", tint: "#131314", edge: "#0d0d0d" },
+  "spatial-ai": { src: "/labs/spatial-ai.91a69345.jpg", tint: "#7e7589", edge: "#7e7588", edgeIsLight: true },
   omicslab: { src: "/labs/omicslab.9a645e33.jpg", tint: "#888990", edge: "#8c8a88" },
   fraudshield: { src: "/labs/fraudshield.ee467982.jpg", tint: "#3a4045", edge: "#323b43" },
   logiclab: { src: "/labs/logiclab.32701fc0.jpg", tint: "#b9b9bc", edge: "#c2c4c8", edgeIsLight: true },
