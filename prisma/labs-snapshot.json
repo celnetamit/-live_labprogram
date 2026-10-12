@@ -336,5 +336,31 @@
     "createdAt": "2026-09-12T06:00:00.000Z",
     "updatedAt": "2026-09-12T06:00:00.000Z",
     "ownerId": null
+  },
+  {
+    "id": "cmspatialai0000000000000",
+    "slug": "spatial-ai",
+    "name": "Spatial Omics AI",
+    "description": "Simulate how a perturbation spreads through tissue: pick a gene knockout, overexpression or a real compound, run a mechanistic and learned propagation model, then compare rescue candidates against the altered state \u2014 every number traceable to the method that produced it.",
+    "synopsis": "A spatial transcriptomics lab for perturbation propagation. Baseline analysis, controlled perturbation, spatial propagation and therapeutic rescue simulation across a twelve-step scientific workflow, with no LLM-generated numerical biology anywhere in the result.",
+    "subject": "Biology",
+    "difficulty": "Advanced",
+    "points": 800,
+    "instructions": "\n# Explore the App\n\n1. Open the linked app for Spatial Omics AI.\n2. Review the workflow, inputs, and outputs inside the experience.\n3. Compare it with similar projects using the subject filters in the catalog.\n4. Capture what makes this project useful for your learning or evaluation goals.\n",
+    "starterCode": "\nconst project = {\n  title: 'Spatial Omics AI',\n  subject: 'Biology',\n};\n\nconsole.log(`Launch ${project.title} to explore a live ${project.subject} workflow.`);\n",
+    "sourceUrl": "https://spatial.live-labs.org/",
+    "tags": "[\"biology\", \"spatial-transcriptomics\", \"systems-biology\", \"perturbation-biology\", \"bioinformatics\"]",
+    "keySkills": "[\"Spatial perturbation modelling\", \"Quality control and baseline spatial analysis\", \"Reading model validation and uncertainty\", \"Therapeutic rescue comparison\", \"Reproducible scientific reporting\"]",
+    "priceMinor": 149900,
+    "currency": "INR",
+    "enabled": true,
+    "domainUrl": "https://spatial.live-labs.org/",
+    "category": "Biology",
+    "thumbnail": null,
+    "accessType": "PRIVATE",
+    "status": "ACTIVE",
+    "createdAt": "2026-10-12T00:00:00.000Z",
+    "updatedAt": "2026-10-12T00:00:00.000Z",
+    "ownerId": null
   }
 ]

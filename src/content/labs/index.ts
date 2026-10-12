@@ -12,6 +12,7 @@ import metamaterials from "./metamaterials";
 import microAi from "./micro-ai";
 import omicslab from "./omicslab";
 import smartfactoryAi from "./smartfactory-ai";
+import spatialAi from "./spatial-ai";
 import virtualAi from "./virtual-ai";
 
 /**
@@ -33,6 +34,7 @@ const GUIDES: Record<string, LabGuide> = Object.fromEntries(
     microAi,
     omicslab,
     smartfactoryAi,
+    spatialAi,
     virtualAi,
   ].map((guide) => [guide.slug, guide]),
 );
