@@ -60,31 +60,37 @@ const guide: LabGuide = {
       description:
         "Perturb a simulated tumour section, watch the effect propagate through the tissue, and compare rescue candidates on traceable numbers.",
     },
+    /* Sampled from the cover: #0398ca cyan, #0faaa5 teal, #880577 magenta and
+       #f1d804 yellow are the four most-present cluster colours in the section.
+       `onDark` is each lifted to read on the near-black hero; `ink` is each
+       darkened to clear 4.5:1 as text on white. */
     palette: {
-      primary: { onDark: "#4fc3d9", ink: "#2a6f83" },
-      secondary: { onDark: "#e05a9e", ink: "#9c2f66" },
-      action: { onDark: "#dde3e8", ink: "#56666f" },
-      quiet: { onDark: "#6fc08a", ink: "#3f7a55" },
-      cta: { onDark: "#4fc3d9", ink: "#2a6f83", text: "#04101a" },
-      level: "#e8b44a",
+      primary: { onDark: "#3fb6e0", ink: "#0a6a8c" },
+      secondary: { onDark: "#d861c2", ink: "#8a1a79" },
+      action: { onDark: "#dcd9e4", ink: "#5b5566" },
+      quiet: { onDark: "#35c4bd", ink: "#0d6f6a" },
+      cta: { onDark: "#3fb6e0", ink: "#0a6a8c", text: "#04101a" },
+      level: "#f1d804",
       features: [
-        { onDark: "#4fc3d9", ink: "#2a6f83" },
-        { onDark: "#e05a9e", ink: "#9c2f66" },
-        { onDark: "#6fc08a", ink: "#3f7a55" },
-        { onDark: "#e8b44a", ink: "#8a6414" },
+        { onDark: "#3fb6e0", ink: "#0a6a8c" },
+        { onDark: "#d861c2", ink: "#8a1a79" },
+        { onDark: "#35c4bd", ink: "#0d6f6a" },
+        { onDark: "#f1d804", ink: "#6f5e03" },
       ],
     },
+    /* The picture's own ground is #0a0112 — a very dark violet-black, read off
+       all four corners — so the page's neutrals are tinted toward it. */
     ground: {
-      page: "#080b10",
-      sidebar: "#06080c",
-      surface: ["#131a22", "#0a0e14"],
-      hero: "#0b1119",
-      scrim: "#04070b",
+      page: "#0a0710",
+      sidebar: "#07040c",
+      surface: ["#171222", "#0c0814"],
+      hero: "#0a0112",
+      scrim: "#050009",
       scrimStops: [97, 90, 46, 16, 84],
-      text: "#f4f6f8",
-      muted: "#a4aeb8",
-      copy: "#aab4bd",
-      soft: "#7c868f",
+      text: "#f6f4f8",
+      muted: "#aaa3b4",
+      copy: "#b0a9ba",
+      soft: "#817a8c",
     },
     /*
       Four claims, each one true of this lab and checkable in the guide below:

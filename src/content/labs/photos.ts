@@ -70,6 +70,11 @@ export const COVER_PHOTO: Record<string, CoverPhoto> = {
     tint: "#624f55", edge: "#645157",
     credit: "Yong, E. Microbiome sequencing offers hope for diagnostics. Nature (2012)",
   },
+  /* A spatial transcriptomics section on its own near-black field. The
+     400x400 source keeps its size on a 1600x560 canvas of the same ground
+     (#0a0112, read off its corners) rather than being upscaled 3x into a
+     3.6:1 hero. tint and edge are both that ground, measured. */
+  "spatial-ai": { src: "/labs/spatial-ai.19691312.jpg", tint: "#0a0112", edge: "#0a0112" },
   omicslab: { src: "/labs/omicslab.9a645e33.jpg", tint: "#888990", edge: "#8c8a88" },
   fraudshield: { src: "/labs/fraudshield.ee467982.jpg", tint: "#3a4045", edge: "#323b43" },
   logiclab: { src: "/labs/logiclab.32701fc0.jpg", tint: "#b9b9bc", edge: "#c2c4c8", edgeIsLight: true },
