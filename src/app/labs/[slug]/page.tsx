@@ -9,10 +9,7 @@ import {
   Check,
   ChevronRight,
   CircleHelp,
-  Clock,
   ExternalLink,
-  Gauge,
-  ListChecks,
   Lock,
   Target,
 } from "lucide-react";
@@ -77,13 +74,6 @@ function taglineOf(lab: Lab, guide: LabGuide | null): string {
   return guide?.summary.tagline ?? lab.synopsis ?? lab.description ?? `A guided laboratory on ${lab.name}.`;
 }
 
-function hoursLabel(minutes: number): string {
-  if (minutes < 60) return `${minutes}m`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m ? `${h}h ${m}m` : `${h}h`;
-}
-
 /** ISO 8601 duration, for `timeRequired` in the structured data. */
 function isoDuration(minutes: number): string {
   const h = Math.floor(minutes / 60);
@@ -119,15 +109,6 @@ export default async function PublicLabPage({ params }: Props) {
   const minutes = guide ? totalMinutes(guide) : 0;
   const launch = formatLaunchDate(lab.launchAt);
   const runHref = `/dashboard/labs/${lab.slug}`;
-
-  const stats = [
-    guide ? { icon: ListChecks, value: String(guide.steps.length), label: "guided steps" } : null,
-    minutes ? { icon: Clock, value: hoursLabel(minutes), label: "hands-on" } : null,
-    lab.difficulty ? { icon: Gauge, value: lab.difficulty, label: "level" } : null,
-    guide?.furtherReading.length
-      ? { icon: BookOpen, value: String(guide.furtherReading.length), label: "sources" }
-      : null,
-  ].filter(Boolean) as { icon: typeof Clock; value: string; label: string }[];
 
   const breadcrumbs = {
     "@context": "https://schema.org",
@@ -223,17 +204,6 @@ export default async function PublicLabPage({ params }: Props) {
                   {taglineOf(lab, guide)}
                 </p>
 
-                {stats.length > 0 && (
-                  <dl className="mt-8 flex flex-wrap gap-x-8 gap-y-4">
-                    {stats.map((s) => (
-                      <div key={s.label} className="flex items-center gap-2.5">
-                        <s.icon className="h-4 w-4 shrink-0 text-[color:var(--color-primary-ink)]" aria-hidden="true" />
-                        <dd className="font-semibold tabular-nums">{s.value}</dd>
-                        <dt className="text-sm text-muted-foreground">{s.label}</dt>
-                      </div>
-                    ))}
-                  </dl>
-                )}
               </div>
 
               {/*
