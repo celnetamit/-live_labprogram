@@ -52,7 +52,7 @@ const guide: LabGuide = {
       "This lab covers three ideas that break the old assumption — smart surfaces that reflect radio waves where you want them, systems that transmit meaning rather than bits, and codecs that stop treating compression and error protection as separate problems.",
     ],
     tags: ["Reflecting surfaces", "Semantic communication", "Autoencoders", "JSCC"],
-    walkthroughTitle: "From a reflecting surface to a codec that degrades gracefully",
+    walkthroughTitle: "Configure a link, run it, and read what actually came back",
     journey: "6G",
     photo: { position: "50% 55%" },
     card: {
@@ -113,14 +113,17 @@ const guide: LabGuide = {
   video: {
     url: "/demos/ai-6g.mp4",
     poster: "/demos/ai-6g.jpg",
-    durationSec: 66,
+    durationSec: 75,
     chapters: [
-      { at: 0, label: "Why 6G needs new ideas, not more spectrum" },
-      { at: 10, label: "The three modules" },
-      { at: 18, label: "Module 1 — Intelligent Reflecting Surfaces" },
-      { at: 38, label: "Tools — the IRS SNR simulator" },
-      { at: 51, label: "Semantic communication and JSCC simulators" },
-      { at: 60, label: "Capstone project" },
+      { at: 0, label: "What the lab is" },
+      { at: 4, label: "The nine-stage workflow, and the loop in it" },
+      { at: 11, label: "Three learning levels" },
+      { at: 18, label: "Knowledge Bank — five modules" },
+      { at: 28, label: "The experiment catalogue" },
+      { at: 35, label: "Configure and run an IRS experiment" },
+      { at: 50, label: "Semantic versus bit-level transmission" },
+      { at: 59, label: "The trained models and their cards" },
+      { at: 67, label: "Dataset manager" },
     ],
   },
 
