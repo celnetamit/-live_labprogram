@@ -11,6 +11,91 @@ import type { LabGuide } from "./types";
 const guide: LabGuide = {
   slug: "smartfactory-ai",
 
+
+  showcase: {
+    overline: "Production & maintenance",
+    title: [{ text: "Smart" }, { text: "Factory", accent: "primary" }],
+    headline: "One slow station sets the pace. One breakdown stops the line.",
+    intro:
+      "Find the bottleneck on a simulated production line, test a change on its digital twin before committing to it, and predict a failure from sensor data — then argue with numbers about what the fix is actually worth.",
+    about: [
+      "A factory is a chain of machines where one slow station sets the pace for everything behind it, and one unplanned breakdown stops the lot. This lab is a simulated production facility where that chain is the subject.",
+      "Unplanned downtime is the most expensive thing that happens in manufacturing, and servicing everything on a fixed schedule wastes an enormous amount of good component life. Sensor data and prediction offer a third option — but only if you can tell a genuinely predictive model from one expensively re-describing the schedule you already had. That judgement is what this lab trains.",
+    ],
+    tags: ["Bottleneck analysis", "Digital twin", "Predictive maintenance", "Maintenance strategy"],
+    walkthroughTitle: "From a slow station to what the fix is worth",
+    journey: "SmartFactory",
+    stats: [
+      { kind: "steps", label: "Guided steps" },
+      { kind: "walkthrough", label: "Walkthrough" },
+      { kind: "handsOn", label: "Hands-on time" },
+    ],
+    card: {
+      badge: "Interactive lab",
+      icon: "simulation",
+      description:
+        "Find the bottleneck on a production line, predict a breakdown before it happens, and work out what the fix is worth.",
+    },
+    /* Sampled from the cover: the dashboard blues (#213d66, #255171) carry the
+       picture, with the amber of the safety rails (#b0811d) and the red of the
+       inspection laser (#af454d) as its accents. `onDark` lifts each to read on
+       the hero; `ink` darkens each to clear 4.5:1 on white. */
+    palette: {
+      primary: { onDark: "#5b9bd6", ink: "#1d5886" },
+      secondary: { onDark: "#e0a63a", ink: "#7d5a09" },
+      action: { onDark: "#d4dae2", ink: "#56606c" },
+      quiet: { onDark: "#e07a80", ink: "#9a2d35" },
+      cta: { onDark: "#5b9bd6", ink: "#1d5886", text: "#04101c" },
+      level: "#e0a63a",
+      features: [
+        { onDark: "#5b9bd6", ink: "#1d5886" },
+        { onDark: "#e0a63a", ink: "#7d5a09" },
+        { onDark: "#e07a80", ink: "#9a2d35" },
+        { onDark: "#d4dae2", ink: "#56606c" },
+      ],
+    },
+    ground: {
+      page: "#0d1016",
+      sidebar: "#0a0d12",
+      surface: ["#171c24", "#0e1218"],
+      hero: "#111620",
+      scrim: "#070a0f",
+      scrimStops: [97, 90, 46, 16, 84],
+      text: "#f5f6f8",
+      muted: "#a6adb8",
+      copy: "#acb3bd",
+      soft: "#7e858f",
+    },
+    /*
+      Four claims, each true of this lab and checkable in the guide below: the
+      constraint it teaches you to find, the twin you test a change on, the
+      trained model it actually ships, and the cost argument it refuses to
+      settle on downtime alone.
+    */
+    features: [
+      {
+        icon: "analysis",
+        title: "Find the constraint",
+        body: "The Optimizer shows which station sets the line's pace, and what improving it will — and will not — do to throughput.",
+      },
+      {
+        icon: "simulation",
+        title: "Test before committing",
+        body: "The digital twin runs a proposed change against the same line, so the argument is about a simulated result rather than an opinion.",
+      },
+      {
+        icon: "graph",
+        title: "A model with a model card",
+        body: "Predictive maintenance runs on trained weights shipped with the lab and a card describing them. The language model writes the prose, never the prediction.",
+      },
+      {
+        icon: "insight",
+        title: "Cost, not downtime alone",
+        body: "Reactive, preventive and predictive strategies are compared on total cost, which is where a schedule that looks safe often stops being worth it.",
+      },
+    ],
+  },
+
   summary: {
     tagline:
       "Find the bottleneck on a production line, predict a breakdown before it happens, and work out what the fix is worth.",

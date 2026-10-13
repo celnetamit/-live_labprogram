@@ -89,6 +89,13 @@ export const COVER_PHOTO: Record<string, CoverPhoto> = {
      NOTE: supplied from nature.com. It still needs its full citation in
      `credit` below, and a licence check before it is used commercially. */
   "spatial-ai": { src: "/labs/spatial-ai.ae49a5ba.jpg", tint: "#73687d", edge: "#685e72", edgeIsLight: true },
+  /* The factory floor this lab simulates: the line, the digital-twin board and
+     the machines the simulators stand in for. A 1672x941 photograph cropped to
+     2:1 — the catalogue card's own aspect — so it fills at every crop without
+     the backdrop fill the round spatial section needed. tint and edge measured
+     off the finished file; the frame ends on mid-grey concrete, so the credit
+     strip takes dark ink. */
+  "smartfactory-ai": { src: "/labs/smartfactory-ai.e9c31146.jpg", tint: "#737375", edge: "#6e6d6e", edgeIsLight: true },
   omicslab: { src: "/labs/omicslab.9a645e33.jpg", tint: "#888990", edge: "#8c8a88" },
   fraudshield: { src: "/labs/fraudshield.ee467982.jpg", tint: "#3a4045", edge: "#323b43" },
   logiclab: { src: "/labs/logiclab.32701fc0.jpg", tint: "#b9b9bc", edge: "#c2c4c8", edgeIsLight: true },
