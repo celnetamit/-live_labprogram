@@ -11,6 +11,91 @@ import type { LabGuide } from "./types";
 const guide: LabGuide = {
   slug: "ai-program-navigator",
 
+
+  showcase: {
+    overline: "Start here",
+    title: [{ text: "Live-Lab Learning" }, { text: "Program Navigator", accent: "primary", subtitle: true }],
+    headline: "The lab that helps you choose the other labs.",
+    intro:
+      "Describe your background and what you want to be able to do, and the navigator recommends a route through the catalogue — then shows the gap between your résumé and a target role before you commit to anything.",
+    about: [
+      "Rather than scrolling a catalogue and guessing, you say where you are starting from and what you want to be able to do, and the navigator proposes an order to work through.",
+      "The commonest way technical training is wasted is starting in the wrong place — a workshop too advanced to follow, or one teaching what you already know. Choosing well needs an honest picture of what you can currently do and what the role you want actually demands. Making that assessment explicit is the point of this tool.",
+    ],
+    tags: ["Learning route", "Résumé gap analysis", "Career report", "Workshop comparison"],
+    walkthroughTitle: "From where you are to which workshop comes first",
+    journey: "Program Navigator",
+    stats: [
+      { kind: "steps", label: "Guided steps" },
+      { kind: "walkthrough", label: "Walkthrough" },
+      { kind: "handsOn", label: "Hands-on time" },
+    ],
+    card: {
+      badge: "Start here",
+      icon: "sequence",
+      description:
+        "Not sure where to start? Describe your background and get a route through the catalogue built for you.",
+    },
+    /* Sampled from the cover: the interface's own blue (#23477b, #4c80aa)
+       carries it, with the warm brown of the desk and figure (#875b42) and the
+       amber of the lit workshop behind (#98794f) as accents. `onDark` lifts
+       each for the hero; `ink` darkens each to clear 4.5:1 on white. */
+    palette: {
+      primary: { onDark: "#5e9ad8", ink: "#1c4f8a" },
+      secondary: { onDark: "#cf9469", ink: "#7a4a2c" },
+      action: { onDark: "#d7dde3", ink: "#5c5a52" },
+      quiet: { onDark: "#7fa8c4", ink: "#3a6480" },
+      cta: { onDark: "#5e9ad8", ink: "#1c4f8a", text: "#04101c" },
+      level: "#cf9469",
+      features: [
+        { onDark: "#5e9ad8", ink: "#1c4f8a" },
+        { onDark: "#cf9469", ink: "#7a4a2c" },
+        { onDark: "#7fa8c4", ink: "#3a6480" },
+        { onDark: "#d7dde3", ink: "#5c5a52" },
+      ],
+    },
+    ground: {
+      page: "#0e1116",
+      sidebar: "#0a0d11",
+      surface: ["#181d25", "#0f1319"],
+      hero: "#121820",
+      scrim: "#080b0f",
+      scrimStops: [97, 90, 46, 16, 84],
+      text: "#f5f6f8",
+      muted: "#a7adb6",
+      copy: "#adb3bc",
+      soft: "#7f858e",
+    },
+    /*
+      Four claims, each one the guide already makes and each one checkable in
+      the tutorial below: the route it builds, the gap it measures, the basis
+      it compares workshops on, and the fact that it hands you off rather than
+      being somewhere you stay.
+    */
+    features: [
+      {
+        icon: "sequence",
+        title: "A route, not a list",
+        body: "You describe your background and your goal, and the catalogue comes back ordered — with the reasoning for that order rather than a ranking.",
+      },
+      {
+        icon: "analysis",
+        title: "The gap, measured",
+        body: "A résumé is compared against a target role so the missing skills are named, instead of being inferred from a course title.",
+      },
+      {
+        icon: "insight",
+        title: "Prerequisites, not titles",
+        body: "Workshops are set side by side on what they assume and what they leave you able to do, which is where a title is least reliable.",
+      },
+      {
+        icon: "graph",
+        title: "It hands you off",
+        body: "This is the meta-lab: once you have chosen, it launches the workshop directly. It is the starting point, not the destination.",
+      },
+    ],
+  },
+
   summary: {
     tagline:
       "Not sure where to start? Describe your background and get a route through the catalogue built for you.",

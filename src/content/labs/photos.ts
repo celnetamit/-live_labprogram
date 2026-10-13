@@ -96,6 +96,12 @@ export const COVER_PHOTO: Record<string, CoverPhoto> = {
      off the finished file; the frame ends on mid-grey concrete, so the credit
      strip takes dark ink. */
   "smartfactory-ai": { src: "/labs/smartfactory-ai.e9c31146.jpg", tint: "#737375", edge: "#6e6d6e", edgeIsLight: true },
+  /* A learner working through the Navigator: the catalogue route, the résumé
+     gap analysis and the launch list, all on screen. A 1536x1024 photograph
+     cropped to 2:1, the catalogue card's own aspect, so it fills at every
+     crop. The copy sits over the figure on the left, which is the darkest
+     part of the frame. tint and edge measured off the finished file. */
+  "ai-program-navigator": { src: "/labs/ai-program-navigator.50bfb0b3.jpg", tint: "#59514e", edge: "#72635c", edgeIsLight: true },
   omicslab: { src: "/labs/omicslab.9a645e33.jpg", tint: "#888990", edge: "#8c8a88" },
   fraudshield: { src: "/labs/fraudshield.ee467982.jpg", tint: "#3a4045", edge: "#323b43" },
   logiclab: { src: "/labs/logiclab.32701fc0.jpg", tint: "#b9b9bc", edge: "#c2c4c8", edgeIsLight: true },
