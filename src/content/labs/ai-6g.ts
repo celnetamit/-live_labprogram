@@ -111,8 +111,27 @@ const guide: LabGuide = {
   },
 
   video: {
-    url: "/demos/ai-6g.mp4",
-    poster: "/demos/ai-6g.jpg",
+    /*
+     * The `?v=` is a cache key, not decoration.
+     *
+     * These files are replaced in place and served with
+     * `cache-control: public, max-age=14400`, so a browser that fetched the
+     * previous cut keeps serving it for four hours after a deploy that
+     * succeeded — the asset has no content hash in its name, unlike the
+     * JavaScript bundles. Bump this whenever the file behind it changes and the
+     * old copy can never be served, because it is a different URL.
+     */
+    url: "/demos/ai-6g.mp4?v=2026-10-13",
+    poster: "/demos/ai-6g.jpg?v=2026-10-13",
+    /*
+     * This cut is narrated, so it needs a real caption track — the player's
+     * badge is driven by this field, and without it the page told a deaf
+     * learner "No narration — on-screen text only", which stopped being true
+     * the moment the voice track was added. The cues carry the spoken script
+     * with its display spellings, not the pronunciation spellings the
+     * synthesiser was given.
+     */
+    captions: "/demos/ai-6g.vtt?v=2026-10-13",
     durationSec: 75,
     chapters: [
       { at: 0, label: "What the lab is" },
