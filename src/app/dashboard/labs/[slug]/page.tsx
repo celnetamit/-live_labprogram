@@ -345,7 +345,12 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
           width === "full" ? "w-full" : "w-full sm:w-auto"
         }`}
       >
-        {showcase ? startLabel : "Open the lab"} <ExternalLink className="h-4 w-4" />
+        {/*
+          One verb for one action, everywhere. The dashboard card now says
+          "Launch the lab" for this same href, so this says the same — a reviewer
+          counted three different labels for opening the application.
+        */}
+        Launch the lab <ExternalLink className="h-4 w-4" />
       </a>
     ) : (
       <span className="text-sm text-muted-foreground">No launch URL configured.</span>

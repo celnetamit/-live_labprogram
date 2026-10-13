@@ -139,9 +139,9 @@ const guide: LabGuide = {
     "**Phishing Classification:** Compare malicious and legitimate messages and examine the evidence behind each result.",
     "**Identity Analysis:** Compare document and capture images for visual consistency and possible manipulation.",
     "**Voice Biometrics:** Compare voice samples and examine indicators of genuine, replayed, or synthetic audio.",
-    "**Model Workbench:** Compare models, adjust decision thresholds, and observe changes in performance.",
-    "**Adversarial Stress Testing:** Test how the detector responds when transaction patterns are changed.",
-    "**Fraud Intelligence:** Review fraud trends, network relationships, and model health.",
+    "**Model Workbench (Intermediate):** Compare models, adjust decision thresholds, and observe changes in performance.",
+    "**Typology Stress Test (Intermediate):** Replay six attack patterns against the detector and find which it handles worst.",
+    "**Fraud Intelligence (Intermediate):** Review fraud trends, network relationships, and model health.",
     "**Assessment:** Complete knowledge questions and practical decision-making exercises.",
   ],
 
@@ -154,8 +154,9 @@ const guide: LabGuide = {
         "Review the list of modules.",
         "Read the key terms before starting the practical work.",
       ],
-      expect: "A clear outline of the workshop and its activities.",
-      why: "The curriculum explains how the different parts of the lab are connected.",
+      expect:
+        "A clear outline of the workshop and its activities. Note the mode selector in the lab: steps 1 to 4 work in Basic, while steps 5, 6 and 7 use the Model Workbench, the Typology Stress Test and Fraud Intelligence, which are Intermediate surfaces.",
+      why: "The curriculum explains how the different parts of the lab are connected. One ordering detail is worth knowing before you start: Intermediate unlocks after you have scored a batch of transactions (step 2) and completed the assessment (step 8), and then chosen to switch. Working strictly top to bottom therefore meets a locked panel at step 5, so take the assessment straight after step 2 if you want to continue without interruption.",
       minutes: 6,
     },
     {
@@ -178,7 +179,7 @@ const guide: LabGuide = {
       actions: [
         "Open Phishing Email Classifier.",
         "Test the supplied malicious and legitimate messages.",
-        "Review the sender, wording, links, and requests in each message.",
+        "Review the wording, the links and the request in each message. The classifier reads the message body only — it has no sender, no Reply-To and no SPF, DKIM or DMARC result — so note what a header check would have told you that the text cannot.",
         "Edit one message and run the classifier again.",
       ],
       expect: "Small changes in the message may change its risk score.",
@@ -200,7 +201,17 @@ const guide: LabGuide = {
       minutes: 14,
     },
     {
-      title: "Adjust the Decision Threshold",
+      /*
+       * Mode requirement, stated where it bites.
+       *
+       * A reviewer following the steps in order was blocked here: the Model
+       * Workbench and the stress test are Intermediate surfaces, and Intermediate
+       * unlocks after a guided investigation (step 2) *and* an assessment (step
+       * 8). Working through the list in order therefore walks into a locked door
+       * at step 5. The fix is to say so before it happens rather than to leave
+       * someone wondering whether the lab is broken.
+       */
+      title: "Adjust the Decision Threshold (needs Intermediate mode)",
       goal: "See how moving the decision threshold trades fraud detection against false alerts.",
       actions: [
         "Open Model Tuning Workbench.",
@@ -214,21 +225,22 @@ const guide: LabGuide = {
       minutes: 15,
     },
     {
-      title: "Test the Detector",
-      goal: "Test how sensitive the detector is to changes in transaction details.",
+      title: "Test the Detector Against Attack Typologies (needs Intermediate mode)",
+      goal: "Find which kinds of fraud the detector handles worst, and say what you would do about it.",
       actions: [
-        "Open Adversarial Stress Test.",
-        "Select a flagged transaction.",
-        "Change one feature at a time, such as the amount, timing, device, or location.",
-        "Run the transaction again after each change.",
-        "Record how the risk score changes.",
+        "Open Typology Stress Test. It replays six attack patterns generated with a different seed from the training data.",
+        "Read the per-typology detection rates — they are ordered worst-first.",
+        "Expand the weakest typology and read its lowest-scoring case.",
+        "Change the alert threshold and watch which typologies cross it; note that comparing two models at one threshold is not like-for-like, because each model's scores sit on its own scale.",
+        "Decide what you would add to close the worst gap — a feature, a rule, or a review step.",
       ],
-      expect: "Some changes may move the transaction below the alert threshold.",
-      why: "Fraud patterns can change. This activity shows how sensitive the detector is to changes in transaction details.",
+      expect:
+        "Detection varies sharply by typology: account takeover is caught far more often than synthetic-identity bust-out, which looks like ordinary account growth until the final draw-down.",
+      why: "An overall detection rate hides the typology an attacker will actually choose. This is a coverage test rather than an adversarial one — nothing here optimises against the model — so read it as what the detector has not been taught, not as what a motivated attacker would achieve.",
       minutes: 15,
     },
     {
-      title: "Review Fraud Patterns",
+      title: "Review Fraud Patterns (needs Intermediate mode)",
       goal: "Review fraud trends and the transaction network alongside individual scores.",
       actions: [
         "Open Intelligence from the sidebar.",
@@ -266,11 +278,11 @@ const guide: LabGuide = {
     },
     {
       problem: "An AI-backed lab returns an error instead of a result.",
-      fix: "Those tabs call a language model through a gateway. Wait a moment and retry — transient upstream errors are the common cause. If it persists across labs, the workshop's provider key or gateway needs attention from the organiser.",
+      fix: "Those panels render in 3D and need WebGL, which some remote-desktop and locked-down browser configurations disable. Check that hardware acceleration is enabled, then reload. Nothing on those panels calls a language model — every figure in the labs is computed in your browser — so a missing AI provider is never the cause.",
     },
     {
       problem: "My tuned threshold looks perfect on the test data.",
-      fix: "That is a warning sign, not a result. Take it to the Adversarial Stress Lab — a threshold that looks perfect on a static set has usually been fitted to that set.",
+      fix: "A threshold chosen by sweeping the split you then report from is the best of ninety-nine tries on those rows, not an estimate of what the next transaction will do. Choose it on the validation split and measure it once on test — the Model Workbench does this for you and shows the same threshold's validation and test figures side by side, so you can see what the discipline costs. Two further checks on any threshold that looks too good: the held-out split holds about a hundred fraud cases, so read the bootstrap interval under each figure before believing a difference, and the Typology Stress Test will show you which attack patterns that threshold still misses.",
     },
   ],
 

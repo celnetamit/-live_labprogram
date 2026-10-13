@@ -322,7 +322,14 @@ export default function DashboardClient({
                       className={`${resume.showcase ? "sc-card-primary" : "ui-btn ui-btn-primary"} focus-ring`}
                     >
                       <Play className="h-4 w-4" />
-                      {resume.status === "not-started" ? "Start lab" : "Resume lab"}
+                      {/*
+                        These two buttons sat side by side as "Start lab" and
+                        "Open the lab", which a reviewer read as the same action
+                        twice. They are not: the first opens the written guide on
+                        this site, the second launches the lab application in a new
+                        tab. The labels now say which is which.
+                      */}
+                      {resume.status === "not-started" ? "Read the guide" : "Resume the guide"}
                     </Link>
                     {resume.sourceUrl && (
                       <a
@@ -331,7 +338,7 @@ export default function DashboardClient({
                         rel="noopener noreferrer"
                         className="ui-btn ui-btn-ghost focus-ring"
                       >
-                        Open the lab <ExternalLink className="h-3.5 w-3.5" />
+                        Launch the lab <ExternalLink className="h-3.5 w-3.5" />
                       </a>
                     )}
                     {resume.lastActiveAt && (
