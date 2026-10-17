@@ -802,6 +802,35 @@
   color: var(--foreground);
 }
 
+/*
+  The lab page as a document.
+
+  Asked for in these words: "make page color this type white like file docs
+  so that each word can appear crystal and clear", against a screenshot of a
+  Google Doc. Measured from the painted pixels first, because the complaint
+  was not what it looked like: the surfaces were already white — the tutorial
+  panel reads 255,255,255 and the page 251,252,254 — while the prose inside
+  them did not. Titles and the About Lab body paint at 13,17,27 (17.9:1), and
+  every goal, action, "You should see" and "Why" line paints at 99,105,117 —
+  5.31:1, which clears AA and still reads as grey next to a Doc's near-black.
+  112 elements on the page were on that one tone.
+
+  So the fix is the ink, not the background. `--muted-foreground` is
+  re-pointed for the whole subtree rather than retyped on 112 elements, which
+  also means a token this page already derives from — `--sc-about-fg`,
+  `--sc-quiet-text` — follows it. oklch(0.39) lands body copy at ~9.6:1 on
+  white: unmistakably darker, and still a step below the headings so the
+  hierarchy survives.
+
+  Light theme only. In the dark theme the same move would push quiet copy
+  towards the page's near-white `--foreground`, which is glare, not clarity;
+  `.dark .showcase-scope` keeps setting its own `--sc-g-muted` there and this
+  rule never matches.
+*/
+html:not(.dark) .lab-doc {
+  --muted-foreground: oklch(0.39 0.016 266);
+}
+
 /* ---------- Panels ---------- */
 
 .showcase-scope .panel {
@@ -976,12 +1005,11 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.sc-overline::before {
-  content: "";
-  width: 26px;
-  height: 1px;
-  background: currentColor;
-}
+/*
+  No leading rule. The overline carried a 26px hairline before the text,
+  which reads as a stray hyphen at 11px — asked for and removed on every lab
+  hero, so the kicker starts on its first letter.
+*/
 
 .sc-title {
   margin: 0;

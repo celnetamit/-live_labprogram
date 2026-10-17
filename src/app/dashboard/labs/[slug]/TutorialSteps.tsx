@@ -247,15 +247,23 @@ export default function TutorialSteps({
           return (
             <li
               key={step.title}
-              /* `rounded-lg` inside the panel's 16px, and a `muted` recess:
-                 `bg-background/40` is 4/255 from the card in the light theme,
-                 so a done card and a not-done card differed by 1.05:1 —
-                 indistinguishable. The done state gets a left rule as well as
-                 a wash, so it does not rest on colour alone. */
+              /* `rounded-lg` inside the panel's 16px.
+
+                 Light theme: paper. The card was a `muted` recess, which
+                 painted 248,249,251 — three points off the panel, enough to
+                 read as a grey box in a screenshot next to a document and not
+                 enough to be a deliberate recess. White, with the hairline
+                 border doing the separating, is what was asked for. Dark
+                 keeps the recess: there the panel is a gradient and a white
+                 card would be a lightbox.
+
+                 The done state gets a left rule as well as a wash, so it does
+                 not rest on colour alone — `bg-background/40` was 4/255 from
+                 the card and the two states differed by 1.05:1. */
               className={`relative rounded-lg border p-4 transition-colors sm:p-5 ${
                 isDone
                   ? "border-[color:color-mix(in_oklch,var(--color-success)_35%,transparent)] border-l-2 border-l-[color:var(--color-success-solid)] bg-[color:color-mix(in_oklch,var(--color-success)_10%,transparent)]"
-                  : "border-border bg-muted/50"
+                  : "border-border bg-white dark:bg-muted/50"
               }`}
             >
               <div className="flex items-start gap-3 sm:gap-4">
@@ -294,7 +302,7 @@ export default function TutorialSteps({
                   >
                     {step.title}
                   </h3>
-                  <p className="mt-0.5 text-sm text-muted-foreground [hyphens:auto] [text-align:justify]">
+                  <p className="mt-0.5 text-sm text-foreground dark:text-muted-foreground [hyphens:auto] [text-align:justify]">
                     <RichText>{step.goal}</RichText>
                   </p>
 
@@ -310,7 +318,7 @@ export default function TutorialSteps({
                             <span className="mt-px font-mono text-[11px] tabular-nums text-primary">
                               {index + 1}.{actionIndex + 1}
                             </span>
-                            <span className="leading-relaxed text-muted-foreground [hyphens:auto] [text-align:justify]">
+                            <span className="leading-relaxed text-foreground dark:text-muted-foreground [hyphens:auto] [text-align:justify]">
                               <RichText>{action}</RichText>
                             </span>
                           </li>
@@ -320,7 +328,7 @@ export default function TutorialSteps({
                       <div className="border-l-2 border-[color:color-mix(in_oklch,var(--color-success)_45%,transparent)] pl-3">
                         <p className="flex gap-2 text-sm">
                           <Eye className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-success-ink)]" />
-                          <span className="leading-relaxed text-muted-foreground [hyphens:auto] [text-align:justify]">
+                          <span className="leading-relaxed text-foreground dark:text-muted-foreground [hyphens:auto] [text-align:justify]">
                             <span className="font-semibold text-[color:var(--color-success-ink)]">
                               You should see:{" "}
                             </span>
@@ -333,7 +341,7 @@ export default function TutorialSteps({
                         <div className="border-l-2 border-[color:color-mix(in_oklch,var(--color-warning)_45%,transparent)] pl-3">
                           <p className="flex gap-2 text-sm">
                             <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-warning-ink)]" />
-                            <span className="leading-relaxed text-muted-foreground [hyphens:auto] [text-align:justify]">
+                            <span className="leading-relaxed text-foreground dark:text-muted-foreground [hyphens:auto] [text-align:justify]">
                               <span className="font-semibold text-[color:var(--color-warning-ink)]">
                                 Why:{" "}
                               </span>
