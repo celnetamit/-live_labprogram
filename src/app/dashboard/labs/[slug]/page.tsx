@@ -329,13 +329,10 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
   const launchButton = (width: "auto" | "full") =>
     launchUrl ? (
       /*
-        The dashboard already links this exact href, and calls it "Open the
-        lab" on a flat `bg-primary` button. This one said "Launch lab" on a
-        `btn-brand` gradient — so a learner who pressed "Start lab" on a card
-        reached a page offering a third verb for the same action, in a fourth
-        shape. The gradient also failed contrast: `--primary-foreground` over
-        it runs 5.07:1 at the violet end down to 3.20:1 at the blue end in the
-        light theme, and the centred label sits in the failing half.
+        This button used a `btn-brand` gradient, which failed contrast:
+        `--primary-foreground` over it runs 5.07:1 at the violet end down to
+        3.20:1 at the blue end in the light theme, and the centred label sits
+        in the failing half. It is a flat `bg-primary` now.
       */
       <a
         href={launchUrl}
@@ -346,15 +343,31 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
         }`}
       >
         {/*
-          One verb for one action, everywhere. The dashboard card now says
-          "Launch the lab" for this same href, so this says the same — a reviewer
-          counted three different labels for opening the application.
+          `startLabel`, not a hard-coded verb. The hero already uses it, so
+          hard-coding "Launch the lab" here put two different labels on the
+          same href on the same page — and left a learner who had finished the
+          lab reading "Review lab" in the hero and "Launch the lab" in the
+          rail. One label, and it follows where the learner actually is.
         */}
-        Launch the lab <ExternalLink className="h-4 w-4" />
+        {startLabel} <ExternalLink className="h-4 w-4" />
       </a>
     ) : (
       <span className="text-sm text-muted-foreground">No launch URL configured.</span>
     );
+
+  /*
+    The link back to My Labs also sits in the sticky rail. The one above the
+    hero scrolls away, and a review of the RepurposeAI page (15 October) asked
+    for a way back from the rail itself.
+  */
+  const railBackLink = (
+    <Link
+      href="/dashboard/labs"
+      className="focus-ring mt-2 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+    >
+      <ArrowLeft className="h-4 w-4" /> Back to My Labs
+    </Link>
+  );
 
   return (
     /* Bottom padding clears the fixed mobile action bar. */
@@ -691,7 +704,16 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                         sections={sections}
                         variant="rail"
                         appearance="showcase"
-                        lead={owned ? launchButton("full") : undefined}
+                        lead={
+                          owned ? (
+                            <>
+                              {launchButton("full")}
+                              {railBackLink}
+                            </>
+                          ) : (
+                            railBackLink
+                          )
+                        }
                       />
                       {!owned ? (
                         <div className="sc-access-card">
@@ -732,6 +754,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                 ) : (
                   <div className="panel">
                     <div className="relative z-10 p-3">
+                      <div className="mb-3">{railBackLink}</div>
                       <SectionNav sections={sections} variant="rail" />
                     </div>
                   </div>

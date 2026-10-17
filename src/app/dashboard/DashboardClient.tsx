@@ -338,7 +338,15 @@ export default function DashboardClient({
                         rel="noopener noreferrer"
                         className="ui-btn ui-btn-ghost focus-ring"
                       >
-                        Launch the lab <ExternalLink className="h-3.5 w-3.5" />
+                        {/* Same action, same words as the lab page's own
+                            controls: the verb follows the learner's progress
+                            rather than being fixed here. */}
+                        {resume.status === "completed"
+                          ? "Review lab"
+                          : resume.status === "in-progress"
+                            ? "Resume lab"
+                            : "Start lab"}{" "}
+                        <ExternalLink className="h-3.5 w-3.5" />
                       </a>
                     )}
                     {resume.lastActiveAt && (

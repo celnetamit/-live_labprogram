@@ -164,7 +164,7 @@ const guide: LabGuide = {
       title: "Read the project brief and answer the pre-lab diagnostic",
       goal: "Find out what you are being asked to determine, and what the lab already knows that you do not.",
       actions: [
-        "Launch the lab, choose **Basic — Learn XRD**, and read the brief for **CALCITE-BEG-001**.",
+        "Press **Start lab**, choose **Basic — Learn XRD**, and read the brief for **CALCITE-BEG-001**.",
         "Note the research question and the **Sample visibility** panel: calcite's identity is given to you, its crystallite size is not.",
         "Note the budget — 150 minutes of instrument time and up to 6 runs — then answer the short pre-lab questions.",
         "Click **Start this project**.",
