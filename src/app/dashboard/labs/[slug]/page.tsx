@@ -4,9 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import {
-  ArrowLeft,
   Award,
   CalendarClock,
   CheckCircle2,
@@ -160,13 +158,6 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
     const launch = formatLaunchDate(lab.launchAt);
     return (
       <div className="mx-auto max-w-3xl">
-        <Link
-          href="/dashboard/labs"
-          className="-ml-2 mb-4 inline-flex h-9 items-center gap-2 rounded-lg px-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-ring"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back to My Labs
-        </Link>
-
         <section className="panel">
           <div className="relative z-10 p-6 sm:p-8">
             {/* Token colours, not raw `sky-400`: a fixed palette class does not
@@ -360,15 +351,6 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
     hero scrolls away, and a review of the RepurposeAI page (15 October) asked
     for a way back from the rail itself.
   */
-  const railBackLink = (
-    <Link
-      href="/dashboard/labs"
-      className="focus-ring mt-2 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
-    >
-      <ArrowLeft className="h-4 w-4" /> Back to My Labs
-    </Link>
-  );
-
   return (
     /* Bottom padding clears the fixed mobile action bar. */
     <div
@@ -397,13 +379,6 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
       }
     >
       {showcase && <style>{showcaseChromeCss(showcase)}</style>}
-      <Link
-        href="/dashboard/labs"
-        className="-ml-2 mb-4 inline-flex h-9 items-center gap-2 rounded-lg px-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-ring"
-      >
-        <ArrowLeft className="h-4 w-4" /> Back to My Labs
-      </Link>
-
       {/*
         Hero.
 
@@ -704,16 +679,7 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                         sections={sections}
                         variant="rail"
                         appearance="showcase"
-                        lead={
-                          owned ? (
-                            <>
-                              {launchButton("full")}
-                              {railBackLink}
-                            </>
-                          ) : (
-                            railBackLink
-                          )
-                        }
+                        lead={owned ? launchButton("full") : undefined}
                       />
                       {!owned ? (
                         <div className="sc-access-card">
@@ -754,7 +720,6 @@ export default async function LabDetail({ params }: { params: Promise<{ slug: st
                 ) : (
                   <div className="panel">
                     <div className="relative z-10 p-3">
-                      <div className="mb-3">{railBackLink}</div>
                       <SectionNav sections={sections} variant="rail" />
                     </div>
                   </div>

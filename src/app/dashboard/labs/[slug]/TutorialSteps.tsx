@@ -294,7 +294,7 @@ export default function TutorialSteps({
                   >
                     {step.title}
                   </h3>
-                  <p className="mt-0.5 text-sm text-muted-foreground">
+                  <p className="mt-0.5 text-sm text-muted-foreground [hyphens:auto] [text-align:justify]">
                     <RichText>{step.goal}</RichText>
                   </p>
 
@@ -310,7 +310,7 @@ export default function TutorialSteps({
                             <span className="mt-px font-mono text-[11px] tabular-nums text-primary">
                               {index + 1}.{actionIndex + 1}
                             </span>
-                            <span className="leading-relaxed text-muted-foreground">
+                            <span className="leading-relaxed text-muted-foreground [hyphens:auto] [text-align:justify]">
                               <RichText>{action}</RichText>
                             </span>
                           </li>
@@ -320,7 +320,7 @@ export default function TutorialSteps({
                       <div className="border-l-2 border-[color:color-mix(in_oklch,var(--color-success)_45%,transparent)] pl-3">
                         <p className="flex gap-2 text-sm">
                           <Eye className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-success-ink)]" />
-                          <span className="leading-relaxed text-muted-foreground">
+                          <span className="leading-relaxed text-muted-foreground [hyphens:auto] [text-align:justify]">
                             <span className="font-semibold text-[color:var(--color-success-ink)]">
                               You should see:{" "}
                             </span>
@@ -333,7 +333,7 @@ export default function TutorialSteps({
                         <div className="border-l-2 border-[color:color-mix(in_oklch,var(--color-warning)_45%,transparent)] pl-3">
                           <p className="flex gap-2 text-sm">
                             <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-warning-ink)]" />
-                            <span className="leading-relaxed text-muted-foreground">
+                            <span className="leading-relaxed text-muted-foreground [hyphens:auto] [text-align:justify]">
                               <span className="font-semibold text-[color:var(--color-warning-ink)]">
                                 Why:{" "}
                               </span>

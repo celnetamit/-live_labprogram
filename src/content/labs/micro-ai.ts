@@ -303,116 +303,110 @@ const guide: LabGuide = {
     "**Guided Analysis & Assessment** — Follow a structured workflow with guided interpretation and knowledge checks to understand results and progress through each stage of the lab.",
   ],
 
+  /*
+    The eight steps supplied for this lab, in its own words.
+
+    Copied verbatim: the wording is the brief, so no control name has been
+    bolded and no sentence reworded to match the house style other guides
+    use. `minutes` are carried over from the steps these replace, one for
+    one, so the lab's hands-on total stays 78 minutes and the figure on the
+    catalogue card does not move.
+  */
   steps: [
     {
-      title: "Understand the Key Terms",
-      goal: "Start by reviewing the terms used throughout the lab.",
+      title: "Understand the Lab Objectives",
+      goal: "Begin by familiarizing yourself with the scientific objectives and analytical workflow of MicrobeAI Lab.",
       actions: [
-        "Open the Knowledge Bank and read about metagenomics, taxonomic levels, functional potential, and anaerobic digestion.",
-        "Pay particular attention to terms such as detected, inferred, predicted, and unknown.",
+        "Review the three core objectives: Microbial Communities, Functional Prediction, and Bioreactor Simulation.",
+        "Explore how microbial community composition, metabolic potential, and bioreactor operating conditions are related.",
       ],
-      expect:
-        "You can explain metagenomics, taxonomic levels, functional potential and anaerobic digestion in your own words, and say what detected, inferred, predicted and unknown each mean.",
-      why:
-        "These words describe different types and levels of scientific evidence. Understanding the distinction will help you interpret the results appropriately.",
+      expect: "An overview of the lab objectives and the sequence of analyses.",
+      why: "Understanding these connections provides a foundation for interpreting microbial ecology and anaerobic digestion processes.",
       minutes: 8,
     },
-
     {
-      title: "Start with a Digester Dataset",
-      goal: "Load a real dataset and see what it is before any microbial result appears.",
+      title: "Start Experiment",
+      goal: "Begin your investigation by selecting a microbial sequencing dataset.",
       actions: [
-        "Open Getting Started and select Explore Anaerobic Digestion.",
+        "Select Run New Experiment to initiate the analysis.",
+        "Navigate to Input Data and choose the available anaerobic-digester dataset.",
+        "Review the dataset description and sample information.",
       ],
-      expect:
-        "The lab loads the anaerobic-digester sludge dataset and takes you to QC & Eligibility, where you can review the file information before examining microbial results.",
-      why:
-        "Before analysing a sample, it is important to understand the type and quality of data you are working with.",
+      expect: "The selected dataset and its associated information, ready for quality assessment.",
+      why: "Understanding the origin and characteristics of a dataset is essential for reliable interpretation of microbial community profiles.",
       minutes: 6,
     },
-
     {
-      title: "Check the Data Quality",
-      goal: "Work through QC & Eligibility to understand what the data is and what it can support.",
+      title: "Assess Data Quality & Eligibility",
+      goal: "Evaluate the quality and suitability of the sequencing data before proceeding with biological analysis.",
       actions: [
-        "Work through the four sections in QC & Eligibility: Input Summary, Content Inspection, Quality Control, and Analysis Eligibility.",
+        "Open QC & Eligibility and review the Input Summary and Content Inspection.",
+        "Examine the available quality indicators and sequence characteristics.",
+        "Review Analysis Eligibility to identify supported analyses and potential data limitations.",
       ],
-      expect:
-        "Each section reviews the file format, sequence information, quality measures, and the analyses that are suitable for the dataset.",
-      why:
-        "A dataset may be appropriate for some analyses but not others. These checks help you understand what conclusions the data can reasonably support.",
+      expect: "A summary of data characteristics, quality indicators, and analysis eligibility.",
+      why: "Quality assessment helps establish the reliability of the input data and the types of scientific conclusions it can support.",
       minutes: 10,
     },
-
     {
-      title: "Explore the Microbial Community",
-      goal: "View the microbial groups classified in the sample.",
+      title: "Characterize the Microbial Community",
+      goal: "Investigate the taxonomic composition and relative abundance of microorganisms within the sample.",
       actions: [
-        "Open Community Profile to view the microbial groups classified in the sample.",
-        "Explore the community at different taxonomic levels and examine the relative abundance of different groups.",
-        "View the proportion of sequences that remain unclassified.",
+        "Open Microbial Community Profile to explore the classified microbial groups.",
+        "Examine taxonomic distributions at different classification levels.",
+        "Compare dominant and less abundant microbial groups, including the proportion of unclassified sequences.",
       ],
-      expect:
-        "You see the community profile: the microbial groups classified in the sample, their relative abundance across taxonomic levels, and the unclassified fraction.",
-      why:
-        "The community profile provides an overview of the microbial composition of the sample. Relative abundance represents proportions within the classified data; it is not a direct measurement of cell number, biomass, or activity.",
+      expect: "Taxonomic profiles illustrating microbial composition and relative abundance patterns.",
+      why: "Community profiling provides insights into microbial diversity and composition. Relative abundance, however, should not be interpreted as a direct measure of microbial activity or biomass.",
       minutes: 12,
     },
-
     {
-      title: "Explore Functional Potential",
-      goal: "Explore possible biological roles associated with the identified microbial community.",
+      title: "Investigate Microbial Functional Potential",
+      goal: "Explore the potential metabolic capabilities of the identified microbial community.",
       actions: [
-        "Open Functional Potential and Traits & Guilds to explore possible biological roles associated with the identified microbial community.",
+        "Open Functional Potential to examine inferred biological functions.",
+        "Explore the four principal stages of anaerobic digestion: hydrolysis, acidogenesis, acetogenesis, and methanogenesis.",
+        "Review potential microbial contributions to organic matter degradation and methane formation.",
       ],
-      expect:
-        "You see the possible biological roles associated with the microbial community identified in the sample, organised by pathway and by guild.",
-      why:
-        "In Microbe Lab, functional information is inferred from the organisms identified in the sample together with curated reference information. It can suggest what the community may be capable of doing, but it does not demonstrate that these functions are currently active. This distinction should remain clear throughout the lab.",
+      expect: "Inferred functional pathways associated with anaerobic digestion.",
+      why: "Functional predictions provide insight into potential microbial capabilities but do not establish whether the corresponding metabolic processes are active.",
       minutes: 10,
     },
-
     {
-      title: "Understand the Visual Results",
-      goal: "Explore the available figures, and check what each one is claiming.",
+      title: "Examine Microbial Traits & Functional Guilds",
+      goal: "Explore how microbial groups may contribute to different stages of anaerobic digestion.",
       actions: [
-        "Open the Visualiser and explore the available figures.",
-        "Check the source label on each visual.",
+        "Open Microbial Traits and Functional Guilds.",
+        "Examine inferred microbial traits associated with substrate degradation, intermediate metabolite transformation, and methanogenesis.",
+        "Review functional guild assignments and the taxonomic evidence supporting them.",
       ],
-      expect:
-        "Some figures are based on project data, while others are curated examples or supporting learning materials — and the source label tells you which.",
-      why:
-        "A reference diagram can explain a biological concept, but it is different from a result generated from the learner's sample. Source labels help learners distinguish between sample-derived results and educational reference material.",
+      expect: "Microbial groups organized according to their inferred metabolic characteristics and ecological roles.",
+      why: "Functional guild analysis helps explain the potential contributions of different microorganisms to anaerobic digestion and their possible metabolic relationships.",
       minutes: 6,
     },
-
     {
-      title: "Explore the Anaerobic Digestion Model",
-      goal: "Run the digester simulation and see how operating conditions change its output.",
+      title: "Explore Bioreactor Simulation",
+      goal: "Investigate how operating conditions may influence anaerobic digestion and simulated biogas production.",
       actions: [
-        "Open Bioreactor and begin with the default conditions.",
-        "Run the simulation, then change one condition at a time.",
-        "Explore the effects of changing pH, temperature, substrate, and hydraulic retention time (HRT).",
-        "Compare the outputs after each change.",
+        "Open Bioreactor and begin with the default operating conditions.",
+        "Modify temperature, pH, hydraulic retention time (HRT), and organic loading individually.",
+        "Observe and compare the simulated responses under different conditions.",
       ],
-      expect:
-        "The outputs change as you vary pH, temperature, substrate and HRT. Note: the results are generated by an educational simulation. They are not predictions for a real biogas plant or operating digester.",
-      why:
-        "Anaerobic digestion is affected by both microbial processes and operating conditions. The simulation helps you explore how these factors are represented in the model.",
+      expect: "Model-generated changes in biogas production and reactor performance indicators.",
+      why: "Simulation provides a controlled environment for examining how operating parameters influence anaerobic digestion. Results represent model-based estimates rather than validated predictions of actual plant performance.",
       minutes: 14,
     },
-
     {
-      title: "Check Your Understanding",
-      goal: "Test what you understood, and unlock the next level.",
+      title: "Interpret & Review Your Results",
+      goal: "Consolidate the findings to develop an integrated understanding of microbial communities and anaerobic digestion.",
       actions: [
-        "After completing the workflow, open the Assessment.",
-        "Answer the questions and submit. Each tests your understanding of a different part of the lab.",
-        "Once you complete the required assessment, unlock Moderate Mode and continue to the next level.",
-        "Optional: compare the starting digester dataset with the provided acid-stress dataset to examine how microbial communities differ under stressed conditions.",
+        "Review the microbial community composition and inferred functional potential.",
+        "Examine the relationship between microbial traits, functional guilds, and simulated bioreactor performance.",
+        "Identify important trends while considering data limitations and model assumptions.",
+        "Select My Experiments to access and review your saved analyses.",
       ],
-      expect:
-        "Completing the required assessment lets you unlock Moderate Mode and continue to the next level.",
+      expect: "A consolidated record of your microbial analyses and bioreactor simulation results.",
+      why: "Integrating taxonomic, functional, and simulation findings supports a more comprehensive understanding of microbial ecology and its potential relevance to biogas production.",
       minutes: 12,
     },
   ],
