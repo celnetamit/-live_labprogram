@@ -241,6 +241,11 @@ export type LabGuide = {
    * checklist and reads oddly under that title — e.g. `"Before you start"`.
    */
   prerequisitesLabel?: string;
+  /**
+   * The lead line under "Step-by-Step Tutorial", when this lab's own brief
+   * supplies one. Left out, the panel keeps the line every lab shares.
+   */
+  tutorialIntro?: string;
   steps: TutorialStep[];
   troubleshooting: { problem: string; fix: string }[];
   furtherReading: { label: string; href: string }[];

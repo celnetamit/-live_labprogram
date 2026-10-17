@@ -1332,13 +1332,16 @@ html:not(.dark) .lab-doc {
   Written with :where() on both halves so the whole selector has zero
   specificity. It therefore acts as a default that any explicit alignment
   beats — the centred unlock panel, a `text-right` figure, a Tailwind
-  `text-center` anywhere inside — instead of fighting them. `hyphens: auto`
-  is not optional here: justifying a measure this wide without it opens
-  rivers of white space between the words.
+  `text-center` anywhere inside — instead of fighting them.
+
+  `hyphens: manual`, not `auto`: automatic hyphenation breaks a word across
+  two lines with a dash ("molecular tar-" / "gets"), and Amit asked for the
+  dashes out of the text. Justification without it opens wider word gaps on
+  a narrow measure; that is the trade that was chosen.
 */
 :where(.lab-prose) :where(p, li, dd, blockquote) {
   text-align: justify;
-  hyphens: auto;
+  hyphens: manual;
 }
 /*
   …but not a heading, and not a control.
@@ -1364,7 +1367,7 @@ html:not(.dark) .lab-doc {
   font-size: 14px;
   line-height: 1.72;
   text-align: justify;
-  hyphens: auto;
+  hyphens: manual;
 }
 .sc-feature-grid {
   display: grid;
@@ -1515,7 +1518,7 @@ html:not(.dark) .lab-doc {
   font-size: 12.5px;
   line-height: 1.6;
   text-align: justify;
-  hyphens: auto;
+  hyphens: manual;
 }
 
 /* ---------- Rail ---------- */
@@ -3331,7 +3334,7 @@ html:not(.dark) .lab-doc {
   line-height: 1.75;
   text-align: justify;
   text-align-last: left;
-  hyphens: auto;
+  hyphens: manual;
   overflow-wrap: break-word;
 }
 @media (prefers-reduced-motion: reduce) {

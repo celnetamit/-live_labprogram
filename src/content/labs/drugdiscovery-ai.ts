@@ -19,26 +19,25 @@ const guide: LabGuide = {
     tagline: "Explore, Predict, and Prioritize New Therapeutic Potentials for Existing Drugs",
     what: "Repurpose is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations. In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects.",
     /*
-     * The brief gives this as two paragraphs; Amit asked for bullets on
-     * 3 October, which is also how the other twelve labs carry the section.
-     * Split at sentence boundaries only: every word is still the brief's.
+     * Four bullets, as the 17 October brief writes them. `whoFor` is that
+     * brief's lead sentence followed by its four subject areas, one per
+     * paragraph, because the field is prose rather than a list.
      */
     why: [
-      "Drug repurposing looks at whether an existing medicine may also be useful for another disease.",
-      "An existing drug may already have safety, pharmacology, and clinical information available, which can support research into a new use.",
-      "However, its safety and effectiveness for the new disease still need to be tested.",
-      "Biomedical information is spread across research papers and databases.",
-      "Knowledge graphs bring information about drugs, genes, diseases, and other biological entities together in a structured way.",
-      "Graph-based methods can then help researchers study these relationships and identify possible connections for further investigation.",
+      "Drug repurposing explores new therapeutic applications for existing medicines, potentially reducing early stage drug development time and costs.",
+      "AI assisted drug discovery helps researchers identify promising drug and disease associations from complex biomedical data.",
+      "Biomedical knowledge graphs integrate drugs, genes, diseases, and biological pathways to reveal meaningful molecular relationships.",
+      "Network pharmacology and link prediction support evidence based drug candidate prioritization and guide further experimental research.",
     ],
-    whoFor: "This lab is suitable for **students and researchers in drug discovery, pharmacology, bioinformatics, computational biology, and related life-science fields** who want to understand how graph-based methods can be used to study drug-target-disease relationships.\n\nBasic knowledge of **drug targets, genes, and disease biology** is helpful. No previous experience with knowledge graphs, graph embeddings, or TransE is required.",
+    whoFor:
+      "This lab is designed for students, researchers, academicians, and industry professionals interested in computational drug discovery and biomedical research.\n\nPharmacy, Pharmacology & Pharmaceutical Sciences\n\nBioinformatics, Computational Biology & Biotechnology\n\nDrug Discovery, Network Pharmacology & Systems Biology\n\nArtificial Intelligence, Machine Learning & Biomedical Data Science",
     outcomes: [
-      "Explain how drugs, genes, diseases, and side effects can be represented in a knowledge graph.",
-      "Explain how graph embeddings represent these relationships in numerical form.",
-      "Use link prediction and interpret the model score correctly.",
-      "Develop a drug-repurposing hypothesis from a predicted drug-disease link.",
-      "Identify the evidence needed to test the hypothesis.",
-      "Explain why a predicted link needs further research and validation.",
+      "Understand how drugs, genes, diseases, and molecular targets are connected through biomedical knowledge graphs.",
+      "Explore graph embeddings and network based methods for representing drug disease relationships.",
+      "Apply link prediction concepts to identify potential drug repurposing opportunities.",
+      "Analyze drug target interactions and interpret computational prediction scores.",
+      "Prioritize promising drug candidates using network pharmacology and biomedical evidence.",
+      "Develop evidence based drug repurposing hypotheses for further experimental validation.",
     ],
   },
 
@@ -72,10 +71,22 @@ const guide: LabGuide = {
    * two together.
    *
    * Review of 16 October 2026: the lab became one Research Project workflow,
-   * so the tutorial (nine steps, word for word from `TUTORIAL_STEPS`), "What's
-   * Included in the Lab" (from `LAB_PROFILE.included`) and the troubleshooting
-   * entries now follow it. The lab's `TUTORIAL_INTRO` has no field here: the
-   * tutorial panel's lead line is shared by every lab.
+   * so "What's Included in the Lab" (from `LAB_PROFILE.included`) and the
+   * troubleshooting entries follow it.
+   *
+   * 17 October 2026, from the brief: the tutorial, the outcomes, "Why It
+   * Matters" and "Who It's For" are rewritten, About's third paragraph is
+   * replaced, and the dashes come out of the words — "drug disease", not
+   * "drug-disease" — which is the same treatment as the 15 October pass and
+   * is why nothing here is hyphenated any more. Published titles under
+   * `furtherReading` keep theirs, being citations. This lab now carries its
+   * own tutorial lead line in `tutorialIntro`; the panel's shared line is
+   * the fallback.
+   *
+   * The eight steps here are the brief's, not `TUTORIAL_STEPS`: they name
+   * the pipeline in general terms ("select Mode", "Select a research case")
+   * rather than the lab's exact controls, so they are deliberately looser
+   * than the previous nine, which were the app's own wording.
    *
    * Palette from drugdiscovery.css: blue #74a9cf, rose #e6a1ad, coral
    * #ec785f, green #6fa58d. The design is dark only; each `ink` is the same
@@ -90,11 +101,11 @@ const guide: LabGuide = {
     ],
     headline: "Explore, Predict, and Prioritize New Therapeutic Potentials for Existing Drugs",
     intro:
-      "Explore relationships among drugs, diseases, genes, and adverse effects using a biomedical knowledge graph. Learn how graph embeddings and link prediction can help uncover possible drug-disease connections for further research.",
+      "Explore relationships among drugs, diseases, genes, and adverse effects using a biomedical knowledge graph. Learn how graph embeddings and link prediction can help uncover possible drug disease connections for further research.",
     about: [
       "**Repurpose** is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations.",
-      "In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects. Apply **knowledge graph embeddings using the TransE model** to represent biological relationships computationally and predict potential drug-disease associations through link prediction.",
-      "In this interactive Virtual Live Lab, investigate the complex relationships among drugs, genes, diseases, and adverse drug effects using a biomedical knowledge graph. Apply **TransE based knowledge graph** embeddings and link prediction techniques to analyze biological associations, identify previously unobserved drug disease connections, and explore potential opportunities for drug repurposing research.",
+      "In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects. Apply **knowledge graph embeddings using the TransE model** to represent biological relationships computationally and predict potential drug disease associations through link prediction.",
+      "Investigate multiple drug disease associations using evidence weighted scoring, safety assessment, literature validation, and server based comparison of TransE with other knowledge graph models.",
       "Analyze and rank promising drug candidates, examine their supporting biological relationships, and interpret predictions to identify potential therapeutic leads. Use these findings to formulate **scientifically grounded, testable hypothesis for future drug discovery**.",
     ],
     tags: ["Drug Repurposing", "Knowledge Graphs", "Graph Embeddings", "AI Prediction"],
@@ -104,7 +115,7 @@ const guide: LabGuide = {
       badge: "Interactive lab",
       icon: "graph",
       description:
-        "Build a drug-gene-disease knowledge graph, learn numerical embeddings, and predict promising links that are not yet recorded.",
+        "Build a drug gene disease knowledge graph, learn numerical embeddings, and predict promising links that are not yet recorded.",
     },
     photo: { position: "50% 50%" },
     palette: {
@@ -147,12 +158,12 @@ const guide: LabGuide = {
       {
         icon: "simulation",
         title: "Link Prediction",
-        body: "Use patterns in the graph to identify and rank possible drug-disease connections for further study.",
+        body: "Use patterns in the graph to identify and rank possible drug disease connections for further study.",
       },
       {
         icon: "insight",
         title: "Testable Hypothesis",
-        body: "Use the model result and supporting graph information to develop a clear drug-repurposing hypothesis that can be investigated further.",
+        body: "Use the model result and supporting graph information to develop a clear drug repurposing hypothesis that can be investigated further.",
       },
     ],
   },
@@ -186,123 +197,110 @@ const guide: LabGuide = {
     "**Guided Workflow:** Follow one research project step by step, from the input data to the report.",
     "**Interactive Knowledge Graph:** Explore links between drugs, genes, diseases, and side effects.",
     "**Graph Embedding Models:** See how graph relationships are represented as numbers, and compare TransE with other models in Advanced mode.",
-    "**Link Prediction Experiment:** Rank possible drug-disease links for further study.",
+    "**Link Prediction Experiment:** Rank possible drug disease links for further study.",
     "**Supporting Graph Paths:** Follow the connections behind a predicted link.",
-    "**Testable Hypothesis:** Use the result to develop a clear drug-repurposing research hypothesis.",
+    "**Testable Hypothesis:** Use the result to develop a clear drug repurposing research hypothesis.",
   ],
 
   /*
-   * `TUTORIAL_STEPS` in `drugdiscovery-ai/data/labProfile.ts`, word for word:
-   * the same nine steps in the same order, each title, goal, action, expected
-   * result and "why" as the lab shows them. Only `minutes` is the hub's own.
+   * The 17 October brief's eight steps, verbatim, in its order: each title,
+   * goal, the three actions and the expected result as written. The brief
+   * gives no "why" line, so none is invented. Only `minutes` is the hub's
+   * own; they are the previous steps' figures carried across one for one, so
+   * the hands-on total falls from 89 to 77 because the ninth step (Review
+   * and Assess) is no longer in the brief.
    */
+  tutorialIntro:
+    "Follow the AI powered drug repurposing workflow, explore biomedical knowledge graphs, evaluate drug disease associations, and develop evidence based research hypotheses.",
+
   steps: [
     {
       title: "Start the Lab",
-      goal: "Get familiar with the lab and see how your progress is tracked.",
+      goal: "Explore the Repurpose Drug Discovery Lab and understand the computational drug repurposing workflow.",
       actions: [
-        "Open the lab and read the aims and objectives on **Start the Lab**.",
-        "Find the sections in the sidebar: Research Project, Knowledge Bank, and Assessment.",
-        "Look at the Analysis Pipeline above the page: eight numbered steps, each one ticked when it is done.",
+        "Open the Repurpose: Drug Discovery Lab and select Mode.",
+        "Review the research objectives and eight stage analysis pipeline.",
+        "Explore how existing drugs can be investigated for new therapeutic applications.",
       ],
-      expect: "The Analysis Pipeline, with Start the Lab as step 1.",
+      expect: "An interactive drug repurposing workflow connecting biomedical data, network analysis, and AI assisted predictions.",
       minutes: 4,
     },
     {
-      title: "Create a Project",
-      goal: "Set up an experiment you can come back to.",
+      title: "Set Up Your Research Project",
+      goal: "Create a research project to investigate potential drug and disease associations.",
       actions: [
-        "Click **Run New Experiment**.",
-        "Give the project a name and create it.",
-        "Use **My Experiments** to reopen a saved project later.",
+        "Select a research case or disease of interest.",
+        "Enter the project name and define the therapeutic research objective.",
+        "Review the selected disease and candidate drugs for computational analysis.",
       ],
-      expect: "Your project open, with its name shown above the steps.",
+      expect: "A structured research project with selected drug candidates and a defined disease target.",
       minutes: 3,
     },
     {
-      title: "Enter the Input Data",
-      goal: "Choose the disease, the drugs, and the genes they act on.",
+      title: "Enter Drug and Disease Data",
+      goal: "Prepare the biomedical inputs required for drug repurposing analysis.",
       actions: [
-        "In Beginner mode, choose one of the checked example cases and one or more of its drugs.",
-        "In Intermediate and Advanced mode, search for a disease, add your drugs, and retrieve each drug’s gene targets from ChEMBL.",
-        "Check the action of each drug on each target, and add extra genes of interest if you have them.",
+        "Enter or review the selected disease and existing drugs.",
+        "Identify relevant drug names and disease information.",
+        "Prepare the input data for biomedical database validation.",
       ],
-      expect: "A disease, at least one drug, and the targets each drug acts on.",
-      why: "The results depend on the information and relationships in the graph. Reliable input is important for meaningful results.",
+      expect: "A structured drug and disease dataset ready for validation and further analysis.",
       minutes: 10,
     },
     {
-      title: "Validate the Inputs and Retrieve the Data",
-      goal: "Check every entry against open databases and collect the evidence.",
+      title: "Validate Biomedical Data",
+      goal: "Explore how reliable biomedical databases support evidence based drug discovery.",
       actions: [
-        "Click **Validate and run analysis** (in Beginner mode the case is already checked).",
-        "Read the validation report and correct anything it flags.",
-        "Watch each analysis step finish. The data comes from ChEMBL, Open Targets, STRING, Reactome, and PubMed.",
+        "Validate drug and disease entries against open biomedical databases.",
+        "Retrieve available information on drug targets and disease associated genes.",
+        "Review the validated records and supporting biological evidence.",
       ],
-      expect: "Validated inputs and a finished analysis.",
-      why: "Each entry is matched to a standard identifier, so the graph joins the right drug, gene, and disease records.",
+      expect: "Validated biomedical information linking candidate drugs, molecular targets, and disease biology.",
       minutes: 10,
     },
     {
-      title: "Explore the Knowledge Graph",
-      goal: "See how drugs, genes, diseases, and side effects are connected in a knowledge graph.",
+      title: "Explore the Biomedical Knowledge Graph",
+      goal: "Visualize molecular relationships through network pharmacology and knowledge graph analysis.",
       actions: [
-        "Identify the node types: Drug, Gene, Pathway, Disease, and Side Effect.",
-        "Look at the relationship types: **targets, associated with, and participates in**. The link being predicted is **treats**, from a drug to a disease.",
-        "Follow one path: a drug targets a gene, and the gene is associated with a disease.",
-        "Download the graph as an image for your notes.",
+        "Generate a biomedical knowledge graph connecting drugs, genes, diseases, pathways, and side effects.",
+        "Examine relationships between drug targets and disease associated genes.",
+        "Explore network connections that may support potential drug repurposing hypotheses.",
       ],
-      expect: "A drug-gene-disease path and what each relationship means.",
-      why: "The relationship type tells you how two nodes are connected and gives the link its meaning.",
+      expect: "An interactive molecular network highlighting biologically relevant drug target disease relationships.",
       minutes: 12,
     },
     {
-      title: "Read the Analysis",
-      goal: "See how each drug’s targets relate to the biology of the disease.",
+      title: "Analyze Drug Disease Relationships",
+      goal: "Investigate how network based computational methods identify promising therapeutic connections.",
       actions: [
-        "Compare the targets of your drugs and the pathways they share with the disease.",
-        "Check how close each target sits to the disease genes in the protein network.",
-        "Read whether each drug acts on its target in the direction the disease needs.",
+        "Analyze drug target interactions and their relevance to disease biology.",
+        "Explore how graph embeddings and link prediction can represent and evaluate drug disease relationships.",
+        "Review available network based evidence supporting potential therapeutic associations.",
       ],
-      expect: "The shared targets, pathways, and direction of action for each drug.",
-      why: "Not every drug-gene relationship has the same effect, so the direction of action matters as much as the connection.",
+      expect: "Computational analysis results highlighting potential drug disease associations and supporting network evidence.",
       minutes: 12,
     },
     {
-      title: "Check the Prediction and Ranking",
-      goal: "Learn how the model ranks possible missing links.",
+      title: "Predict and Rank Drug Candidates",
+      goal: "Explore AI assisted drug repurposing and evidence based candidate prioritization.",
       actions: [
-        "Look at the ranked list of drug-disease candidates and the score of each one.",
-        "In Advanced mode, compare TransE (**head + relation ≈ tail**) with the other models and the simple baselines.",
-        "Check what the model score means and what it does not mean.",
+        "Evaluate potential drug disease links using the available prediction and scoring methods.",
+        "Compare candidate drugs based on network relationships and supporting biomedical evidence.",
+        "Rank promising candidates for further investigation and experimental validation.",
       ],
-      expect: "A ranked list of possible drug-disease links with their scores.",
-      why: "The score shows how well a link fits the patterns learned from the graph. It does not prove that the biological relationship is real.",
+      expect: "A ranked list of potential drug repurposing candidates with prediction scores and supporting evidence.",
       minutes: 12,
     },
     {
-      title: "Form a Hypothesis and Download the Report",
-      goal: "Use the prediction to develop a testable research hypothesis.",
+      title: "Interpret Results and Generate a Research Report",
+      goal: "Translate computational predictions into scientifically testable drug repurposing hypotheses.",
       actions: [
-        "Open **Results & Report** and read the result, its evidence level, and its limitations.",
-        "Follow the related graph path and note the target and disease association.",
-        "Read the hypothesis and how it could be tested.",
-        "Download the report as a PDF, with the knowledge graph included.",
+        "Review the ranked candidates, biological relationships, and supporting evidence.",
+        "Identify promising drug disease associations and evaluate their scientific relevance.",
+        "Generate a research report summarizing the findings and proposed experimental validation steps.",
       ],
-      expect: "A predicted drug-disease link, its score, and the related graph connections.",
-      why: "A model score is not biological proof. The graph provides useful context, but the predicted relationship still needs further evidence and testing.",
+      expect: "A structured drug repurposing research report containing prioritized drug candidates, supporting biomedical evidence, and testable therapeutic hypotheses.",
       minutes: 14,
-    },
-    {
-      title: "Review and Assess",
-      goal: "Review the main concepts and check your understanding.",
-      actions: [
-        "Use the AI Chat if you need help with a concept.",
-        "Review the Knowledge Bank sections on drug repurposing, network medicine, and TransE.",
-        "Complete the Assessment.",
-      ],
-      expect: "A completed assessment and a drug-repurposing hypothesis based on the lab results.",
-      minutes: 12,
     },
   ],
 

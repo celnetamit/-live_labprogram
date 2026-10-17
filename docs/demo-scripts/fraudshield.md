@@ -11,22 +11,26 @@ Target runtime **00:42**. Generated from `src/content/labs/fraudshield.ts` — e
 
 Set up in advance so no shot is spent waiting:
 
-- Familiarity with basic classification metrics — precision, recall, false positive rate
-- A desktop browser; the network graph and 3D model comparison views need room and WebGL
-- A microphone if you want to enrol your own voice in the Voice Biometrics lab (optional — sample recordings are provided)
-- About 90 minutes for the full sequence, or 30 for the transaction lab alone
+- Transaction Scoring: Score transactions and review the factors associated with each risk score.
+- Phishing Classification: Compare malicious and legitimate messages and examine the evidence behind each result.
+- Identity Analysis: Compare document and capture images for visual consistency and possible manipulation.
+- Voice Biometrics: Compare voice samples and examine indicators of genuine, replayed, or synthetic audio.
+- Model Workbench (Intermediate): Compare models, adjust decision thresholds, and observe changes in performance.
+- Typology Stress Test (Intermediate): Replay six attack patterns against the detector and find which it handles worst.
+- Fraud Intelligence (Intermediate): Review fraud trends, network relationships, and model health.
+- Assessment: Complete knowledge questions and practical decision-making exercises.
 
 ## Shots
 
 | In | Out | Chapter | On screen |
 | --- | --- | --- | --- |
-| 00:00 | 00:04 | Curriculum — how the workshop is laid out | _fill in during storyboard_ |
-| 00:04 | 00:09 | AI Labs — the eight hands-on exercises | _fill in during storyboard_ |
+| 00:00 | 00:04 | Curriculum and workshop structure | _fill in during storyboard_ |
+| 00:04 | 00:09 | AI Labs: eight hands-on activities | _fill in during storyboard_ |
 | 00:09 | 00:17 | Transaction Anomaly Detector | _fill in during storyboard_ |
 | 00:17 | 00:22 | Phishing Email Classifier | _fill in during storyboard_ |
-| 00:22 | 00:27 | Model Tuning Workbench — the threshold trade-off | _fill in during storyboard_ |
-| 00:27 | 00:36 | Intelligence — trends and network graphs | _fill in during storyboard_ |
-| 00:36 | 00:42 | Assessments and certification | _fill in during storyboard_ |
+| 00:22 | 00:27 | Model Tuning Workbench: threshold trade-offs | _fill in during storyboard_ |
+| 00:27 | 00:36 | Intelligence: trends and network graphs | _fill in during storyboard_ |
+| 00:36 | 00:42 | Assessment and certification | _fill in during storyboard_ |
 
 ## Narration source
 
@@ -38,126 +42,136 @@ The opening line comes from the guide summary; each subsequent beat mirrors a tu
 
 **Then work the 8 tutorial steps** (94 min in written form, compressed to the runtime above — demonstrate, do not narrate every click):
 
-### 1. Read the curriculum before opening any lab
+### 1. Read the Curriculum
 
-_Understand the arc of the workshop so each exercise has somewhere to sit._
-
-Show, in order:
-
-- Open Curriculum in the sidebar — it is the course outline plus an AI tutor.
-- Skim the module list to see how the eight labs relate.
-- Ask the tutor one question you already have, so you know how it behaves before you need it under time pressure.
-
-**Hold the shot on:** A structured outline of the workshop and a responsive tutor panel.
-
-**Say over it:** The labs are individually usable but deliberately sequenced: the tuning workbench only makes sense once you have felt a detector produce too many false positives, and the adversarial lab only lands once you have a model you feel ownership of.
-
-### 2. Score transactions in the Anomaly Detector
-
-_Meet the core problem — separating rare fraud from overwhelming legitimate volume._
+_Understand how the workshop is organised before starting the hands-on work._
 
 Show, in order:
 
-- Open AI Labs in the sidebar. It opens on the Transaction Anomaly Detector tab.
-- Run the provided transaction stream and watch the risk scores populate.
-- Pick one high-scoring transaction and read the contributing factors — amount, velocity, location mismatch, device novelty.
-- Find a transaction with a high score that you judge to be genuine, and write down why the model got it wrong.
+- Open Curriculum from the sidebar.
+- Review the list of modules.
+- Read the key terms before starting the practical work.
 
-**Hold the shot on:** A scored transaction feed with a small number of high-risk items, each with an explanation of what drove the score.
+**Hold the shot on:** A clear outline of the workshop and its activities. Note the mode selector in the lab: steps 1 to 4 work in Basic, while steps 5, 6 and 7 use the Model Workbench, the Typology Stress Test and Fraud Intelligence, which are Intermediate surfaces.
 
-**Say over it:** Fraud is heavily imbalanced — typically well under 1% of transactions. A model that predicts "not fraud" for everything is over 99% accurate and completely worthless, which is why accuracy is never the metric anyone uses here.
+**Say over it:** The curriculum explains how the different parts of the lab are connected. One ordering detail is worth knowing before you start: Intermediate unlocks after you have scored a batch of transactions (step 2) and completed the assessment (step 8), and then chosen to switch. Working strictly top to bottom therefore meets a locked panel at step 5, so take the assessment straight after step 2 if you want to continue without interruption.
 
-### 3. Classify phishing emails
+### 2. Score Transactions
 
-_See the same detection problem in text, where the adversary writes the input._
-
-Show, in order:
-
-- Switch to the Phishing Email Classifier tab.
-- Run the supplied examples and note which signals the classifier weights — sender mismatch, urgency language, link domains, credential requests.
-- Edit a flagged email to make it read as legitimate while keeping its malicious intent, and re-run it.
-
-**Hold the shot on:** Confident classifications on the obvious examples, and a measurable drop in confidence once you soften the urgency cues — often enough to slip below the threshold.
-
-**Say over it:** Text classifiers key on surface signals that an attacker controls completely and can iterate against for free. This is your first direct experience of the adversarial dynamic the last lab formalises.
-
-### 4. Work through Identity Verification and Voice Biometrics
-
-_Extend detection to documents and audio, where failure modes are physical rather than statistical._
+_Score transactions and see how the model separates fraud from legitimate activity._
 
 Show, in order:
 
-- Open the Identity Verification tab and run the provided document checks.
-- Note which manipulations the check catches and which it misses.
-- Open Voice Biometrics, enrol a sample, then test matching and non-matching voices.
+- Open AI Labs and select Transaction Anomaly Detector.
+- Run the prepared transaction dataset.
+- Select a transaction with a high risk score.
+- Review its amount, location, device, and recent activity.
+- Find one incorrect prediction and consider why it occurred.
 
-**Hold the shot on:** Verification decisions with confidence scores, and at least one manipulation that passes when you expected it to fail.
+**Hold the shot on:** Most transactions should have a low risk score. A smaller number should be marked for review.
 
-**Say over it:** Biometrics feel authoritative and are treated as such by users, but they are probabilistic like everything else — with the added problem that a compromised biometric cannot be reissued the way a password can.
+**Say over it:** Fraud cases are less common than legitimate transactions. Accuracy alone may therefore give a misleading result.
 
-### 5. Move the threshold in the Model Tuning Workbench
+### 3. Classify Phishing Messages
 
-_Turn an abstract trade-off into a number with a currency symbol in front of it._
-
-Show, in order:
-
-- Open the Model Tuning Workbench tab.
-- Set the decision threshold as low as it goes and read the confusion matrix: nearly all fraud caught, and a large block of genuine customers blocked.
-- Raise it to the maximum and read it again: almost no false alarms, and most fraud through.
-- Settle on the threshold you would actually deploy, and write down the assumed cost of a missed fraud versus a blocked genuine customer that justifies it.
-
-**Hold the shot on:** A confusion matrix that moves continuously as you drag the threshold, with no setting that is good on both axes at once.
-
-**Say over it:** There is no threshold that optimises both error types — moving one always worsens the other. The choice is a business decision about relative cost, not a technical one, and this is the step where that stops being a slogan.
-
-### 6. Attack your own detector in the Adversarial Stress Lab
-
-_Find out how much effort it takes an adversary to defeat what you just tuned._
+_See how a text classifier separates malicious messages from legitimate ones._
 
 Show, in order:
 
-- Open the Adversarial Stress Lab tab.
-- Take a transaction your model flags confidently and perturb it — split the amount, change the timing, route through a different device — until the score drops below your threshold.
-- Count how many attempts it took.
-- Return to the workbench and adjust your model in light of what you found.
+- Open Phishing Email Classifier.
+- Test the supplied malicious and legitimate messages.
+- Review the wording, the links and the request in each message. The classifier reads the message body only — it has no sender, no Reply-To and no SPF, DKIM or DMARC result — so note what a header check would have told you that the text cannot.
+- Edit one message and run the classifier again.
 
-**Hold the shot on:** You get a flagged transaction past your own detector, usually in a handful of attempts. That result is the intended one.
+**Hold the shot on:** Small changes in the message may change its risk score.
 
-**Say over it:** Fraud models operate against an opponent who gets unlimited free tries and immediate feedback on whether an attempt worked. A model evaluated only on a static historical test set has never been tested against the thing it will actually face.
+**Say over it:** A text classifier looks for patterns in the message. It may make mistakes when legitimate and malicious messages contain similar language.
 
-### 7. Review the Intelligence dashboards
+### 4. Examine Identity and Voice Samples
 
-_See what the detector looks like from the operations side, over time._
-
-Show, in order:
-
-- Open Intelligence in the sidebar.
-- Work through the fraud trend chart, the transaction network graph and the model health monitor.
-- On the network graph, look for accounts that connect to each other through shared devices or addresses.
-
-**Hold the shot on:** Rings become visible as clusters in the network graph that were invisible when transactions were scored one at a time.
-
-**Say over it:** Per-transaction scoring is blind to coordination. Organised fraud shows up in the relationships between accounts, which is why graph analysis sits alongside classification in every serious fraud stack.
-
-### 8. Take the assessment
-
-_Confirm the trade-off reasoning has stuck, not just the tool operation._
+_Test identity and voice verification against supplied samples._
 
 Show, in order:
 
-- Open Assessments in the sidebar.
-- Complete the quiz and the practical challenges.
-- Use Resources to look up any concept you stumble on, then retry.
+- Open Identity Verification.
+- Compare the supplied document and capture images.
+- Note which changes are detected and which are missed.
+- Open Voice Biometrics and test the supplied voice samples.
+- Record your own sample only if you wish to do so.
 
-**Hold the shot on:** A completed assessment and, on a pass, a workshop certificate.
+**Hold the shot on:** The modules should show similarities, differences, and possible signs of manipulation.
+
+**Say over it:** Image and voice checks can support an investigation, but they cannot prove a person's identity by themselves.
+
+### 5. Adjust the Decision Threshold (needs Intermediate mode)
+
+_See how moving the decision threshold trades fraud detection against false alerts._
+
+Show, in order:
+
+- Open Model Tuning Workbench.
+- Lower the threshold and review the results.
+- Raise the threshold and compare the results.
+- Note the number of detected fraud cases, missed cases, and false alerts.
+- Choose a threshold and explain your choice.
+
+**Hold the shot on:** A lower threshold usually detects more fraud but creates more false alerts. A higher threshold usually reduces false alerts but misses more fraud.
+
+**Say over it:** The threshold should reflect fraud risk, customer inconvenience, investigation work, and cost.
+
+### 6. Test the Detector Against Attack Typologies (needs Intermediate mode)
+
+_Find which kinds of fraud the detector handles worst, and say what you would do about it._
+
+Show, in order:
+
+- Open Typology Stress Test. It replays six attack patterns generated with a different seed from the training data.
+- Read the per-typology detection rates — they are ordered worst-first.
+- Expand the weakest typology and read its lowest-scoring case.
+- Change the alert threshold and watch which typologies cross it; note that comparing two models at one threshold is not like-for-like, because each model's scores sit on its own scale.
+- Decide what you would add to close the worst gap — a feature, a rule, or a review step.
+
+**Hold the shot on:** Detection varies sharply by typology: account takeover is caught far more often than synthetic-identity bust-out, which looks like ordinary account growth until the final draw-down.
+
+**Say over it:** An overall detection rate hides the typology an attacker will actually choose. This is a coverage test rather than an adversarial one — nothing here optimises against the model — so read it as what the detector has not been taught, not as what a motivated attacker would achieve.
+
+### 7. Review Fraud Patterns (needs Intermediate mode)
+
+_Review fraud trends and the transaction network alongside individual scores._
+
+Show, in order:
+
+- Open Intelligence from the sidebar.
+- Review the fraud trend chart.
+- Examine the transaction network.
+- Look for accounts linked through shared devices, addresses, or merchants.
+- Review the model-health information.
+
+**Hold the shot on:** Some related activities may be easier to see in the network than in individual transactions.
+
+**Say over it:** Transaction scores describe individual cases. Trends and networks provide additional information. A connection does not prove fraud.
+
+### 8. Complete the Assessment
+
+_Check your understanding of the tools, results, and decision trade-offs._
+
+Show, in order:
+
+- Open Assessments.
+- Complete the questions and practical tasks.
+- Use Resources if you need help with a topic.
+- Try the assessment again if required.
+
+**Hold the shot on:** The assessment checks your understanding of the tools, results, and decision trade-offs. Learners who meet the required score may receive a completion certificate.
 
 ## Close with
 
-- Score transactions for anomalies and explain which features drove each score
-- Read a confusion matrix in money rather than percentages, and set a threshold that reflects real cost
-- Explain why fraud models degrade in production and what monitoring catches it
-- Identify the manipulations that defeat identity and voice verification
-- Attack a detector you built and harden it against what you find
+- Score transactions and identify the factors linked to each risk score.
+- Read a confusion matrix and consider the financial cost of each type of error.
+- Select a decision threshold based on fraud risk, customer impact, and review cost.
+- Explain why model performance may change over time and how it can be monitored.
+- Recognise common limitations of identity-image and voice checks.
+- Test how a detector responds when transaction details change.
 
 ## Publishing
 

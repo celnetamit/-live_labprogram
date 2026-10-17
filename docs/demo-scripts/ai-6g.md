@@ -1,6 +1,6 @@
 # Demo video shot list — `ai-6g`
 
-Target runtime **01:06**. Generated from `src/content/labs/ai-6g.ts` — edit the guide, not this file, then re-run `npm run demo:scripts`.
+Target runtime **01:15**. Generated from `src/content/labs/ai-6g.ts` — edit the guide, not this file, then re-run `npm run demo:scripts`.
 
 ## Before recording
 
@@ -20,12 +20,15 @@ Set up in advance so no shot is spent waiting:
 
 | In | Out | Chapter | On screen |
 | --- | --- | --- | --- |
-| 00:00 | 00:10 | Why 6G needs new ideas, not more spectrum | _fill in during storyboard_ |
-| 00:10 | 00:18 | The three modules | _fill in during storyboard_ |
-| 00:18 | 00:38 | Module 1 — Intelligent Reflecting Surfaces | _fill in during storyboard_ |
-| 00:38 | 00:51 | Tools — the IRS SNR simulator | _fill in during storyboard_ |
-| 00:51 | 01:00 | Semantic communication and JSCC simulators | _fill in during storyboard_ |
-| 01:00 | 01:06 | Capstone project | _fill in during storyboard_ |
+| 00:00 | 00:04 | What the lab is | _fill in during storyboard_ |
+| 00:04 | 00:11 | The nine-stage workflow, and the loop in it | _fill in during storyboard_ |
+| 00:11 | 00:18 | Three learning levels | _fill in during storyboard_ |
+| 00:18 | 00:28 | Knowledge Bank — five modules | _fill in during storyboard_ |
+| 00:28 | 00:35 | The experiment catalogue | _fill in during storyboard_ |
+| 00:35 | 00:50 | Configure and run an IRS experiment | _fill in during storyboard_ |
+| 00:50 | 00:59 | Semantic versus bit-level transmission | _fill in during storyboard_ |
+| 00:59 | 01:07 | The trained models and their cards | _fill in during storyboard_ |
+| 01:07 | 01:15 | Dataset manager | _fill in during storyboard_ |
 
 ## Narration source
 

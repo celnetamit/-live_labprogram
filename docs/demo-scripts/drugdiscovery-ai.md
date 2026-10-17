@@ -14,9 +14,9 @@ Set up in advance so no shot is spent waiting:
 - Guided Workflow: Follow one research project step by step, from the input data to the report.
 - Interactive Knowledge Graph: Explore links between drugs, genes, diseases, and side effects.
 - Graph Embedding Models: See how graph relationships are represented as numbers, and compare TransE with other models in Advanced mode.
-- Link Prediction Experiment: Rank possible drug-disease links for further study.
+- Link Prediction Experiment: Rank possible drug disease links for further study.
 - Supporting Graph Paths: Follow the connections behind a predicted link.
-- Testable Hypothesis: Use the result to develop a clear drug-repurposing research hypothesis.
+- Testable Hypothesis: Use the result to develop a clear drug repurposing research hypothesis.
 
 ## Shots
 
@@ -37,138 +37,112 @@ The opening line comes from the guide summary; each subsequent beat mirrors a tu
 
 > Repurpose is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations. In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects.
 
-**Then work the 9 tutorial steps** (89 min in written form, compressed to the runtime above — demonstrate, do not narrate every click):
+**Then work the 8 tutorial steps** (77 min in written form, compressed to the runtime above — demonstrate, do not narrate every click):
 
 ### 1. Start the Lab
 
-_Get familiar with the lab and see how your progress is tracked._
+_Explore the Repurpose Drug Discovery Lab and understand the computational drug repurposing workflow._
 
 Show, in order:
 
-- Open the lab and read the aims and objectives on Start the Lab.
-- Find the sections in the sidebar: Research Project, Knowledge Bank, and Assessment.
-- Look at the Analysis Pipeline above the page: eight numbered steps, each one ticked when it is done.
+- Open the Repurpose: Drug Discovery Lab and select Mode.
+- Review the research objectives and eight stage analysis pipeline.
+- Explore how existing drugs can be investigated for new therapeutic applications.
 
-**Hold the shot on:** The Analysis Pipeline, with Start the Lab as step 1.
+**Hold the shot on:** An interactive drug repurposing workflow connecting biomedical data, network analysis, and AI assisted predictions.
 
-### 2. Create a Project
+### 2. Set Up Your Research Project
 
-_Set up an experiment you can come back to._
-
-Show, in order:
-
-- Click Run New Experiment.
-- Give the project a name and create it.
-- Use My Experiments to reopen a saved project later.
-
-**Hold the shot on:** Your project open, with its name shown above the steps.
-
-### 3. Enter the Input Data
-
-_Choose the disease, the drugs, and the genes they act on._
+_Create a research project to investigate potential drug and disease associations._
 
 Show, in order:
 
-- In Beginner mode, choose one of the checked example cases and one or more of its drugs.
-- In Intermediate and Advanced mode, search for a disease, add your drugs, and retrieve each drug’s gene targets from ChEMBL.
-- Check the action of each drug on each target, and add extra genes of interest if you have them.
+- Select a research case or disease of interest.
+- Enter the project name and define the therapeutic research objective.
+- Review the selected disease and candidate drugs for computational analysis.
 
-**Hold the shot on:** A disease, at least one drug, and the targets each drug acts on.
+**Hold the shot on:** A structured research project with selected drug candidates and a defined disease target.
 
-**Say over it:** The results depend on the information and relationships in the graph. Reliable input is important for meaningful results.
+### 3. Enter Drug and Disease Data
 
-### 4. Validate the Inputs and Retrieve the Data
-
-_Check every entry against open databases and collect the evidence._
+_Prepare the biomedical inputs required for drug repurposing analysis._
 
 Show, in order:
 
-- Click Validate and run analysis (in Beginner mode the case is already checked).
-- Read the validation report and correct anything it flags.
-- Watch each analysis step finish. The data comes from ChEMBL, Open Targets, STRING, Reactome, and PubMed.
+- Enter or review the selected disease and existing drugs.
+- Identify relevant drug names and disease information.
+- Prepare the input data for biomedical database validation.
 
-**Hold the shot on:** Validated inputs and a finished analysis.
+**Hold the shot on:** A structured drug and disease dataset ready for validation and further analysis.
 
-**Say over it:** Each entry is matched to a standard identifier, so the graph joins the right drug, gene, and disease records.
+### 4. Validate Biomedical Data
 
-### 5. Explore the Knowledge Graph
-
-_See how drugs, genes, diseases, and side effects are connected in a knowledge graph._
+_Explore how reliable biomedical databases support evidence based drug discovery._
 
 Show, in order:
 
-- Identify the node types: Drug, Gene, Pathway, Disease, and Side Effect.
-- Look at the relationship types: targets, associated with, and participates in. The link being predicted is treats, from a drug to a disease.
-- Follow one path: a drug targets a gene, and the gene is associated with a disease.
-- Download the graph as an image for your notes.
+- Validate drug and disease entries against open biomedical databases.
+- Retrieve available information on drug targets and disease associated genes.
+- Review the validated records and supporting biological evidence.
 
-**Hold the shot on:** A drug-gene-disease path and what each relationship means.
+**Hold the shot on:** Validated biomedical information linking candidate drugs, molecular targets, and disease biology.
 
-**Say over it:** The relationship type tells you how two nodes are connected and gives the link its meaning.
+### 5. Explore the Biomedical Knowledge Graph
 
-### 6. Read the Analysis
-
-_See how each drug’s targets relate to the biology of the disease._
+_Visualize molecular relationships through network pharmacology and knowledge graph analysis._
 
 Show, in order:
 
-- Compare the targets of your drugs and the pathways they share with the disease.
-- Check how close each target sits to the disease genes in the protein network.
-- Read whether each drug acts on its target in the direction the disease needs.
+- Generate a biomedical knowledge graph connecting drugs, genes, diseases, pathways, and side effects.
+- Examine relationships between drug targets and disease associated genes.
+- Explore network connections that may support potential drug repurposing hypotheses.
 
-**Hold the shot on:** The shared targets, pathways, and direction of action for each drug.
+**Hold the shot on:** An interactive molecular network highlighting biologically relevant drug target disease relationships.
 
-**Say over it:** Not every drug-gene relationship has the same effect, so the direction of action matters as much as the connection.
+### 6. Analyze Drug Disease Relationships
 
-### 7. Check the Prediction and Ranking
-
-_Learn how the model ranks possible missing links._
+_Investigate how network based computational methods identify promising therapeutic connections._
 
 Show, in order:
 
-- Look at the ranked list of drug-disease candidates and the score of each one.
-- In Advanced mode, compare TransE (head + relation ≈ tail) with the other models and the simple baselines.
-- Check what the model score means and what it does not mean.
+- Analyze drug target interactions and their relevance to disease biology.
+- Explore how graph embeddings and link prediction can represent and evaluate drug disease relationships.
+- Review available network based evidence supporting potential therapeutic associations.
 
-**Hold the shot on:** A ranked list of possible drug-disease links with their scores.
+**Hold the shot on:** Computational analysis results highlighting potential drug disease associations and supporting network evidence.
 
-**Say over it:** The score shows how well a link fits the patterns learned from the graph. It does not prove that the biological relationship is real.
+### 7. Predict and Rank Drug Candidates
 
-### 8. Form a Hypothesis and Download the Report
-
-_Use the prediction to develop a testable research hypothesis._
+_Explore AI assisted drug repurposing and evidence based candidate prioritization._
 
 Show, in order:
 
-- Open Results & Report and read the result, its evidence level, and its limitations.
-- Follow the related graph path and note the target and disease association.
-- Read the hypothesis and how it could be tested.
-- Download the report as a PDF, with the knowledge graph included.
+- Evaluate potential drug disease links using the available prediction and scoring methods.
+- Compare candidate drugs based on network relationships and supporting biomedical evidence.
+- Rank promising candidates for further investigation and experimental validation.
 
-**Hold the shot on:** A predicted drug-disease link, its score, and the related graph connections.
+**Hold the shot on:** A ranked list of potential drug repurposing candidates with prediction scores and supporting evidence.
 
-**Say over it:** A model score is not biological proof. The graph provides useful context, but the predicted relationship still needs further evidence and testing.
+### 8. Interpret Results and Generate a Research Report
 
-### 9. Review and Assess
-
-_Review the main concepts and check your understanding._
+_Translate computational predictions into scientifically testable drug repurposing hypotheses._
 
 Show, in order:
 
-- Use the AI Chat if you need help with a concept.
-- Review the Knowledge Bank sections on drug repurposing, network medicine, and TransE.
-- Complete the Assessment.
+- Review the ranked candidates, biological relationships, and supporting evidence.
+- Identify promising drug disease associations and evaluate their scientific relevance.
+- Generate a research report summarizing the findings and proposed experimental validation steps.
 
-**Hold the shot on:** A completed assessment and a drug-repurposing hypothesis based on the lab results.
+**Hold the shot on:** A structured drug repurposing research report containing prioritized drug candidates, supporting biomedical evidence, and testable therapeutic hypotheses.
 
 ## Close with
 
-- Explain how drugs, genes, diseases, and side effects can be represented in a knowledge graph.
-- Explain how graph embeddings represent these relationships in numerical form.
-- Use link prediction and interpret the model score correctly.
-- Develop a drug-repurposing hypothesis from a predicted drug-disease link.
-- Identify the evidence needed to test the hypothesis.
-- Explain why a predicted link needs further research and validation.
+- Understand how drugs, genes, diseases, and molecular targets are connected through biomedical knowledge graphs.
+- Explore graph embeddings and network based methods for representing drug disease relationships.
+- Apply link prediction concepts to identify potential drug repurposing opportunities.
+- Analyze drug target interactions and interpret computational prediction scores.
+- Prioritize promising drug candidates using network pharmacology and biomedical evidence.
+- Develop evidence based drug repurposing hypotheses for further experimental validation.
 
 ## Publishing
 
