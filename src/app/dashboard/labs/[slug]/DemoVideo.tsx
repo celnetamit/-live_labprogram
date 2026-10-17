@@ -175,7 +175,7 @@ export default function DemoVideo({
               done. It turns itself on when a track is finally authored.
             */
             <span className="text-xs text-muted-foreground">
-              {video.captions ? "Captions available" : "No narration — on-screen text only"}
+              {video.captions ? "Captions available" : "No narration, on-screen text only"}
             </span>
           )}
           {video.durationSec ? (

@@ -11,9 +11,12 @@ Target runtime **01:01**. Generated from `src/content/labs/drugdiscovery-ai.ts` 
 
 Set up in advance so no shot is spent waiting:
 
-- Introductory biology — genes, proteins, what a drug target is
-- A desktop browser with WebGL for the interactive graph
-- About 75 minutes for the three learning labs plus the experiment
+- Guided Workflow: Follow one research project step by step, from the input data to the report.
+- Interactive Knowledge Graph: Explore links between drugs, genes, diseases, and side effects.
+- Graph Embedding Models: See how graph relationships are represented as numbers, and compare TransE with other models in Advanced mode.
+- Link Prediction Experiment: Rank possible drug-disease links for further study.
+- Supporting Graph Paths: Follow the connections behind a predicted link.
+- Testable Hypothesis: Use the result to develop a clear drug-repurposing research hypothesis.
 
 ## Shots
 
@@ -21,8 +24,8 @@ Set up in advance so no shot is spent waiting:
 | --- | --- | --- | --- |
 | 00:00 | 00:06 | Drugs that found their real purpose late | _fill in during storyboard_ |
 | 00:06 | 00:16 | Entering the laboratory | _fill in during storyboard_ |
-| 00:16 | 00:28 | Learning Lab — graphs, embeddings, link prediction | _fill in during storyboard_ |
-| 00:28 | 00:39 | The Experiment — an interactive knowledge graph | _fill in during storyboard_ |
+| 00:16 | 00:28 | Graphs, embeddings and link prediction | _fill in during storyboard_ |
+| 00:28 | 00:39 | An interactive knowledge graph | _fill in during storyboard_ |
 | 00:39 | 00:53 | Adding a drug and predicting links | _fill in during storyboard_ |
 | 00:53 | 01:01 | Knowledge Bank and assessment | _fill in during storyboard_ |
 
@@ -32,130 +35,140 @@ The opening line comes from the guide summary; each subsequent beat mirrors a tu
 
 **Open with:**
 
-> Some of the most important drugs in use today were developed for something else entirely and found their real purpose later. Drug repurposing tries to make that happen deliberately instead of by accident. This lab teaches the network approach: represent drugs, genes, diseases and side effects as a connected graph, learn a numerical embedding of that graph, and then predict the connections that ought to exist but have not been recorded yet — each one a repurposing hypothesis.
+> RepurposeAI is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations. In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects.
 
-**Then work the 8 tutorial steps** (96 min in written form, compressed to the runtime above — demonstrate, do not narrate every click):
+**Then work the 9 tutorial steps** (89 min in written form, compressed to the runtime above — demonstrate, do not narrate every click):
 
-### 1. Take the dashboard tour
+### 1. Start the Lab
 
-_See the structure and how progress is tracked._
-
-Show, in order:
-
-- Sign in and land on Dashboard.
-- Note the five sections: Dashboard, Learning Lab, Experiment, Knowledge Bank, Assessment.
-- Note the XP counter — the app awards points for completing labs and running tools, which is how it tracks what you have done.
-
-**Hold the shot on:** A dashboard with progress indicators and clear entry points.
-
-### 2. Learning Lab 1 — knowledge graph integration
-
-_Understand how biomedical knowledge becomes a graph._
+_Get familiar with the lab and see how your progress is tracked._
 
 Show, in order:
 
-- Open Learning Lab and start Lab 1: Knowledge Graph Integration.
-- Note the four node types: Drug, Disease, Gene and Side Effect.
-- Note that edges are typed too — 'treats', 'targets', 'associated_with' — not just connections.
-- Trace one path in your head: a drug targets a gene, that gene is associated with a disease.
+- Open the lab and read the aims and objectives on Start the Lab.
+- Find the sections in the sidebar: Research Project, Knowledge Bank, and Assessment.
+- Look at the Analysis Pipeline above the page: eight numbered steps, each one ticked when it is done.
 
-**Hold the shot on:** You can describe a drug-target-disease path and say what each edge type means.
+**Hold the shot on:** The Analysis Pipeline, with Start the Lab as step 1.
 
-**Say over it:** Typed edges are what make this more than a diagram. 'Drug A treats Disease B' and 'Drug A causes Disease B' connect the same two nodes and mean opposite things, so the relation type carries as much information as the link itself.
+### 2. Create a Project
 
-### 3. Learning Lab 2 — graph embeddings
-
-_See how a graph becomes numbers a model can work with._
+_Set up an experiment you can come back to._
 
 Show, in order:
 
-- Start Lab 2: Graph Embeddings.
-- Follow how each entity is assigned a position in a vector space.
-- Note the property that matters: entities playing similar roles end up close together.
-- Look at how a relation becomes a translation between positions rather than a point.
+- Click Run New Experiment.
+- Give the project a name and create it.
+- Use My Experiments to reopen a saved project later.
 
-**Hold the shot on:** You can explain why two drugs that treat the same diseases through the same targets end up near each other in the embedding.
+**Hold the shot on:** Your project open, with its name shown above the steps.
 
-**Say over it:** The embedding is a lossy compression of the graph that preserves relational structure. That compression is the point — it lets you ask about connections that were never recorded, because the geometry generalises beyond the specific edges it was trained on.
+### 3. Enter the Input Data
 
-### 4. Learning Lab 3 — link prediction
-
-_Understand the algorithm that turns geometry into a hypothesis._
+_Choose the disease, the drugs, and the genes they act on._
 
 Show, in order:
 
-- Start Lab 3: Link Prediction.
-- Read how TransE works: it trains so that the embedding of the head entity plus the embedding of the relation lands near the tail entity.
-- Understand the inference step: given a head and a relation, the nearest entities are the most likely tails.
-- Note that every prediction comes with a score, and what that score does and does not mean.
+- In Beginner mode, choose one of the checked example cases and one or more of its drugs.
+- In Intermediate and Advanced mode, search for a disease, add your drugs, and retrieve each drug’s gene targets from ChEMBL.
+- Check the action of each drug on each target, and add extra genes of interest if you have them.
 
-**Hold the shot on:** You can state the TransE relationship — head + relation ≈ tail — and explain how it produces ranked candidates.
+**Hold the shot on:** A disease, at least one drug, and the targets each drug acts on.
 
-**Say over it:** The score measures geometric consistency with the training graph, nothing more. It is not a probability that the biology is real, and reading it as one is the central mistake this field makes.
+**Say over it:** The results depend on the information and relationships in the graph. Reliable input is important for meaningful results.
 
-### 5. Open the Experiment and take the guided tour
+### 4. Validate the Inputs and Retrieve the Data
 
-_Get oriented on the interactive graph before manipulating it._
-
-Show, in order:
-
-- Open Experiment in the sidebar.
-- Start the guided tour and follow all four steps: Welcome to the Lab, Drug-Target Interaction, Target-Disease Association, and Repurposing Hypothesis.
-- Then explore freely — drag nodes, click them for details, and see how the graph responds.
-
-**Hold the shot on:** An interactive graph, colour-coded by node type, with a four-step tour that walks a complete repurposing argument.
-
-**Say over it:** The tour is the argument in miniature: drug to target, target to disease, therefore drug to disease as a hypothesis. Everything you do afterwards is a variation on that chain.
-
-### 6. Add your own drug candidate
-
-_Extend the graph and see how new knowledge propagates._
+_Check every entry against open databases and collect the evidence._
 
 Show, in order:
 
-- Click Add Drug.
-- Give it a name, list the gene targets you want it to act on, and list its side effects.
-- Submit it and find your node in the graph.
-- Look at what it is now connected to, and through which paths.
+- Click Validate and run analysis (in Beginner mode the case is already checked).
+- Read the validation report and correct anything it flags.
+- Watch each analysis step finish. The data comes from ChEMBL, Open Targets, STRING, Reactome, and PubMed.
 
-**Hold the shot on:** Your drug appears as a new node, linked through the targets you specified, and reachable from diseases associated with those genes.
+**Hold the shot on:** Validated inputs and a finished analysis.
 
-**Say over it:** Adding a node with no edges tells you nothing. The value came entirely from the relationships you declared — which is exactly why building these graphs from literature is slow, expensive work, and why the graph's quality caps the quality of every prediction made on it.
+**Say over it:** Each entry is matched to a standard identifier, so the graph joins the right drug, gene, and disease records.
 
-### 7. Run link prediction and form a hypothesis
+### 5. Explore the Knowledge Graph
 
-_Generate a candidate and turn it into something testable._
-
-Show, in order:
-
-- Click AI Link Prediction.
-- Read the result: which drug is predicted to treat which disease, and with what score.
-- Trace the path through the graph that supports it — which target, which association.
-- Write the hypothesis in one sentence, and then write down the experiment that would falsify it.
-
-**Hold the shot on:** A predicted drug-disease link with a confidence score, and a traceable path through the graph explaining it.
-
-**Say over it:** The traceable path is what makes a prediction usable. A high score with no mechanistic path is unpublishable and unfundable; a moderate score with a clear target-disease mechanism is a research proposal. Always look for the path before looking at the number.
-
-### 8. Consolidate and assess
-
-_Fill gaps and check understanding._
+_See how drugs, genes, diseases, and side effects are connected in a knowledge graph._
 
 Show, in order:
 
-- Use the AI Chat sidebar for anything unclear.
-- Read the Knowledge Bank sections on drug repurposing, network medicine and the TransE algorithm.
-- Take the Assessment.
+- Identify the node types: Drug, Gene, Pathway, Disease, and Side Effect.
+- Look at the relationship types: targets, associated with, and participates in. The link being predicted is treats, from a drug to a disease.
+- Follow one path: a drug targets a gene, and the gene is associated with a disease.
+- Download the graph as an image for your notes.
 
-**Hold the shot on:** A completed assessment and a repurposing hypothesis you could defend.
+**Hold the shot on:** A drug-gene-disease path and what each relationship means.
+
+**Say over it:** The relationship type tells you how two nodes are connected and gives the link its meaning.
+
+### 6. Read the Analysis
+
+_See how each drug’s targets relate to the biology of the disease._
+
+Show, in order:
+
+- Compare the targets of your drugs and the pathways they share with the disease.
+- Check how close each target sits to the disease genes in the protein network.
+- Read whether each drug acts on its target in the direction the disease needs.
+
+**Hold the shot on:** The shared targets, pathways, and direction of action for each drug.
+
+**Say over it:** Not every drug-gene relationship has the same effect, so the direction of action matters as much as the connection.
+
+### 7. Check the Prediction and Ranking
+
+_Learn how the model ranks possible missing links._
+
+Show, in order:
+
+- Look at the ranked list of drug-disease candidates and the score of each one.
+- In Advanced mode, compare TransE (head + relation ≈ tail) with the other models and the simple baselines.
+- Check what the model score means and what it does not mean.
+
+**Hold the shot on:** A ranked list of possible drug-disease links with their scores.
+
+**Say over it:** The score shows how well a link fits the patterns learned from the graph. It does not prove that the biological relationship is real.
+
+### 8. Form a Hypothesis and Download the Report
+
+_Use the prediction to develop a testable research hypothesis._
+
+Show, in order:
+
+- Open Results & Report and read the result, its evidence level, and its limitations.
+- Follow the related graph path and note the target and disease association.
+- Read the hypothesis and how it could be tested.
+- Download the report as a PDF, with the knowledge graph included.
+
+**Hold the shot on:** A predicted drug-disease link, its score, and the related graph connections.
+
+**Say over it:** A model score is not biological proof. The graph provides useful context, but the predicted relationship still needs further evidence and testing.
+
+### 9. Review and Assess
+
+_Review the main concepts and check your understanding._
+
+Show, in order:
+
+- Use the AI Chat if you need help with a concept.
+- Review the Knowledge Bank sections on drug repurposing, network medicine, and TransE.
+- Complete the Assessment.
+
+**Hold the shot on:** A completed assessment and a drug-repurposing hypothesis based on the lab results.
 
 ## Close with
 
-- Model biomedical knowledge as a graph of typed entities and typed relationships
-- Explain what a graph embedding is and why proximity in that space is meaningful
-- Run link prediction and read the confidence score for what it is
-- Generate a repurposing hypothesis and articulate what evidence would test it
-- Explain why a predicted link is a starting point for experiments, not a conclusion
+- Explain how drugs, genes, diseases, and side effects can be represented in a knowledge graph.
+- Explain how graph embeddings represent these relationships in numerical form.
+- Use link prediction and interpret the model score correctly.
+- Develop a drug-repurposing hypothesis from a predicted drug-disease link.
+- Identify the evidence needed to test the hypothesis.
+- Explain why a predicted link needs further research and validation.
 
 ## Publishing
 
