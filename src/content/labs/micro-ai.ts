@@ -315,7 +315,7 @@ const guide: LabGuide = {
   steps: [
     {
       title: "Understand the Lab Objectives",
-      goal: "Begin by familiarizing yourself with the scientific objectives and analytical workflow of MicrobeAI Lab.",
+      goal: "Begin by familiarizing yourself with the scientific objectives and analytical workflow of Microbe Lab.",
       actions: [
         "Review the three core objectives: Microbial Communities, Functional Prediction, and Bioreactor Simulation.",
         "Explore how microbial community composition, metabolic potential, and bioreactor operating conditions are related.",

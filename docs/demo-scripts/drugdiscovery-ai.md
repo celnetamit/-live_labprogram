@@ -35,7 +35,7 @@ The opening line comes from the guide summary; each subsequent beat mirrors a tu
 
 **Open with:**
 
-> RepurposeAI is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations. In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects.
+> Repurpose is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations. In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects.
 
 **Then work the 9 tutorial steps** (89 min in written form, compressed to the runtime above — demonstrate, do not narrate every click):
 

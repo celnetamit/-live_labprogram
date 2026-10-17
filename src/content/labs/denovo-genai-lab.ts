@@ -63,7 +63,7 @@ const guide: LabGuide = {
     ],
     tags: ["Generative chemistry", "SMILES", "Chemical space", "Molecular design"],
     walkthroughTitle: "From a line of text to a new molecule",
-    journey: "Denovo GenAI",
+    journey: "Denovo",
     card: {
       badge: "Interactive lab",
       icon: "graph",

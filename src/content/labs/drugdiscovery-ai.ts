@@ -17,7 +17,7 @@ const guide: LabGuide = {
 
   summary: {
     tagline: "Explore, Predict, and Prioritize New Therapeutic Potentials for Existing Drugs",
-    what: "RepurposeAI is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations. In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects.",
+    what: "Repurpose is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations. In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects.",
     /*
      * The brief gives this as two paragraphs; Amit asked for bullets on
      * 3 October, which is also how the other twelve labs carry the section.
@@ -92,7 +92,7 @@ const guide: LabGuide = {
     intro:
       "Explore relationships among drugs, diseases, genes, and adverse effects using a biomedical knowledge graph. Learn how graph embeddings and link prediction can help uncover possible drug-disease connections for further research.",
     about: [
-      "**RepurposeAI** is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations.",
+      "**Repurpose** is an experimental approach to identifying new therapeutic applications for existing drugs by investigating their molecular targets, biological pathways, and disease associations.",
       "In this interactive Live Lab, explore a biomedical knowledge graph to integrate drugs, genes, diseases, and adverse drug effects. Apply **knowledge graph embeddings using the TransE model** to represent biological relationships computationally and predict potential drug-disease associations through link prediction.",
       "In this interactive Virtual Live Lab, investigate the complex relationships among drugs, genes, diseases, and adverse drug effects using a biomedical knowledge graph. Apply **TransE based knowledge graph** embeddings and link prediction techniques to analyze biological associations, identify previously unobserved drug disease connections, and explore potential opportunities for drug repurposing research.",
       "Analyze and rank promising drug candidates, examine their supporting biological relationships, and interpret predictions to identify potential therapeutic leads. Use these findings to formulate **scientifically grounded, testable hypothesis for future drug discovery**.",
